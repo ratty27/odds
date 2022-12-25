@@ -13,17 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('bets', function (Blueprint $table) {
+        Schema::create('odds', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('game_id')->index();
             $table->integer('type');
-            $table->integer('user_id');
-            $table->integer('game_id');
             $table->integer('candidate_id0');
             $table->integer('candidate_id1');
             $table->integer('candidate_id2');
-            $table->integer('points');
-            $table->boolean('payed');
-            $table->timestamp('created_at');
+            $table->double('odds')->default(1.0);
+            $table->integer('favorite')->default(0);
+            $table->timestamps();
         });
     }
 
@@ -34,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('bets');
+        Schema::dropIfExists('odds');
     }
 };

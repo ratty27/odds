@@ -1,0 +1,17 @@
+a {
+  text-decoration: none;
+}
+
+h1 {
+  border-bottom: solid 3px black;
+}
+
+.odds_header {
+  font-size: 20px;
+  color: #fff;
+  background-color: #000;
+}
+
+.odds_header a:link { color: #fff; }
+.odds_header a:visited { color: #fff; }
+.odds_header a:active { color: #fff; }

@@ -1,5 +1,6 @@
 @php
-$user = App\Models\User::where('personal_id', Cookie::get('iden_token'))->take(1)->get()[0];
+$user_token = Cookie::queued('iden_token') ? Cookie::queued('iden_token')->getValue() : Cookie::get('iden_token');
+$user = App\Models\User::where('personal_id', $user_token)->take(1)->get()[0];
 $candidates_name = "";
 if( $game_id === 'new' )
 {
@@ -29,6 +30,8 @@ else
       @endphp
 
         <div class="container">
+          @include('parts.header')
+          <h1>レース編集</h1>
           <form action="/update" method="POST">
             <div class="form-group">
               <label>{{ __('odds.game_name') }}</label>

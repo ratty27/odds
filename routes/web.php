@@ -23,3 +23,4 @@ Route::get('/', 'App\Http\Controllers\GameController@index');
 Route::get('/edit/{game_id}', 'App\Http\Controllers\GameController@edit');
 Route::post('/update', 'App\Http\Controllers\GameController@update');
 Route::get('/game/{game_id}', 'App\Http\Controllers\GameController@show');
+Route::get('/bet/{game_id}', 'App\Http\Controllers\GameController@bet');

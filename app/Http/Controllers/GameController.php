@@ -52,6 +52,8 @@ class GameController extends Controller
                     $game->name = $request->input('game_name');
                     $game->limit = $request->input('game_limit');
                     $game->user_id = $user->id;
+                    $game->next_update = date("Y/m/d H:i:s");
+                    $game->exclusion_update = 0;
                     Log::info('Update game: ' . $request->input('game_name'));
                     if( $game->save() )
                     {   // Update cadidates
@@ -105,7 +107,14 @@ class GameController extends Controller
      */
     public function show($game_id)
     {
-        $games = Game::all();
-        return view('game/show', compact('games'));
+        return view('game/show', compact('game_id'));
+    }
+
+    /**
+     *  Bet in a game
+     */
+    public function bet($game_id)
+    {
+        return view('game/bet', compact('game_id'));
     }
 }
