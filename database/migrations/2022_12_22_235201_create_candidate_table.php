@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->integer('game_id')->index();
             $table->integer('disp_order');
-            $table->integer('result_rank');
+            $table->integer('result_rank')->default(-1);
             $table->timestamps();
         });
     }
