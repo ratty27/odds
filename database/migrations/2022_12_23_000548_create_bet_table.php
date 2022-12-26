@@ -16,11 +16,11 @@ return new class extends Migration
         Schema::create('bets', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('type');
-            $table->integer('user_id');
-            $table->integer('game_id');
-            $table->integer('candidate_id0');
-            $table->integer('candidate_id1');
-            $table->integer('candidate_id2');
+            $table->integer('user_id')->index();
+            $table->integer('game_id')->index();
+            $table->integer('candidate_id0')->default(-1);
+            $table->integer('candidate_id1')->default(-1);
+            $table->integer('candidate_id2')->default(-1);
             $table->integer('points');
             $table->boolean('payed');
             $table->timestamp('created_at');

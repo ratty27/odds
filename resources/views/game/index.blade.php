@@ -25,16 +25,16 @@ $user = App\Models\User::where('personal_id', $user_token)->take(1)->get()[0];
     </tr>
     @foreach($games as $game)
       <tr>
-        <td>{{ $game->id }}</td>
-        <td>
+        <td class="align-middle">{{ $game->id }}</td>
+        <td class="align-middle">
           <a href="/game/{{ $game->id }}">{{ $game->name }}</a>
         </td>
-        <td>{{ $game->limit }}</td>
+        <td class="align-middle">{{ $game->limit }}</td>
         @php
         if( $user->admin )
         {
         @endphp
-          <td class="text-center"><a href="/edit/{{ $game->id }}" class="btn btn-info">{{ __('odds.admin_edit') }}</a></td>
+          <td class="text-center align-middle"><a href="/edit/{{ $game->id }}" class="btn btn-info">{{ __('odds.admin_edit') }}</a></td>
         @php
         }
         @endphp

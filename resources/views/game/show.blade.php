@@ -1,14 +1,21 @@
 @php
+use Illuminate\Support\Facades\DB;
+
 // User
 $user_token = Cookie::queued('iden_token') ? Cookie::queued('iden_token')->getValue() : Cookie::get('iden_token');
-$user = App\Models\User::where('personal_id', $user_token)->take(1)->get()[0];
+$user = App\Models\User::where('personal_id', $user_token)->select('id', 'name', 'points')->first();
 // Game
 $game = App\Models\Game::findOrFail($game_id);
 $game->update_odds_if_needs();
 // Canddates
-$candidates = App\Models\Candidate::where('game_id', $game_id)->orderBy('disp_order', 'asc')->get();
+$candidates = App\Models\Candidate::where('game_id', $game_id)
+  ->orderBy('disp_order', 'asc')
+  ->select('id', 'name', 'disp_order', 'result_rank')
+  ->get();
 // Odds for win
-$odds0 = App\Models\Odd::where('game_id', $game_id)->where('type', 0)->get();
+$odds0 = App\Models\Odd::where('game_id', $game_id)->where('type', 0)
+  ->select('candidate_id0', 'odds', 'favorite')
+  ->get();
 
 @endphp
 <head>
@@ -42,10 +49,10 @@ $odds0 = App\Models\Odd::where('game_id', $game_id)->where('type', 0)->get();
             }
           }
         @endphp
-        <td class="text-center">{{ $candidate->disp_order+1 }}</td>
-        <td class="text-left" style="padding-left: 20px; padding-right: 20px;">{{ $candidate->name }}</td>
-        <td class="text-center">{{ $disp_odds }}</td>
-        <td class="text-center">{{ $disp_favo }}</td>
+        <td class="text-center align-middle">{{ $candidate->disp_order+1 }}</td>
+        <td class="text-left align-middle" style="padding-left: 20px; padding-right: 20px;">{{ $candidate->name }}</td>
+        <td class="text-center align-middle">{{ $disp_odds }}</td>
+        <td class="text-center align-middle">{{ $disp_favo }}</td>
         @php
           if( $candidate->result_rank < 0 )
           {
@@ -70,3 +77,8 @@ $odds0 = App\Models\Odd::where('game_id', $game_id)->where('type', 0)->get();
     </div>
   </div>
 </div>
+
+<script type="text/javascript">
+  var userInfo = <?php echo json_encode($user); ?>;
+  var oddsInfo = <?php echo json_encode($odds0); ?>;
+</script>

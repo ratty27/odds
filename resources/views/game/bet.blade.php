@@ -1,17 +1,26 @@
 @php
 // User
 $user_token = Cookie::queued('iden_token') ? Cookie::queued('iden_token')->getValue() : Cookie::get('iden_token');
-$user = App\Models\User::where('personal_id', $user_token)->take(1)->get()[0];
+$user = App\Models\User::where('personal_id', $user_token)->select('id', 'name', 'points')->first();
 // Game
 $game = App\Models\Game::findOrFail($game_id);
 $game->update_odds_if_needs();
 // Canddates
-$candidates = App\Models\Candidate::where('game_id', $game_id)->orderBy('disp_order', 'asc')->get();
+$candidates = App\Models\Candidate::where('game_id', $game_id)
+  ->orderBy('disp_order', 'asc')
+  ->select('id', 'name', 'disp_order', 'result_rank')
+  ->get();
 // Odds for win
-$odds0 = App\Models\Odd::where('game_id', $game_id)->where('type', 0)->get();
+$odds0 = App\Models\Odd::where('game_id', $game_id)->where('type', 0)
+  ->select('candidate_id0', 'odds', 'favorite')
+  ->get();
 // Bets
-$bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)->get();
+$bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
+	->select('type', 'candidate_id0', 'candidate_id1', 'candidate_id2', 'points', 'payed')
+	->get();
+
 @endphp
+
 <head>
   <title>{{ __('odds.title') }}</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
@@ -29,34 +38,12 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)-
 	        <th class="text-center col-md-2">{{ __('odds.bet_points') }}</th>
 				</tr>
 	    @foreach($candidates as $candidate)
-	    	@php
-          $disp_odds = 0.0;
-          foreach($odds0 as $odd)
-          {
-            if( $odd->candidate_id0 == $candidate->id )
-            {
-              $disp_odds = $odd->$odds;
-              break;
-            }
-          }
-
-	    		$bet_points = 0;
-	    		foreach($bets as $bet)
-	    		{
-	    			if( $bet->type == 0
-	    			 && $bet->candidate_id0 == $candidate->id )
-	    			{
-	    				$bet_points = $bet->points;
-	    				break;
-	    			}
-	    		}
-	    	@endphp
 	      <tr>
-	        <td class="text-center">{{ $candidate->disp_order+1 }}</td>
-	        <td class="text-left" style="padding-left: 20px; padding-right: 20px;">{{ $candidate->name }}</td>
-	        <td class="text-center">{{ $disp_odds }}</td>
-	        <td class="text-left">
-	        	<input name="bet_win_{{ $candidate->id }}" type='text' class="form-control" value="{{ $bet_points }}">
+	        <td class="text-center align-middle">{{ $candidate->disp_order+1 }}</td>
+	        <td class="text-left align-middle" style="padding-left: 20px; padding-right: 20px;">{{ $candidate->name }}</td>
+	        <td class="text-center align-middle" id="odds_win_{{ $candidate->id }}"></td>
+	        <td class="text-left align-middle">
+	        	<input id="bet_win_{{ $candidate->id }}" name="bet_win_{{ $candidate->id }}" type='number' class="form-control" oninput="onModifyBet()">
 	        </td>
 	      </tr>
 	    @endforeach
@@ -66,10 +53,113 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)-
 
       <input type="hidden" name="game_id" value="{{ $game_id }}">
       {{ csrf_field() }}
-      <button type="submit" class="btn btn-primary">{{ __('odds.game_bet_save') }}</button>
+      <input type="button" class="btn btn-info" onclick="if(checkBet()) submit();" value="{{ __('odds.game_bet_save') }}">
 	  </form>
   </div>
 </div>
 
 <script type="text/javascript">
+const candidates = <?php echo json_encode($candidates); ?>;
+const odds0 = <?php echo json_encode($odds0); ?>;
+const bets = <?php echo json_encode($bets); ?>;
+const initial_points = {{ $user->get_current_points() }};
+var input_bet_elements = [];
+
+// Calculate total of bets that isn't resulted.
+function calcTotalBets()
+{
+	let total = 0;
+	for( let i = 0; i < bets.length; ++i )
+	{
+		if( !bets[i].payed )
+		{
+			total += bets[i].points;
+		}
+	}
+	return total;
+}
+const initial_bets = calcTotalBets();
+
+// Initialize the values of odds, and bets.
+function initOddsBets()
+{
+	// for win
+	candidates.forEach( function(candidate)
+		{
+			// Odds
+			let elem = document.getElementById('odds_win_' + candidate.id);
+			elem.innerHTML = '1';
+			for( let i = 0; i < odds0.length; ++i )
+			{
+				if( odds0[i].candidate_id0 == candidate.id )
+				{
+					elem.innerHTML = '' + odds0[i].odds;
+					break;
+				}
+			}
+			// Bets
+			let elem_name = 'bet_win_' + candidate.id;
+			elem = document.getElementById(elem_name);
+			elem.value = 0;
+			for( let i = 0; i < bets.length; ++i )
+			{
+				if( bets[i].type == 0
+				 && bets[i].candidate_id0 == candidate.id )
+				{
+					elem.value = bets[i].points;
+					break;
+				}
+			}
+			input_bet_elements.push(elem_name);
+		}
+	);
+}
+window.onload = initOddsBets;
+
+// Total current bets
+function getTotalBets()
+{
+	let	current_bets = 0;
+	for( let i = 0; i < input_bet_elements.length; ++i )
+	{
+		let elem = document.getElementById(input_bet_elements[i]);
+		let num = Number(elem.value);
+		if( num > 0 )
+		{
+			current_bets += num;
+		}
+	}
+	return current_bets;
+}
+
+// Update current own points 
+function onModifyBet()
+{
+	let	current_bets = getTotalBets();
+	let current_points = initial_points + initial_bets - current_bets;
+	let elem = document.getElementById("my_points");
+	elem.innerHTML = current_points;
+	if( current_points < 0 )
+		elem.style.color = '#f11';
+	else
+		elem.style.color = '#fff';
+}
+
+// Check whether the input bet is correct
+function checkBet()
+{
+	let	current_bets = getTotalBets();
+	let current_points = initial_points + initial_bets - current_bets;
+	if( current_points >= 0 )
+	{
+		console.log("ok");
+		return true;
+	}
+	else
+	{
+		console.log("fail");
+		return false;
+	}
+}
+
 </script>

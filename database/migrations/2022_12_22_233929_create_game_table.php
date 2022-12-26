@@ -17,7 +17,7 @@ return new class extends Migration
             $table->increments('id');
             $table->string('name', 256);
             $table->timestamp('limit');
-            $table->integer('user_id');
+            $table->integer('user_id')->index();
             $table->timestamp('next_update');
             $table->integer('exclusion_update');
             $table->timestamps();

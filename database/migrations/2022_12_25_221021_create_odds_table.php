@@ -17,9 +17,9 @@ return new class extends Migration
             $table->increments('id');
             $table->integer('game_id')->index();
             $table->integer('type');
-            $table->integer('candidate_id0');
-            $table->integer('candidate_id1');
-            $table->integer('candidate_id2');
+            $table->integer('candidate_id0')->default(-1);
+            $table->integer('candidate_id1')->default(-1);
+            $table->integer('candidate_id2')->default(-1);
             $table->double('odds')->default(1.0);
             $table->integer('favorite')->default(0);
             $table->timestamps();
