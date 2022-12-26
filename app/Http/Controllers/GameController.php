@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\Game;
 use App\Models\Candidate;
+use App\Models\Bet;
 
 class GameController extends Controller
 {
@@ -34,7 +35,7 @@ class GameController extends Controller
      */
     public function update(Request $request)
     {
-        $user = User::where('personal_id', Cookie::get('iden_token'))->take(1)->get()[0];
+        $user = User::where('personal_id', Cookie::get('iden_token'))->first();
         if( $user->admin )
         {
             DB::transaction(function () use($request, $user)
@@ -54,7 +55,7 @@ class GameController extends Controller
                     $game->user_id = $user->id;
                     $game->next_update = date("Y/m/d H:i:s");
                     $game->exclusion_update = 0;
-                    Log::info('Update game: ' . $request->input('game_name'));
+                    //Log::info('Update game: ' . $request->input('game_name'));
                     if( $game->save() )
                     {   // Update cadidates
                         $candidate_names = explode("\n", $request->input('game_candidate'));
@@ -116,5 +117,83 @@ class GameController extends Controller
     public function bet($game_id)
     {
         return view('game/bet', compact('game_id'));
+    }
+
+    /**
+     *  Save betting info
+     */
+    public function save_bet(Request $request)
+    {
+        $user = User::where('personal_id', Cookie::get('iden_token'))->first();
+        $game_id = $request->input('game_id');
+        DB::transaction(function () use($request, $user, $game_id)
+            {
+                $candidates = Candidate::where('game_id', $game_id)->where('result_rank', '<', 0)->select('id')->get();
+                $last_bets = intval( Bet::where('game_id', $game_id)->where('user_id', $user->id)->where('payed', 0)->sum('points') );
+
+                // Requested total bets
+                $request_bets = 0;
+                // for win
+                foreach( $candidates as &$candidate )
+                {
+                    $request_bets += $request->input('bet_win_' . $candidate->id);
+                }
+
+                // Check whether request bets over own points
+                $left = $user->get_current_points() + $last_bets - $request_bets;
+                if( $left < 0 )
+                {
+                    Log::warning('Invalid bettnig request : user_id=' . $user->id);
+                    return;
+                }
+
+                // Save betting request
+                // for win
+                $bets = Bet::where('game_id', $game_id)
+                    ->where('user_id', $user->id)
+                    ->where('type', 0)
+                    ->where('payed', 0)
+                    ->select('id', 'points', 'candidate_id0')->get();
+                foreach( $candidates as &$candidate )
+                {
+                    $bet_points = $request->input('bet_win_' . $candidate->id);
+                    $found = false;
+                    foreach( $bets as &$bet )
+                    {
+                        if( $bet->candidate_id0 == $candidate->id )
+                        {
+                            if( $bet_points > 0 )
+                            {
+                                $bet->points = $bet_points;
+                                $bet->update();
+                            }
+                            else
+                            {
+                                $bet->delete();
+                            }
+                            $found = true;
+                            break;
+                        }
+                    }
+                    if( !$found && $bet_points > 0 )
+                    {
+                        $bet = new Bet;
+                        $bet->type = 0;
+                        $bet->game_id = $game_id;
+                        $bet->user_id = $user->id;
+                        $bet->candidate_id0 = $candidate->id;
+                        $bet->points = $bet_points;
+                        $bet->payed = 0;
+                        $bet->save();
+                    }
+                }
+
+                // Request to update odds
+                $game = Game::find($game_id);
+                $game->exclusion_update = 0;
+                $game->update();
+            }
+        );
+        return view('game/show', compact('game_id'));
     }
 }

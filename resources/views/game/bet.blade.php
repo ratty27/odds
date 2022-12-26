@@ -28,7 +28,7 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
 <div class="container">
   @include('parts.header')
   <div class="table-responsive">
-    <form action="/update" method="POST">
+    <form action="/bet" method="POST">
 	  	<h1>{{ __('odds.bet_win') }}</h1>
 	    <table class="table table-striped table-bordered">
 				<tr>

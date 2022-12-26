@@ -34,11 +34,18 @@ class User extends Model
     }
 
     /**
+     *  Get betting points
+     */
+    public function get_betting_points()
+    {
+        return intval( DB::table('bets')->where('user_id', $this->id)->where('payed', 0)->sum('points') );
+    }
+
+    /**
      *  Get current points left
      */
     public function get_current_points()
     {
-        $total_bet = DB::table('bets')->where('user_id', $this->id)->where('payed', 0)->sum('points');
-        return $this->points - $total_bet;
+        return $this->points - $this->get_betting_points();
     }
 }
