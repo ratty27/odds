@@ -43,8 +43,8 @@ $odds0 = App\Models\Odd::where('game_id', $game_id)->where('type', 0)
           {
             if( $odd->candidate_id0 == $candidate->id )
             {
-              $disp_odds = $odd->$odds;
-              $disp_favo = $odd->$favorite;
+              $disp_odds = $odd->odds;
+              $disp_favo = $odd->favorite;
               break;
             }
           }

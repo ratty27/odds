@@ -18,9 +18,9 @@ return new class extends Migration
             $table->integer('type');
             $table->integer('user_id')->index();
             $table->integer('game_id')->index();
-            $table->integer('candidate_id0')->default(-1);
-            $table->integer('candidate_id1')->default(-1);
-            $table->integer('candidate_id2')->default(-1);
+            $table->integer('candidate_id0')->default(-1)->index();
+            $table->integer('candidate_id1')->default(-1)->index();
+            $table->integer('candidate_id2')->default(-1)->index();
             $table->integer('points');
             $table->boolean('payed')->default(0);
             $table->timestamps();
