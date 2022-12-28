@@ -16,6 +16,10 @@ $candidates = App\Models\Candidate::where('game_id', $game_id)
 $odds0 = App\Models\Odd::where('game_id', $game_id)->where('type', 0)
   ->select('candidate_id0', 'odds', 'favorite')
   ->get();
+// Bets
+$bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
+  ->select('id', 'type', 'candidate_id0', 'candidate_id1', 'candidate_id2', 'points', 'payed')
+  ->get();
 
 @endphp
 <head>
@@ -81,29 +85,77 @@ $odds0 = App\Models\Odd::where('game_id', $game_id)->where('type', 0)
     </table>
 
   </div>
+
+  <hr>
+
+  <h4>{{ __('odds.user_tickers') }}</h4>
+  <div class='d-flex flex-row bd-highlight'>
+  @foreach($bets as $bet)
+    <div class='border shadow odds_ticket' id='bet_ticket_{{ $bet->id }}'></div>
+  @endforeach
+  </div>
+
 </div>
 
 <script type="text/javascript">
 var candidates = <?php echo json_encode($candidates); ?>;
 var odds0 = <?php echo json_encode($odds0); ?>;
+var bets = <?php echo json_encode($bets); ?>;
 
-function initOddsFavo()
+function searchCadidate(canid)
 {
+  for( let i = 0; i < candidates.length; ++i )
+  {
+    if(candidates[i].id == canid )
+    {
+      return candidates[i];
+    }
+  }
+  return null;
+}
+
+function initValues()
+{
+  // Odds & Favorites
   for( let i = 0; i < odds0.length; ++i )
   {
-      let elem = document.getElementById('odds_win_' + odds0[i].candidate_id0);
-      if( elem )
-      {
-        elem.innerHTML = '' + odds0[i].odds;
-      }
+    let elem = document.getElementById('odds_win_' + odds0[i].candidate_id0);
+    if( elem )
+    {
+      elem.innerHTML = '' + odds0[i].odds;
+    }
 
-      elem = document.getElementById('favo_win_' + odds0[i].candidate_id0);
-      if( elem )
+    elem = document.getElementById('favo_win_' + odds0[i].candidate_id0);
+    if( elem )
+    {
+      elem.innerHTML = '' + odds0[i].favorite;
+    }
+  }
+
+  // Bets
+  for( let i = 0; i < bets.length; ++i )
+  {
+    let elem = document.getElementById('bet_ticket_' + bets[i].id);
+    if( elem )
+    {
+      if( bets[i].type == 0 )
       {
-        elem.innerHTML = '' + odds0[i].favorite;
+        let can0 = searchCadidate( bets[i].candidate_id0 );
+        if( can0 != null )
+        {
+          elem.innerHTML = '{{ __("odds.bet_win") }}<br>'
+                         + (can0.disp_order+1) + ' ' + can0.name + '<br>'
+                         + bets[i].points + 'pt';
+          if( can0.result_rank == 1 )
+          {
+            elem.classList.remove('odds_ticket');
+            elem.classList.add('odds_win_ticket');
+          }
+        }
       }
+    }
   }
 }
-window.onload = initOddsFavo;
+window.onload = initValues;
 
 </script>

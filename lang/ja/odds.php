@@ -48,5 +48,7 @@ return [
 	'bet_tierce' => '３連単',
 	'bet_trio' => '３連複',
 
+	'user_tickers' => 'あなたの予想',
+
 	'internal_error' => '内部エラー',
 ];

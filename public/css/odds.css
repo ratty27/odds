@@ -19,3 +19,20 @@ h4 {
 .odds_header a:link { color: #fff; }
 .odds_header a:visited { color: #fff; }
 .odds_header a:active { color: #fff; }
+
+.odds_ticket {
+	margin: 4px;
+	padding: 8px;
+	background-color: #eefeee;
+}
+
+.odds_win_ticket {
+	margin: 4px;
+	padding: 8px;
+  animation: blinkAnime 1s infinite alternate;
+}
+
+@keyframes blinkAnime {
+   0%{ color : black; background:#ffffee }
+ 100%{ color : black; background:#eefeee }
+}
