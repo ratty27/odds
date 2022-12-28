@@ -29,6 +29,12 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
   @include('parts.header')
   <div class="table-responsive">
     <form action="/bet" method="POST">
+      <input type="button" class="btn btn-info" onclick="if(checkBet()) submit();" value="{{ __('odds.game_bet_save') }}">
+      <input type="hidden" name="game_id" value="{{ $game_id }}">
+      {{ csrf_field() }}
+
+      <hr>
+
 	  	<h1>{{ __('odds.bet_win') }}</h1>
 	    <table class="table table-striped table-bordered">
 				<tr>
@@ -51,9 +57,6 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
 
 	  	<hr>
 
-      <input type="hidden" name="game_id" value="{{ $game_id }}">
-      {{ csrf_field() }}
-      <input type="button" class="btn btn-info" onclick="if(checkBet()) submit();" value="{{ __('odds.game_bet_save') }}">
 	  </form>
   </div>
 </div>

@@ -15,13 +15,20 @@ use Illuminate\Support\Facades\Route;
 
 /*
 Route::get('/', function () {
-    return view('welcome');
+	return view('welcome');
 });
 */
 
+// Top
 Route::get('/', 'App\Http\Controllers\GameController@index');
+
+// Admin
 Route::get('/edit/{game_id}', 'App\Http\Controllers\GameController@edit');
 Route::post('/update', 'App\Http\Controllers\GameController@update');
+Route::get('/close/{game_id}', 'App\Http\Controllers\GameController@close');
+Route::get('/result/{game_id}', 'App\Http\Controllers\GameController@result');
+
+// User's
 Route::get('/game/{game_id}', 'App\Http\Controllers\GameController@show');
 Route::get('/bet/{game_id}', 'App\Http\Controllers\GameController@bet');
 Route::post('/bet', 'App\Http\Controllers\GameController@save_bet');

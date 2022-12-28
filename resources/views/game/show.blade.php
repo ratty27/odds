@@ -24,6 +24,14 @@ $odds0 = App\Models\Odd::where('game_id', $game_id)->where('type', 0)
 </head>
 <div class="container">
   @include('parts.header')
+  <div style="width: 100%;">
+    <div style="float: left"><a href="/" class="btn btn-info">{{ __('odds.game_list') }}</a></div>
+    <div style="float: right;"><a href="/bet/{{ $game->id }}" class="btn btn-info">{{ __('odds.game_bet') }}</a></div>
+  </div>
+  <div style="clear: left;"></div>
+
+  <hr>
+
   <div class="table-responsive">
   	<h1>{{ $game->name }}</h1>
     <table class="table table-striped table-bordered">
@@ -72,9 +80,6 @@ $odds0 = App\Models\Odd::where('game_id', $game_id)->where('type', 0)
     @endforeach
     </table>
 
-    <div class="text-end">
-      <a href="/bet/{{ $game->id }}" class="btn btn-info">{{ __('odds.game_bet') }}</a>
-    </div>
   </div>
 </div>
 
