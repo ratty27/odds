@@ -26,6 +26,7 @@ Route::get('/', 'App\Http\Controllers\GameController@index');
 Route::get('/edit/{game_id}', 'App\Http\Controllers\GameController@edit');
 Route::post('/update', 'App\Http\Controllers\GameController@update');
 Route::get('/close/{game_id}', 'App\Http\Controllers\GameController@close');
+Route::get('/reopen/{game_id}', 'App\Http\Controllers\GameController@reopen');
 Route::get('/result/{game_id}', 'App\Http\Controllers\GameController@result');
 
 // User's

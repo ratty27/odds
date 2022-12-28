@@ -110,7 +110,40 @@ class GameController extends Controller
 		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
 		if( $user->admin )
 		{
+			DB::transaction(function () use($game_id)
+				{
+					$game = Game::find($game_id);
+					if( $game->status == 0 )
+					{
+						$game->status = 1;
+						$game->update_odds();
+					}
+				}
+			);
 		}
+		return redirect('/');
+	}
+
+	/**
+	 *  Re-open a game (admin)
+	 */
+	public function reopen($game_id)
+	{
+		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
+		if( $user->admin )
+		{
+			DB::transaction(function () use($game_id)
+				{
+					$game = Game::find($game_id);
+					if( $game->status == 1 )
+					{
+						$game->status = 0;
+						$game->update();
+					}
+				}
+			);
+		}
+		return redirect('/');
 	}
 
 	/**
@@ -149,6 +182,12 @@ class GameController extends Controller
 		$game_id = $request->input('game_id');
 		DB::transaction(function () use($request, $user, $game_id)
 			{
+				$game = Game::find($game_id);
+				if( $game->status > 0 )
+				{	// Reject
+					return;
+				}
+
 				$candidates = Candidate::where('game_id', $game_id)->where('result_rank', '<', 0)->select('id')->get();
 				$last_bets = intval( Bet::where('game_id', $game_id)->where('user_id', $user->id)->where('payed', 0)->sum('points') );
 
@@ -210,7 +249,6 @@ class GameController extends Controller
 				}
 
 				// Request to update odds
-				$game = Game::find($game_id);
 				$game->exclusion_update = 0;
 				$game->update();
 			}

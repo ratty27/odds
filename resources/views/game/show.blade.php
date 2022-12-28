@@ -26,14 +26,27 @@ $odds0 = App\Models\Odd::where('game_id', $game_id)->where('type', 0)
   @include('parts.header')
   <div style="width: 100%;">
     <div style="float: left"><a href="/" class="btn btn-info">{{ __('odds.game_list') }}</a></div>
-    <div style="float: right;"><a href="/bet/{{ $game->id }}" class="btn btn-info">{{ __('odds.game_bet') }}</a></div>
+    @php
+    if( $game->status == 0 )
+    {
+    @endphp
+      <div style="float: right;"><a href="/bet/{{ $game->id }}" class="btn btn-info">{{ __('odds.game_bet') }}</a></div>
+    @php
+    }
+    else
+    {
+    @endphp
+      <div class="btn btn-dark" style="float: right;">{{ __('odds.game_info_closed') }}</div>
+    @php
+    }
+    @endphp
   </div>
   <div style="clear: left;"></div>
 
   <hr>
 
   <div class="table-responsive">
-  	<h1>{{ $game->name }}</h1>
+  	<h3>{{ $game->name }}</h3>
     <table class="table table-striped table-bordered">
       <tr>
         <th class="text-center col-md-1">{{ __('odds.candidate_order') }}</th>
@@ -44,23 +57,10 @@ $odds0 = App\Models\Odd::where('game_id', $game_id)->where('type', 0)
       </tr>
     @foreach($candidates as $candidate)
       <tr>
-        @php
-          $disp_odds = 0.0;
-          $disp_favo = 0;
-          foreach($odds0 as $odd)
-          {
-            if( $odd->candidate_id0 == $candidate->id )
-            {
-              $disp_odds = $odd->odds;
-              $disp_favo = $odd->favorite;
-              break;
-            }
-          }
-        @endphp
         <td class="text-center align-middle">{{ $candidate->disp_order+1 }}</td>
         <td class="text-left align-middle" style="padding-left: 20px; padding-right: 20px;">{{ $candidate->name }}</td>
-        <td class="text-center align-middle">{{ $disp_odds }}</td>
-        <td class="text-center align-middle">{{ $disp_favo }}</td>
+        <td class="text-center align-middle" id="odds_win_{{ $candidate->id }}"></td>
+        <td class="text-center align-middle" id="favo_win_{{ $candidate->id }}"></td>
         @php
           if( $candidate->result_rank < 0 )
           {
@@ -84,6 +84,26 @@ $odds0 = App\Models\Odd::where('game_id', $game_id)->where('type', 0)
 </div>
 
 <script type="text/javascript">
-  var userInfo = <?php echo json_encode($user); ?>;
-  var oddsInfo = <?php echo json_encode($odds0); ?>;
+var candidates = <?php echo json_encode($candidates); ?>;
+var odds0 = <?php echo json_encode($odds0); ?>;
+
+function initOddsFavo()
+{
+  for( let i = 0; i < odds0.length; ++i )
+  {
+      let elem = document.getElementById('odds_win_' + odds0[i].candidate_id0);
+      if( elem )
+      {
+        elem.innerHTML = '' + odds0[i].odds;
+      }
+
+      elem = document.getElementById('favo_win_' + odds0[i].candidate_id0);
+      if( elem )
+      {
+        elem.innerHTML = '' + odds0[i].favorite;
+      }
+  }
+}
+window.onload = initOddsFavo;
+
 </script>
