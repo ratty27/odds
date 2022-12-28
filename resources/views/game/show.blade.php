@@ -71,7 +71,7 @@ $odds0 = App\Models\Odd::where('game_id', $game_id)->where('type', 0)
           else
           {
         @endphp
-            <td class="text-right">{{ $candidate->result_rank }}</td>
+            <td class="text-center">{{ $candidate->result_rank }}</td>
         @php
           }
         @endphp

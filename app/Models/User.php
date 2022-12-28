@@ -103,6 +103,7 @@ class User extends Model
 						$bet->update();
 					}
 				}
+				// Todo: Record to log...
 				$user->points += $rewards;
 				$user->update();
 			}

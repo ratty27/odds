@@ -1,6 +1,8 @@
 @php
 $user_token = Cookie::queued('iden_token') ? Cookie::queued('iden_token')->getValue() : Cookie::get('iden_token');
 $user = App\Models\User::where('personal_id', $user_token)->take(1)->get()[0];
+$games = App\Models\Game::where('status', '<', 2)->select('id', 'name', 'limit')->get();
+$past_games = App\Models\Game::where('status', 2)->select('id', 'name')->get();
 @endphp
 
 <head>
@@ -9,6 +11,9 @@ $user = App\Models\User::where('personal_id', $user_token)->take(1)->get()[0];
 </head>
 <div class="container">
   @include('parts.header')
+
+  <!-- Future games -->
+  <h3>{{ __('odds.game_future') }}</h3>
   <table class="table text-center table-striped table-bordered">
     <tr>
       <th class="text-center col-md-1">{{ __('odds.game_id') }}</th>
@@ -33,10 +38,7 @@ $user = App\Models\User::where('personal_id', $user_token)->take(1)->get()[0];
         {
           echo "<td class='text-center align-middle'>";
             // Edit button
-            if( $game->status < 2 )
-            {
-              echo "<a class='btn btn-info' href='/edit/$game->id'>" . __('odds.admin_edit') . "</a> ";
-            }
+            echo "<a class='btn btn-info' href='/edit/$game->id'>" . __('odds.admin_edit') . "</a> ";
 
             // Close/Reopen button
             if( $game->status == 0 )
@@ -49,10 +51,7 @@ $user = App\Models\User::where('personal_id', $user_token)->take(1)->get()[0];
             }
 
             // Result buttion
-            if( $game->status < 2 )
-            {
-              echo "<a class='btn btn-info' href='/result/$game->id'>" . __('odds.admin_result') . "</a> ";
-            }
+            echo "<a class='btn btn-info' href='/result/$game->id'>" . __('odds.admin_result') . "</a> ";
           echo "</td>";
         }
         @endphp
@@ -67,6 +66,26 @@ $user = App\Models\User::where('personal_id', $user_token)->take(1)->get()[0];
     }
     @endphp
   </table>
+
+  <!-- Past games -->
+  <h3>{{ __('odds.game_past') }}</h3>
+  <table class="table text-center table-striped table-bordered">
+    <tr>
+      <th class="text-center col-md-1">{{ __('odds.game_id') }}</th>
+      <th class="text-center col-md-6">{{ __('odds.game_name') }}</th>
+      <th class="text-center col-md-1">{{ __('odds.game_limit') }}</th>
+    </tr>
+    @foreach($past_games as $game)
+      <tr>
+        <td class="align-middle">{{ $game->id }}</td>
+        <td class="align-middle">
+          <a href="/game/{{ $game->id }}">{{ $game->name }}</a>
+        </td>
+        <td class="align-middle">{{ __('odds.game_limit_close') }}</td>
+      </tr>
+    @endforeach
+  </table>
+
 </div>
 
 @php
