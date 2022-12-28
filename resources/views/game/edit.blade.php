@@ -47,7 +47,8 @@ else
             </div>
             <input type="hidden" name="game_id" value="{{ $game_id }}">
             {{ csrf_field() }}
-            <button type="submit" class="btn btn-primary">{{ __('odds.admin_save') }}</button>
+            <button type="submit" class="btn btn-success">{{ __('odds.admin_save') }}</button>
+            <input type="button" class="btn btn-secondary" onclick="onCancel();" value="{{ __('odds.admin_cancel') }}">
           </form>
         </div>
 
@@ -55,3 +56,11 @@ else
       }
       @endphp
 </div>
+
+<script type="text/javascript">
+// Cancel clicked
+function onCancel()
+{
+  location.href = "/";
+}
+</script>

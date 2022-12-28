@@ -46,7 +46,7 @@ if( $user->admin )
         </tr>
       @endforeach
       </table>
-      <input type="button" class="btn btn-info" onclick="onCancel();" value="{{ __('odds.admin_cancel') }}">
+      <input type="button" class="btn btn-secondary" onclick="onCancel();" value="{{ __('odds.admin_cancel') }}">
       <input type="button" class="btn btn-danger" onclick="if(checkRanking()) submit();" value="{{ __('odds.admin_save') }}">
     </form>
   </div>
