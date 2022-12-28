@@ -17,9 +17,7 @@ $user = App\Models\User::where('personal_id', $user_token)->take(1)->get()[0];
       @php
       if( $user->admin )
       {
-      @endphp
-        <th class="text-center col-md-2">{{ __('odds.admin') }}</th>
-      @php
+        echo "<th class='text-center col-md-2'>" . __('odds.admin') . "</th>";
       }
       @endphp
     </tr>
@@ -33,26 +31,29 @@ $user = App\Models\User::where('personal_id', $user_token)->take(1)->get()[0];
         @php
         if( $user->admin )
         {
-        @endphp
-          <td class="text-center align-middle">
-            <a class="btn btn-info" href="/edit/{{ $game->id }}">{{ __('odds.admin_edit') }}</a>
-            @php
+          echo "<td class='text-center align-middle'>";
+            // Edit button
+            if( $game->status < 2 )
+            {
+              echo "<a class='btn btn-info' href='/edit/$game->id'>" . __('odds.admin_edit') . "</a> ";
+            }
+
+            // Close/Reopen button
             if( $game->status == 0 )
             {
-            @endphp
-              <a class="btn btn-info" data-bs-toggle="modal" data-bs-target="#ConfirmClose">{{ __('odds.admin_close') }}</a>
-            @php
+              echo "<a class='btn btn-info' data-bs-toggle='modal' data-bs-target='#ConfirmClose'>" . __('odds.admin_close') . "</a> ";
             }
             else if( $game->status == 1 )
             {
-            @endphp
-              <a class="btn btn-info" data-bs-toggle="modal" data-bs-target="#ConfirmReopen">{{ __('odds.admin_reopen') }}</a>
-            @php
+              echo "<a class='btn btn-info' data-bs-toggle='modal' data-bs-target='#ConfirmReopen'>" . __('odds.admin_reopen') . "</a> ";
             }
-            @endphp
-            <a class="btn btn-info" href="/result/{{ $game->id }}">{{ __('odds.admin_result') }}</a>
-          </td>
-        @php
+
+            // Result buttion
+            if( $game->status < 2 )
+            {
+              echo "<a class='btn btn-info' href='/result/$game->id'>" . __('odds.admin_result') . "</a> ";
+            }
+          echo "</td>";
         }
         @endphp
       </tr>
@@ -60,11 +61,9 @@ $user = App\Models\User::where('personal_id', $user_token)->take(1)->get()[0];
     @php
     if( $user->admin )
     {
-    @endphp
-      <tr>
-        <td><a href="/edit/new" class="btn btn-info">{{ __('odds.admin_add') }}</a></td>
-      </tr>
-    @php
+      echo "<tr>";
+      echo "<td><a href='/edit/new' class='btn btn-info'>" . __('odds.admin_add') ."</a></td>";
+      echo "</tr>";
     }
     @endphp
   </table>

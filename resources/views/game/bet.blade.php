@@ -156,12 +156,10 @@ function checkBet()
 	let current_points = initial_points + initial_bets - current_bets;
 	if( current_points >= 0 )
 	{
-		console.log("ok");
 		return true;
 	}
 	else
 	{
-		console.log("fail");
 		return false;
 	}
 }

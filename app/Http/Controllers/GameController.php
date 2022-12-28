@@ -27,7 +27,15 @@ class GameController extends Controller
 	 */
 	public function edit($game_id)
 	{
-		return view('game/edit', compact('game_id'));
+		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
+		if( $user->admin )
+		{
+			return view('game/edit', compact('game_id'));
+		}
+		else
+		{
+			return redirect('/');
+		}
 	}
 
 	/**
@@ -154,7 +162,45 @@ class GameController extends Controller
 		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
 		if( $user->admin )
 		{
+			return view('game/result', compact('game_id'));
 		}
+		else
+		{
+			return redirect('/');
+		}
+	}
+
+	/**
+	 *  Finish a game (admin)
+	 */
+	public function finish(Request $request)
+	{
+		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
+		if( $user->admin )
+		{
+			DB::transaction(function () use($request, $user)
+				{
+					$game_id = $request->input('game_id');
+					$game = Game::find($game_id);
+
+					$candidates = Candidate::where('game_id', $game_id)->select('id')->get();
+					foreach( $candidates as $candidate )
+					{
+						$ranking = intval( $request->input('ranking_' . $candidate->id) );
+						if( $ranking <= 0 )
+						{	// Invalid ranking value
+							throw new Exception(__('internal_error'));
+						}
+						$candidate->result_rank = $ranking;
+						$candidate->save();
+					}
+
+					$game->status = 2;
+					$game->update_odds();
+					$success = true;
+				});
+		}
+		return redirect('/');
 	}
 
 	/**
@@ -254,5 +300,13 @@ class GameController extends Controller
 			}
 		);
 		return redirect()->action('App\Http\Controllers\GameController@show', ['game_id' => $game_id]);
+	}
+
+	/**
+	 *  Error
+	 */
+	public function error($errcode)
+	{
+		return response(__($errcode), 500)->header('Content-Type', 'text/plain');
 	}
 }

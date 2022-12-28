@@ -82,7 +82,7 @@ class Game extends Model
 		}
 
 		$this->next_update = date('Y/m/d H:i:s', strtotime('+' . config('odds.interval_calc_odds')));
-		$this->save();
+		$this->update();
 	}
 
 	/**
@@ -90,25 +90,28 @@ class Game extends Model
 	 */
 	public function update_odds_if_needs()
 	{
-		$game = $this;
-		DB::transaction(function () use($game)
-			{
-				if( $game->exclusion_update == 0 )
+		if( $this->status == 0 )
+		{
+			$game = $this;
+			DB::transaction(function () use($game)
 				{
-					$current = time();
-					$next = strtotime($game->next_update);
-					//Log::info('Update check: ' . $current . ' / ' . $next );
-					if( $current >= $next )
+					if( $game->exclusion_update == 0 )
 					{
-						$game->increment('exclusion_update');
-						$game->save();
-						if( $game->exclusion_update == 1 )
+						$current = time();
+						$next = strtotime($game->next_update);
+						//Log::info('Update check: ' . $current . ' / ' . $next );
+						if( $current >= $next )
 						{
-							$game->update_odds();
+							$game->increment('exclusion_update');
+							$game->save();
+							if( $game->exclusion_update == 1 )
+							{
+								$game->update_odds();
+							}
 						}
 					}
 				}
-			}
-		);
+			);
+		}
 	}
 }

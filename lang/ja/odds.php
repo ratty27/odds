@@ -11,8 +11,11 @@ return [
 	'admin_reopen' => '再開',
 	'admin_result' => '結果',
 	'admin_save' => '保存',
+	'admin_cancel' => 'キャンセル',
 	'admin_confirm_close' => "レースの予想受付を締め切ります。\nよろしいですか？",
 	'admin_confirm_reopen' => "レースの予想受付を再開します。\nよろしいですか？",
+	'admin_confirm_finish' => "レースの結果を確定してよろしいですか？\\nこの操作はやり直しできません。",	// for confirm()
+	'admin_error_input' => "入力に間違いがあります。",	// for confirm()
 
 	'dialog_title_confirm' => '確認',
 	'dialog_yes' => 'はい',
@@ -35,6 +38,7 @@ return [
 	'candidate_odds' => 'オッズ',
 	'candidate_favorite' => '人気',
 	'candidate_result' => '結果',
+	'candidate_ranking' => '順位',
 
 	'bet_points' => 'ポイント',
 	'bet_win' => '単勝',
@@ -43,4 +47,6 @@ return [
 	'bet_place' => '複勝',
 	'bet_tierce' => '３連単',
 	'bet_trio' => '３連複',
+
+	'internal_error' => '内部エラー',
 ];
