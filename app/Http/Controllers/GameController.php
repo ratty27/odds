@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\Game;
 use App\Models\Candidate;
+use App\Models\Odd;
 use App\Models\Bet;
 
 class GameController extends Controller
@@ -71,12 +72,22 @@ class GameController extends Controller
 						$candidate_updated = array();
 
 						// Update existing records
-						$candidates = Candidate::where('game_id', $game->id)->get();
+						$candidates = Candidate::where('game_id', $game->id)
+							->select('id', 'name', 'disp_order')
+							->get();
 						foreach( $candidates as &$candidate )
 						{
 							$index = array_search($candidate->name, $candidate_names);
 							if( $index === false )
 							{
+								Odd::where('candidate_id0', $candidate->id)
+								 ->orWhere('candidate_id1', $candidate->id)
+								 ->orWhere('candidate_id2', $candidate->id)
+								 ->delete();
+								Bet::where('candidate_id0', $candidate->id)
+								 ->orWhere('candidate_id1', $candidate->id)
+								 ->orWhere('candidate_id2', $candidate->id)
+								 ->delete();
 								$candidate->delete();
 							}
 							else

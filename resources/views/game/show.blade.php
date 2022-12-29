@@ -18,6 +18,7 @@ $odds0 = App\Models\Odd::where('game_id', $game_id)->where('type', 0)
   ->get();
 // Bets
 $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
+  ->orderBy('type', 'asc')->orderBy('candidate_id0', 'asc')->orderBy('candidate_id1', 'asc')->orderBy('candidate_id2', 'asc')
   ->select('id', 'type', 'candidate_id0', 'candidate_id1', 'candidate_id2', 'points', 'payed')
   ->get();
 
