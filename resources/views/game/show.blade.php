@@ -50,6 +50,8 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
 
   <hr>
 
+  <div class="text-end text-info">{!! __("odds.info_odds") !!}</div>
+
   <div class="table-responsive">
   	<h3>{{ $game->name }}</h3>
 

@@ -35,6 +35,8 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
 
       <hr>
 
+		  <div class="text-end text-info">{!! __("odds.info_points") !!}</div>
+
 	  	<h3>{{ $game->name }}</h3>
 	  	<h4>{{ __('odds.bet_win') }}</h4>
 	    <table class="table table-striped table-bordered">
