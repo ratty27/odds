@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="{{ asset('/css/odds.css')  }}" >
-<nav class="navbar odds_header">
-	<div class="col-md-2"><a href="/">{{ __('odds.title') }}</a></div>
+<nav class="navbar fixed-top odds_header">
+	<div class="col-md-2" style="padding-left: 32px"><a href="/">{{ __('odds.title') }}</a></div>
 	<div class="col-md-2">
 		<table>
 			<tr>
@@ -10,3 +10,5 @@
 		</table>
 	</div>
 </nav>
+<br>
+<br>
