@@ -1,7 +1,7 @@
 @php
 $user_token = Cookie::queued('iden_token') ? Cookie::queued('iden_token')->getValue() : Cookie::get('iden_token');
 $user = App\Models\User::where('personal_id', $user_token)->take(1)->get()[0];
-$games = App\Models\Game::where('status', '<', 2)->select('id', 'name', 'limit')->get();
+$games = App\Models\Game::where('status', '<', 2)->select('id', 'name', 'limit', 'status')->get();
 $past_games = App\Models\Game::where('status', 2)->select('id', 'name')->get();
 @endphp
 
@@ -31,6 +31,7 @@ $past_games = App\Models\Game::where('status', 2)->select('id', 'name')->get();
         <td class="align-middle">{{ $game->id }}</td>
         <td class="align-middle">
           <a href="/game/{{ $game->id }}">{{ $game->name }}</a>
+          <br>{{ json_encode($game) }}
         </td>
         <td class="align-middle">{{ $game->status == 0 ? $game->limit : __('odds.game_limit_close') }}</td>
         @php
@@ -43,11 +44,11 @@ $past_games = App\Models\Game::where('status', 2)->select('id', 'name')->get();
             // Close/Reopen button
             if( $game->status == 0 )
             {
-              echo "<a class='btn btn-info' data-bs-toggle='modal' data-bs-target='#ConfirmClose'>" . __('odds.admin_close') . "</a> ";
+              echo "<a class='btn btn-info' href='/close/$game->id'>" . __('odds.admin_close') . "</a> ";
             }
             else if( $game->status == 1 )
             {
-              echo "<a class='btn btn-info' data-bs-toggle='modal' data-bs-target='#ConfirmReopen'>" . __('odds.admin_reopen') . "</a> ";
+              echo "<a class='btn btn-info' href='/reopen/$game->id'>" . __('odds.admin_reopen') . "</a> ";
             }
 
             // Result buttion
