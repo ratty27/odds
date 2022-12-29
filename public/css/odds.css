@@ -10,6 +10,12 @@ h4 {
 	border-bottom: 3px dotted #000;
 }
 
+footer {
+	font-size: 20px;
+	color: #fff;
+	background-color: #000;
+}
+
 .odds_header {
 	font-size: 20px;
 	color: #fff;

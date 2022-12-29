@@ -90,4 +90,5 @@ $past_games = App\Models\Game::where('status', 2)->select('id', 'name')->get();
   </table>
 
 </div>
+@include('parts.footer')
 
