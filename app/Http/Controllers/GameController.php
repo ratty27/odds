@@ -313,6 +313,23 @@ class GameController extends Controller
 	}
 
 	/**
+	 *  Force reset user points
+	 */
+	public function reset_user()
+	{
+		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
+		DB::transaction(function () use($user)
+			{
+				// Todo: Record to log
+				Bet::where('user_id', $user->id)->where('payed', 0)->delete();
+				$user->points = config('odds.initial_points');
+				$user->update();
+			}
+		);
+		return redirect('/');
+	}
+
+	/**
 	 *  Error
 	 */
 	public function error($errcode)

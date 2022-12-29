@@ -34,6 +34,7 @@ Route::post('/finish', 'App\Http\Controllers\GameController@finish');
 Route::get('/game/{game_id}', 'App\Http\Controllers\GameController@show');
 Route::get('/bet/{game_id}', 'App\Http\Controllers\GameController@bet');
 Route::post('/bet', 'App\Http\Controllers\GameController@save_bet');
+Route::get('/reset_user', 'App\Http\Controllers\GameController@reset_user');
 
 // misc
 Route::get('/error/{errcode}', 'App\Http\Controllers\GameController@error');

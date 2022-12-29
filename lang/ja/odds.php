@@ -49,6 +49,9 @@ return [
 	'bet_trio' => '３連複',
 
 	'user_tickers' => 'あなたの予想',
+	'user_settings' => '設定',
+	'user_reset' => '所持ポイントリセット',
+	'user_reset_confirm' => 'すべての予想を破棄して所持ポイントリセットします。\\nよろしいですか？',
 
 	'internal_error' => '内部エラー',
 ];

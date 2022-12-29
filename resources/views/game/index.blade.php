@@ -31,7 +31,6 @@ $past_games = App\Models\Game::where('status', 2)->select('id', 'name')->get();
         <td class="align-middle">{{ $game->id }}</td>
         <td class="align-middle">
           <a href="/game/{{ $game->id }}">{{ $game->name }}</a>
-          <br>{{ json_encode($game) }}
         </td>
         <td class="align-middle">{{ $game->status == 0 ? $game->limit : __('odds.game_limit_close') }}</td>
         @php
@@ -89,59 +88,3 @@ $past_games = App\Models\Game::where('status', 2)->select('id', 'name')->get();
 
 </div>
 
-@php
-if( $user->admin )
-{
-@endphp
-<!-- Confirm for closing a game -->
-<div class="modal fade" id="ConfirmClose" tabindex="-1" aria-labelledby="ConfirmCloseLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">{{ __('odds.dialog_title_confirm') }}</h4>
-            </div>
-            <div class="modal-body">
-                <label>{{ __('odds.admin_confirm_close') }}</label>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-bs-dismiss="modal">{{ __('odds.dialog_no') }}</button>
-                <button type="button" class="btn btn-danger" onclick="onCloseGame();">{{ __('odds.dialog_yes') }}</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Confirm for re-open a game -->
-<div class="modal fade" id="ConfirmReopen" tabindex="-1" aria-labelledby="ConfirmReopenLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">{{ __('odds.dialog_title_confirm') }}</h4>
-            </div>
-            <div class="modal-body">
-                <label>{{ __('odds.admin_confirm_reopen') }}</label>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-bs-dismiss="modal">{{ __('odds.dialog_no') }}</button>
-                <button type="button" class="btn btn-danger" onclick="onReopenGame();">{{ __('odds.dialog_yes') }}</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
-<script type="text/javascript">
-function onCloseGame()
-{
-  location.href = "/close/{{ $game->id }}";
-}
-
-function onReopenGame()
-{
-  location.href = "/reopen/{{ $game->id }}";
-}
-</script>
-
-@php
-}
-@endphp
