@@ -22,13 +22,13 @@ h4 {
 
 .odds_ticket {
 	margin: 4px;
-	padding: 8px;
+	padding: 8px 24px;
 	background-color: #eefeee;
 }
 
 .odds_win_ticket {
 	margin: 4px;
-	padding: 8px;
+	padding: 8px 24px;
   animation: blinkAnime 1s infinite alternate;
 }
 

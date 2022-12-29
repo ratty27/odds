@@ -51,6 +51,23 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
 
   <div class="table-responsive">
   	<h3>{{ $game->name }}</h3>
+
+    @php
+    if( count($bets) > 0 )
+    {
+    @endphp
+      <h4>{{ __('odds.user_tickers') }}</h4>
+      <div class='d-flex flex-row flex-wrap bd-highlight'>
+      @foreach($bets as $bet)
+        <div class='border shadow-sm odds_ticket' id='bet_ticket_{{ $bet->id }}'></div>
+      @endforeach
+      </div>
+      <hr>
+    @php
+    }
+    @endphp
+
+    <h4>{{ __('odds.bet_win') }}</h4>
     <table class="table table-striped table-bordered">
       <tr>
         <th class="text-center col-md-1">{{ __('odds.candidate_order') }}</th>
@@ -87,13 +104,6 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
   </div>
 
   <hr>
-
-  <h4>{{ __('odds.user_tickers') }}</h4>
-  <div class='d-flex flex-row bd-highlight'>
-  @foreach($bets as $bet)
-    <div class='border shadow odds_ticket' id='bet_ticket_{{ $bet->id }}'></div>
-  @endforeach
-  </div>
 
 </div>
 
@@ -143,10 +153,23 @@ function initValues()
         let can0 = searchCadidate( bets[i].candidate_id0 );
         if( can0 != null )
         {
-          elem.innerHTML = '{{ __("odds.bet_win") }}<br>'
-                         + (can0.disp_order+1) + ' ' + can0.name + '<br>'
-                         + bets[i].points + 'pt';
-          if( can0.result_rank == 1 )
+//          elem.innerHTML = '<div class="border border-dark">{{ __("odds.bet_win") }}</div>'
+//                         + '[' + (can0.disp_order+1) + '] ' + can0.name + '<br>'
+//                         + bets[i].points + 'pt';
+          elem.innerHTML = '<table>'
+                         +   '<tr>'
+                         +     '<td class="border border-dark" rowspan="3"><div style="writing-mode: vertical-rl;">{{ __("odds.bet_win") }}</div></td>'
+                         +     '<td colspan="3"></td>'
+                         +   '</tr>'
+                         +   '<tr>'
+                         +     '<td></td>'
+                         +     '<td class="border border-dark">' + (can0.disp_order+1) + '</td>'
+                         +     '<td>' + can0.name + '</td>'
+                         +   '</tr>'
+                         +   '<tr>'
+                         +     '<td colspan="3"><div class="text-end">' + bets[i].points + 'pt</div></td>'
+                         +   '</tr>';
+          if( bets[i].payed == 1 && can0.result_rank == 1 )
           {
             elem.classList.remove('odds_ticket');
             elem.classList.add('odds_win_ticket');
