@@ -65,7 +65,7 @@ if( $user->admin )
         <tr>
           <td style="padding: 4px;">
             <label for="enable_win">
-              <input type="checkbox" id="enable_win" name="enabled[]" value="0" {{ $enabled_win }} />
+              <input type="checkbox" id="enable_win" name="enabled[]" value="0" {{ $enabled_win }} disabled />
               {{ __('odds.bet_win') }}
             </label>
           </td>

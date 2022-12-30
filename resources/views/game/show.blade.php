@@ -16,6 +16,14 @@ $candidates = App\Models\Candidate::where('game_id', $game_id)
 $odds0 = App\Models\Odd::where('game_id', $game_id)->where('type', 0)
   ->select('candidate_id0', 'odds', 'favorite')
   ->get();
+// Odds for quinella
+$odds1 = App\Models\Odd::where('game_id', $game_id)->where('type', 1)
+  ->select('candidate_id0', 'candidate_id1', 'odds')
+  ->get();
+// Odds for exacta
+$odds2 = App\Models\Odd::where('game_id', $game_id)->where('type', 2)
+  ->select('candidate_id0', 'candidate_id1', 'odds')
+  ->get();
 // Bets
 $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
   ->orderBy('type', 'asc')->orderBy('candidate_id0', 'asc')->orderBy('candidate_id1', 'asc')->orderBy('candidate_id2', 'asc')
@@ -112,6 +120,55 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
     @endforeach
     </table>
 
+    <hr>
+
+    @php
+    if( $game->is_enabled(1) )
+    {
+      echo '<h4>' . __('odds.bet_quinella') . '</h4>';
+      for( $i = 0; $i < count($candidates) - 1; ++$i )
+      {
+        echo '<table class="table-bordered" style="table-layout: auto;">';
+        echo '<tr><td class="odds_value text-center" rowspan="2">' . ($candidates[$i]->disp_order+1) . '</td>';
+        for( $j = $i + 1; $j < count($candidates); ++$j )
+        {
+          echo '<td class="odds_value text-center">' . ($candidates[$j]->disp_order+1) . '</td>';
+        }
+        echo '</tr>';
+        echo '<tr>';
+        for( $j = $i + 1; $j < count($candidates); ++$j )
+        {
+          echo '<td class="odds_value text-center" id="bet_quinella_' . $candidates[$i]->id . '_' . $candidates[$j]->id . '"></td>';
+        }
+        echo '</tr>';
+        echo '</table><br>';
+      }
+    }
+
+    if( $game->is_enabled(2) )
+    {
+      echo '<h4>' . __('odds.bet_exacta') . '</h4>';
+      for( $i = 0; $i < count($candidates); ++$i )
+      {
+        echo '<table class="table-bordered" style="table-layout: auto;">';
+        echo '<tr><td class="odds_value text-center" rowspan="2">' . ($candidates[$i]->disp_order+1) . '</td>';
+        for( $j = 0; $j < count($candidates); ++$j )
+        {
+          if( $i == $j ) continue;
+          echo '<td class="odds_value text-center">' . ($candidates[$j]->disp_order+1) . '</td>';
+        }
+        echo '</tr>';
+        echo '<tr>';
+        for( $j = 0; $j < count($candidates); ++$j )
+        {
+          if( $i == $j ) continue;
+          echo '<td class="odds_value text-center" id="bet_exacta_' . $candidates[$i]->id . '_' . $candidates[$j]->id . '"></td>';
+        }
+        echo '</tr>';
+        echo '</table><br>';
+      }
+    }
+    @endphp
   </div>
 
   <hr>
@@ -121,6 +178,8 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
 <script type="text/javascript">
 var candidates = <?php echo json_encode($candidates); ?>;
 var odds0 = <?php echo json_encode($odds0); ?>;
+var odds1 = <?php echo json_encode($odds1); ?>;
+var odds2 = <?php echo json_encode($odds2); ?>;
 var bets = <?php echo json_encode($bets); ?>;
 
 function searchCadidate(canid)
@@ -138,6 +197,7 @@ function searchCadidate(canid)
 function initValues()
 {
   // Odds & Favorites
+  // win
   for( let i = 0; i < odds0.length; ++i )
   {
     let elem = document.getElementById('odds_win_' + odds0[i].candidate_id0);
@@ -152,6 +212,38 @@ function initValues()
       elem.innerHTML = '' + odds0[i].favorite;
     }
   }
+  // quinella
+  @php
+  if( $game->is_enabled(1) )
+  {
+  @endphp
+    for( let i = 0; i < odds1.length; ++i )
+    {
+      let elem = document.getElementById('bet_quinella_' + odds1[i].candidate_id0 + '_' + odds1[i].candidate_id1);
+      if( elem )
+      {
+        elem.innerHTML = '' + odds1[i].odds;
+      }
+    }
+  @php
+  }
+  @endphp
+  // exacta
+  @php
+  if( $game->is_enabled(2) )
+  {
+  @endphp
+    for( let i = 0; i < odds2.length; ++i )
+    {
+      let elem = document.getElementById('bet_exacta_' + odds2[i].candidate_id0 + '_' + odds2[i].candidate_id1);
+      if( elem )
+      {
+        elem.innerHTML = '' + odds2[i].odds;
+      }
+    }
+  @php
+  }
+  @endphp
 
   // Bets
   for( let i = 0; i < bets.length; ++i )

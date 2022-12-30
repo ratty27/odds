@@ -57,7 +57,7 @@ class Game extends Model
 				$results[] = array('id' => $candidate->id, 'odds' => $odds_value);
 			}
 			usort( $results, [Game::class, "compare_odds"] );
-			// Ranking of favorite
+			// Write result w/ calculation of ranking of favorite
 			$rank = 0;
 			$last = 0.0;
 			for( $i = 0; $i < count($results); ++$i )
@@ -85,6 +85,100 @@ class Game extends Model
 					$odd->odds = $result['odds'];
 					$odd->favorite = $rank;
 					$odd->save();
+				}
+			}
+			// for quinella
+			if( $this->is_enabled(1) )
+			{
+				$num = count($candidates);
+				$num = (($num * $num) - $num) / 2;
+				$dummy = config('odds.dummy_points') / $num;
+				$total_bets = intval( Bet::where('game_id', $game_id)->where('type', 1)->sum('points') ) + ($dummy * $num);
+				$results = array();
+				for( $i = 0; $i < count($candidates) - 1; ++$i )
+				{
+					for( $j = $i + 1; $j < count($candidates); ++$j )
+					{
+						$candidate_bet = intval( Bet::where('type', 1)->where('candidate_id0', $candidates[$i]->id)->where('candidate_id1', $candidates[$j]->id)->sum('points') ) + $dummy;
+						if( $candidate_bet <= 0 )
+							$candidate_bet = 1;
+						$odds_value = round((float)$total_bets / (float)$candidate_bet, 1);
+
+						$results[] = array('id0' => $candidates[$i]->id, 'id1' => $candidates[$j]->id, 'odds' => $odds_value);
+					}
+				}
+				for( $i = 0; $i < count($results); ++$i )
+				{
+					$result = $results[$i];
+					$odds = Odd::where('type', 1)
+						->where('candidate_id0', $result['id0'])
+						->where('candidate_id1', $result['id1'])
+						->select('id')->get();
+					if( count($odds) > 0 )
+					{
+						$odds[0]->odds = $result['odds'];
+						$odds[0]->update();
+					}
+					else
+					{
+						$odd = new Odd;
+						$odd->game_id = $game_id;
+						$odd->type = 1;
+						$odd->candidate_id0 = $result['id0'];
+						$odd->candidate_id1 = $result['id1'];
+						$odd->odds = $result['odds'];
+						$odd->save();
+					}
+				}
+			}
+			// for exacta
+			if( $this->is_enabled(2) )
+			{
+				$num = count($candidates);
+				$num = (($num * $num) - $num);
+				$dummy = config('odds.dummy_points') / $num;
+				$total_bets = intval( Bet::where('game_id', $game_id)->where('type', 2)->sum('points') ) + ($dummy * $num);
+				$results = array();
+				for( $i = 0; $i < count($candidates); ++$i )
+				{
+					for( $j = 0; $j < count($candidates); ++$j )
+					{
+						if( $i == $j )
+						{
+							continue;
+						}
+
+						$candidate_bet = intval( Bet::where('type', 2)->where('candidate_id0', $candidates[$i]->id)->where('candidate_id1', $candidates[$j]->id)->sum('points') ) + $dummy;
+						if( $candidate_bet <= 0 )
+							$candidate_bet = 1;
+						$odds_value = round((float)$total_bets / (float)$candidate_bet, 1);
+						//Log::info('Odds ' . $candidate->id . ': ' . $total_bets . ' / ' . $candidate_bet . ' = ' . $odds_value );
+
+						$results[] = array('id0' => $candidates[$i]->id, 'id1' => $candidates[$j]->id, 'odds' => $odds_value);
+					}
+				}
+				for( $i = 0; $i < count($results); ++$i )
+				{
+					$result = $results[$i];
+					$odds = Odd::where('type', 2)
+						->where('candidate_id0', $result['id0'])
+						->where('candidate_id1', $result['id1'])
+						->select('id')->get();
+					if( count($odds) > 0 )
+					{
+						$odds[0]->odds = $result['odds'];
+						$odds[0]->update();
+					}
+					else
+					{
+						$odd = new Odd;
+						$odd->game_id = $game_id;
+						$odd->type = 2;
+						$odd->candidate_id0 = $result['id0'];
+						$odd->candidate_id1 = $result['id1'];
+						$odd->odds = $result['odds'];
+						$odd->save();
+					}
 				}
 			}
 		}
