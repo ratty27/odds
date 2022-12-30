@@ -21,41 +21,56 @@ else
 
 <head>
   <title>{{ __('odds.title') }}</title>
-  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="{{ asset('/css/bootstrap.min.css')  }}">
+  <link rel="stylesheet" href="{{ asset('/css/odds.css')  }}" >
 </head>
-<div>
-      @php
-      if( $user->admin )
-      {
-      @endphp
 
-        <div class="container">
-          @include('parts.header')
-          <h1>レース編集</h1>
-          <form action="/update" method="POST">
-            <div class="form-group">
-              <label>{{ __('odds.game_name') }}</label>
-              <input name="game_name" type="text" class="form-control" value="{{ $game->name }}">
-            </div>
-            <div class="form-group">
-              <label>{{ __('odds.game_limit') }}</label>
-              <input name="game_limit" type="datetime" class="form-control" value="{{ $game->limit }}">
-            </div>
-            <div class="form-group">
-              <label>{{ __('odds.game_candidate') }}</label>
-              <textarea name="game_candidate" style='height: 400px' class="form-control">{{ $candidates_name }}</textarea>
-            </div>
-            <input type="hidden" name="game_id" value="{{ $game_id }}">
-            {{ csrf_field() }}
-            <input type="button" class="btn btn-secondary" onclick="onCancel();" value="{{ __('odds.admin_cancel') }}">
-            <button type="submit" class="btn btn-success">{{ __('odds.admin_save') }}</button>
-          </form>
-        </div>
+@php
+if( $user->admin )
+{
+  $enabled_win = '';
+  $enable_quinella = '';
+  $enable_exacta = '';
+  if( $game->enabled & 1 )
+  {
+    $enabled_win = 'checked';
+  }
+  if( $game->enabled & 2 )
+  {
+    $enable_quinella = 'checked';
+  }
+  if( $game->enabled & 4 )
+  {
+    $enable_exacta = 'checked';
+  }
+@endphp
 
-      @php
-      }
-      @endphp
-</div>
+  <div class="container">
+    @include('parts.header')
+    <h1>レース編集</h1>
+    <form action="/update" method="POST">
+      <div class="form-group">
+        <label>{{ __('odds.game_name') }}</label>
+        <input name="game_name" type="text" class="form-control" value="{{ $game->name }}">
+      </div>
+      <div class="form-group">
+        <label>{{ __('odds.game_limit') }}</label>
+        <input name="game_limit" type="datetime" class="form-control" value="{{ $game->limit }}">
+      </div>
+      <div class="form-group">
+        <label>{{ __('odds.game_candidate') }}</label>
+        <textarea name="game_candidate" style='height: 400px' class="form-control">{{ $candidates_name }}</textarea>
+      </div>
+      <input type="hidden" name="game_id" value="{{ $game_id }}">
+      {{ csrf_field() }}
+      <input type="button" class="btn btn-secondary" onclick="onCancel();" value="{{ __('odds.admin_cancel') }}">
+      <button type="submit" class="btn btn-success">{{ __('odds.admin_save') }}</button>
+    </form>
+  </div>
+
+@php
+}
+@endphp
 
 <script type="text/javascript">
 // Cancel clicked

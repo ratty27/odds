@@ -25,7 +25,8 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
 @endphp
 <head>
   <title>{{ __('odds.title') }}</title>
-  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="{{ asset('/css/bootstrap.min.css')  }}">
+  <link rel="stylesheet" href="{{ asset('/css/odds.css')  }}" >
 </head>
 <div class="container">
   @include('parts.header')
