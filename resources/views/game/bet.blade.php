@@ -23,7 +23,7 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
 
 <head>
   <title>{{ __('odds.title') }}</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
 </head>
 <div class="container">
   @include('parts.header')

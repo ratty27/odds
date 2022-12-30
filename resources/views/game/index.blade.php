@@ -7,7 +7,7 @@ $past_games = App\Models\Game::where('status', 2)->select('id', 'name')->get();
 
 <head>
   <title>{{ __('odds.title') }}</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
 </head>
 <div class="container">
   @include('parts.header')

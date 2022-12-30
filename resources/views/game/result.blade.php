@@ -15,7 +15,7 @@ $candidates = App\Models\Candidate::where('game_id', $game_id)
 
 <head>
   <title>{{ __('odds.title') }}</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
 </head>
 
 @php
