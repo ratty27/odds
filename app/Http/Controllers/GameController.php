@@ -253,8 +253,11 @@ class GameController extends Controller
 					return;
 				}
 
-				$candidates = Candidate::where('game_id', $game_id)->where('result_rank', '<', 0)->select('id')->get();
-				$last_bets = intval( Bet::where('game_id', $game_id)->where('user_id', $user->id)->where('payed', 0)->sum('points') );
+				$candidates = Candidate::where('game_id', $game_id)->where('result_rank', '<', 0)
+					->orderBy('id', 'asc')->select('id', 'disp_order')->get();
+				$last_bets = intval(
+					Bet::where('game_id', $game_id)->where('user_id', $user->id)->where('payed', 0)->sum('points')
+				);
 
 				// Requested total bets
 				$request_bets = 0;
@@ -278,29 +281,31 @@ class GameController extends Controller
 					->where('user_id', $user->id)
 					->where('type', 0)
 					->where('payed', 0)
+					->orderBy('candidate_id0', 'asc')
 					->select('id', 'points', 'candidate_id0')->get();
+				$beti = 0;
 				foreach( $candidates as &$candidate )
 				{
 					$bet_points = $request->input('bet_win_' . $candidate->id);
-					$found = false;
-					foreach( $bets as &$bet )
+					if( $beti < count($bets) )
 					{
-						if( $bet->candidate_id0 == $candidate->id )
+						if( $bets[$beti]->candidate_id0 == $candidate->id )
 						{
 							if( $bet_points > 0 )
 							{
-								$bet->points = $bet_points;
-								$bet->update();
+								$bets[$beti]->points = $bet_points;
+								$bets[$beti]->update();
 							}
 							else
 							{
-								$bet->delete();
+								$bets[$beti]->delete();
 							}
-							$found = true;
-							break;
+							++$beti;
+							continue;
 						}
 					}
-					if( !$found && $bet_points > 0 )
+
+					if( $bet_points > 0 )
 					{
 						$bet = new Bet;
 						$bet->type = 0;
@@ -310,6 +315,111 @@ class GameController extends Controller
 						$bet->points = $bet_points;
 						$bet->payed = 0;
 						$bet->save();
+					}
+				}
+				// for quinella
+				if( $game->is_enabled(1) )
+				{
+					$bets = Bet::where('game_id', $game_id)
+						->where('user_id', $user->id)
+						->where('type', 1)
+						->where('payed', 0)
+						->orderBy('candidate_id0', 'asc')
+						->orderBy('candidate_id1', 'asc')
+						->select('id', 'points', 'candidate_id0', 'candidate_id1')->get();
+					$beti = 0;
+					for( $i = 0; $i < count($candidates) - 1; ++$i )
+					{
+						for( $j = $i + 1; $j < count($candidates); ++$j )
+						{
+							$id0 = $candidates[$i]->id;
+							$id1 = $candidates[$j]->id;
+							$bet_points = $request->input('bet_quinella_' . $id0 . '_' . $id1);
+							if( $beti < count($bets) )
+							{
+								if( $bets[$beti]->candidate_id0 == $id0
+								 && $bets[$beti]->candidate_id1 == $id1 )
+								{
+									if( $bet_points > 0 )
+									{
+										$bets[$beti]->points = $bet_points;
+										$bets[$beti]->update();
+									}
+									else
+									{
+										$bets[$beti]->delete();
+									}
+									++$beti;
+									continue;
+								}
+							}
+
+							if( $bet_points > 0 )
+							{
+								$bet = new Bet;
+								$bet->type = 1;
+								$bet->game_id = $game_id;
+								$bet->user_id = $user->id;
+								$bet->candidate_id0 = $id0;
+								$bet->candidate_id1 = $id1;
+								$bet->points = $bet_points;
+								$bet->payed = 0;
+								$bet->save();
+							}
+						}
+					}
+				}
+				// for exacta
+				if( $game->is_enabled(2) )
+				{
+					$bets = Bet::where('game_id', $game_id)
+						->where('user_id', $user->id)
+						->where('type', 2)
+						->where('payed', 0)
+						->orderBy('candidate_id0', 'asc')
+						->orderBy('candidate_id1', 'asc')
+						->select('id', 'points', 'candidate_id0', 'candidate_id1')->get();
+					$beti = 0;
+					for( $i = 0; $i < count($candidates); ++$i )
+					{
+						for( $j = 0; $j < count($candidates); ++$j )
+						{
+							if( $i == $j ) continue;
+							$id0 = $candidates[$i]->id;
+							$id1 = $candidates[$j]->id;
+							$bet_points = $request->input('bet_exacta_' . $id0 . '_' . $id1);
+							if( $beti < count($bets) )
+							{
+								if( $bets[$beti]->candidate_id0 == $id0
+								 && $bets[$beti]->candidate_id1 == $id1 )
+								{
+									if( $bet_points > 0 )
+									{
+										$bets[$beti]->points = $bet_points;
+										$bets[$beti]->update();
+									}
+									else
+									{
+										$bets[$beti]->delete();
+									}
+									++$beti;
+									continue;
+								}
+							}
+
+							if( $bet_points > 0 )
+							{
+								$bet = new Bet;
+								$bet->type = 2;
+								$bet->game_id = $game_id;
+								$bet->user_id = $user->id;
+								$bet->candidate_id0 = $id0;
+								$bet->candidate_id1 = $id1;
+								$bet->points = $bet_points;
+								$bet->payed = 0;
+								$bet->save();
+							}
+						}
 					}
 				}
 

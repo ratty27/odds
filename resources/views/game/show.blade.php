@@ -68,7 +68,6 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
   }
   @endphp
 
-  <div class="table-responsive">
   	<h3>{{ $game->name }}</h3>
 
     @php
@@ -97,7 +96,7 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
       </tr>
     @foreach($candidates as $candidate)
       <tr>
-        <td class="text-center align-middle">{{ $candidate->disp_order+1 }}</td>
+        <td class="text-center align-middle fw-bold text-center">{{ $candidate->disp_order+1 }}</td>
         <td class="text-left align-middle" style="padding-left: 20px; padding-right: 20px;">{{ $candidate->name }}</td>
         <td class="text-center align-middle" id="odds_win_{{ $candidate->id }}"></td>
         <td class="text-center align-middle" id="favo_win_{{ $candidate->id }}"></td>
@@ -128,20 +127,21 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
       echo '<h4>' . __('odds.bet_quinella') . '</h4>';
       for( $i = 0; $i < count($candidates) - 1; ++$i )
       {
+        echo '<div class="table-responsive">';
         echo '<table class="table-bordered" style="table-layout: auto;">';
-        echo '<tr><td class="odds_value text-center" rowspan="2">' . ($candidates[$i]->disp_order+1) . '</td>';
+        echo '<tr><td class="odds_value text-center fw-bold text-center" rowspan="2">' . ($candidates[$i]->disp_order+1) . '</td>';
         for( $j = $i + 1; $j < count($candidates); ++$j )
         {
-          echo '<td class="odds_value text-center">' . ($candidates[$j]->disp_order+1) . '</td>';
+          echo '<td class="odds_value text-center fw-bold text-center">' . ($candidates[$j]->disp_order+1) . '</td>';
         }
         echo '</tr>';
         echo '<tr>';
         for( $j = $i + 1; $j < count($candidates); ++$j )
         {
-          echo '<td class="odds_value text-center" id="bet_quinella_' . $candidates[$i]->id . '_' . $candidates[$j]->id . '"></td>';
+          echo '<td class="odds_value text-center" id="odds_quinella_' . $candidates[$i]->id . '_' . $candidates[$j]->id . '"></td>';
         }
         echo '</tr>';
-        echo '</table><br>';
+        echo '</table></div><br>';
       }
     }
 
@@ -150,31 +150,32 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
       echo '<h4>' . __('odds.bet_exacta') . '</h4>';
       for( $i = 0; $i < count($candidates); ++$i )
       {
+        echo '<div class="table-responsive">';
         echo '<table class="table-bordered" style="table-layout: auto;">';
-        echo '<tr><td class="odds_value text-center" rowspan="2">' . ($candidates[$i]->disp_order+1) . '</td>';
+        echo '<tr><td class="odds_value text-center fw-bold text-center" rowspan="2">' . ($candidates[$i]->disp_order+1) . '</td>';
         for( $j = 0; $j < count($candidates); ++$j )
         {
           if( $i == $j ) continue;
-          echo '<td class="odds_value text-center">' . ($candidates[$j]->disp_order+1) . '</td>';
+          echo '<td class="odds_value text-center fw-bold text-center">' . ($candidates[$j]->disp_order+1) . '</td>';
         }
         echo '</tr>';
         echo '<tr>';
         for( $j = 0; $j < count($candidates); ++$j )
         {
           if( $i == $j ) continue;
-          echo '<td class="odds_value text-center" id="bet_exacta_' . $candidates[$i]->id . '_' . $candidates[$j]->id . '"></td>';
+          echo '<td class="odds_value text-center" id="odds_exacta_' . $candidates[$i]->id . '_' . $candidates[$j]->id . '"></td>';
         }
         echo '</tr>';
-        echo '</table><br>';
+        echo '</table></div><br>';
       }
     }
     @endphp
-  </div>
 
   <hr>
 
 </div>
 
+<script src="{{ asset('/js/odds_util.js') }}"></script>
 <script type="text/javascript">
 var candidates = <?php echo json_encode($candidates); ?>;
 var odds0 = <?php echo json_encode($odds0); ?>;
@@ -203,7 +204,7 @@ function initValues()
     let elem = document.getElementById('odds_win_' + odds0[i].candidate_id0);
     if( elem )
     {
-      elem.innerHTML = '' + odds0[i].odds;
+      elem.innerHTML = get_disp_odds( odds0[i].odds );
     }
 
     elem = document.getElementById('favo_win_' + odds0[i].candidate_id0);
@@ -219,10 +220,10 @@ function initValues()
   @endphp
     for( let i = 0; i < odds1.length; ++i )
     {
-      let elem = document.getElementById('bet_quinella_' + odds1[i].candidate_id0 + '_' + odds1[i].candidate_id1);
+      let elem = document.getElementById('odds_quinella_' + odds1[i].candidate_id0 + '_' + odds1[i].candidate_id1);
       if( elem )
       {
-        elem.innerHTML = '' + odds1[i].odds;
+        elem.innerHTML = get_disp_odds( odds1[i].odds );
       }
     }
   @php
@@ -235,10 +236,10 @@ function initValues()
   @endphp
     for( let i = 0; i < odds2.length; ++i )
     {
-      let elem = document.getElementById('bet_exacta_' + odds2[i].candidate_id0 + '_' + odds2[i].candidate_id1);
+      let elem = document.getElementById('odds_exacta_' + odds2[i].candidate_id0 + '_' + odds2[i].candidate_id1);
       if( elem )
       {
-        elem.innerHTML = '' + odds2[i].odds;
+        elem.innerHTML = get_disp_odds( odds2[i].odds );
       }
     }
   @php
@@ -256,23 +257,90 @@ function initValues()
         let can0 = searchCadidate( bets[i].candidate_id0 );
         if( can0 != null )
         {
-//          elem.innerHTML = '<div class="border border-dark">{{ __("odds.bet_win") }}</div>'
-//                         + '[' + (can0.disp_order+1) + '] ' + can0.name + '<br>'
-//                         + bets[i].points + 'pt';
           elem.innerHTML = '<table>'
                          +   '<tr>'
-                         +     '<td class="border border-dark" rowspan="3"><div style="writing-mode: vertical-rl;">{{ __("odds.bet_win") }}</div></td>'
+                         +     '<td class="border border-dark" rowspan="4"><div style="writing-mode: vertical-rl;">{{ __("odds.bet_win") }}</div></td>'
                          +     '<td colspan="3"></td>'
                          +   '</tr>'
                          +   '<tr>'
                          +     '<td></td>'
-                         +     '<td class="border border-dark">' + (can0.disp_order+1) + '</td>'
+                         +     '<td class="border border-dark fw-bold text-center">' + (can0.disp_order+1) + '</td>'
                          +     '<td>' + can0.name + '</td>'
+                         +   '</tr>'
+                         +   '<tr>'
+                         +     '<td>　</td>'
+                         +     '<td>　</td>'
+                         +     '<td>　</td>'
                          +   '</tr>'
                          +   '<tr>'
                          +     '<td colspan="3"><div class="text-end">' + bets[i].points + 'pt</div></td>'
                          +   '</tr>';
           if( bets[i].payed == 1 && can0.result_rank == 1 )
+          {
+            elem.classList.remove('odds_ticket');
+            elem.classList.add('odds_win_ticket');
+          }
+        }
+      }
+      else if( bets[i].type == 1 )
+      {
+        let can0 = searchCadidate( bets[i].candidate_id0 );
+        let can1 = searchCadidate( bets[i].candidate_id1 );
+        if( can0 != null && can1 != null )
+        {
+          elem.innerHTML = '<table>'
+                         +   '<tr>'
+                         +     '<td class="border border-dark" rowspan="4"><div style="writing-mode: vertical-rl;">{{ __("odds.bet_quinella") }}</div></td>'
+                         +     '<td colspan="3"></td>'
+                         +   '</tr>'
+                         +   '<tr>'
+                         +     '<td>　</td>'
+                         +     '<td class="border border-dark fw-bold text-center">' + (can0.disp_order+1) + '</td>'
+                         +     '<td>' + can0.name + '</td>'
+                         +   '</tr>'
+                         +   '<tr>'
+                         +     '<td>　</td>'
+                         +     '<td class="border border-dark fw-bold text-center">' + (can1.disp_order+1) + '</td>'
+                         +     '<td>' + can1.name + '</td>'
+                         +   '</tr>'
+                         +   '<tr>'
+                         +     '<td colspan="3"><div class="text-end">' + bets[i].points + 'pt</div></td>'
+                         +   '</tr>';
+          if( bets[i].payed == 1
+           && ( (can0.result_rank == 1 && can1.result_rank == 2)
+             || (can0.result_rank == 2 && can1.result_rank == 1) ) )
+          {
+            elem.classList.remove('odds_ticket');
+            elem.classList.add('odds_win_ticket');
+          }
+        }
+      }
+      else if( bets[i].type == 2 )
+      {
+        let can0 = searchCadidate( bets[i].candidate_id0 );
+        let can1 = searchCadidate( bets[i].candidate_id1 );
+        if( can0 != null && can1 != null )
+        {
+          elem.innerHTML = '<table>'
+                         +   '<tr>'
+                         +     '<td class="border border-dark" rowspan="4"><div style="writing-mode: vertical-rl;">{{ __("odds.bet_exacta") }}</div></td>'
+                         +     '<td colspan="3"></td>'
+                         +   '</tr>'
+                         +   '<tr>'
+                         +     '<td>　</td>'
+                         +     '<td class="border border-dark fw-bold text-center">' + (can0.disp_order+1) + '</td>'
+                         +     '<td>' + can0.name + '</td>'
+                         +   '</tr>'
+                         +   '<tr>'
+                         +     '<td>　</td>'
+                         +     '<td class="border border-dark fw-bold text-center">' + (can1.disp_order+1) + '</td>'
+                         +     '<td>' + can1.name + '</td>'
+                         +   '</tr>'
+                         +   '<tr>'
+                         +     '<td colspan="3"><div class="text-end">' + bets[i].points + 'pt</div></td>'
+                         +   '</tr>';
+          if( bets[i].payed == 1
+           && (can0.result_rank == 1 && can1.result_rank == 2) )
           {
             elem.classList.remove('odds_ticket');
             elem.classList.add('odds_win_ticket');

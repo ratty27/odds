@@ -39,7 +39,9 @@ class Game extends Model
 		$game_id = $this->id;
 
 		// for win
-		$candidates = Candidate::where('game_id', $game_id)->select('id')->get();
+		$candidates = Candidate::where('game_id', $game_id)
+			->orderBy('disp_order', 'asc')
+			->select('id')->get();
 		if( count($candidates) > 0 )
 		{
 			// Calculate odds for each candidate
@@ -104,7 +106,15 @@ class Game extends Model
 							$candidate_bet = 1;
 						$odds_value = round((float)$total_bets / (float)$candidate_bet, 1);
 
-						$results[] = array('id0' => $candidates[$i]->id, 'id1' => $candidates[$j]->id, 'odds' => $odds_value);
+						$id0 = $candidates[$i]->id;
+						$id1 = $candidates[$j]->id;
+						if( $id0 > $id1 )
+						{
+							$tmp = $id0;
+							$id0 = $id1;
+							$id1 = $tmp;
+						}
+						$results[] = array('id0' => $id0, 'id1' => $id1, 'odds' => $odds_value);
 					}
 				}
 				for( $i = 0; $i < count($results); ++$i )
@@ -154,7 +164,15 @@ class Game extends Model
 						$odds_value = round((float)$total_bets / (float)$candidate_bet, 1);
 						//Log::info('Odds ' . $candidate->id . ': ' . $total_bets . ' / ' . $candidate_bet . ' = ' . $odds_value );
 
-						$results[] = array('id0' => $candidates[$i]->id, 'id1' => $candidates[$j]->id, 'odds' => $odds_value);
+						$id0 = $candidates[$i]->id;
+						$id1 = $candidates[$j]->id;
+						if( $id0 > $id1 )
+						{
+							$tmp = $id0;
+							$id0 = $id1;
+							$id1 = $tmp;
+						}
+						$results[] = array('id0' => $id0, 'id1' => $id1, 'odds' => $odds_value);
 					}
 				}
 				for( $i = 0; $i < count($results); ++$i )

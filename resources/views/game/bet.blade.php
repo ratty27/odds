@@ -14,6 +14,14 @@ $candidates = App\Models\Candidate::where('game_id', $game_id)
 $odds0 = App\Models\Odd::where('game_id', $game_id)->where('type', 0)
   ->select('candidate_id0', 'odds', 'favorite')
   ->get();
+// Odds for quinella
+$odds1 = App\Models\Odd::where('game_id', $game_id)->where('type', 1)
+  ->select('candidate_id0', 'candidate_id1', 'odds')
+  ->get();
+// Odds for exacta
+$odds2 = App\Models\Odd::where('game_id', $game_id)->where('type', 2)
+  ->select('candidate_id0', 'candidate_id1', 'odds')
+  ->get();
 // Bets
 $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
 	->select('type', 'candidate_id0', 'candidate_id1', 'candidate_id2', 'points', 'payed')
@@ -28,7 +36,6 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
 </head>
 <div class="container">
   @include('parts.header')
-  <div class="table-responsive">
     <form action="/bet" method="POST">
       <input type="button" class="btn btn-info" onclick="if(checkBet()) submit();" value="{{ __('odds.game_bet_save') }}">
       <input type="hidden" name="game_id" value="{{ $game_id }}">
@@ -53,21 +60,110 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
 	        <td class="text-left align-middle" style="padding-left: 20px; padding-right: 20px;">{{ $candidate->name }}</td>
 	        <td class="text-center align-middle" id="odds_win_{{ $candidate->id }}"></td>
 	        <td class="text-left align-middle">
-	        	<input id="bet_win_{{ $candidate->id }}" name="bet_win_{{ $candidate->id }}" type='number' class="form-control" oninput="onModifyBet()">
+	        	<input id="bet_win_{{ $candidate->id }}" name="bet_win_{{ $candidate->id }}" type='number' class="form-control" oninput="onModifyBet()" value="0">
 	        </td>
 	      </tr>
 	    @endforeach
 	  	</table>
 
-	  	<hr>
+	    @php
+	    if( $game->is_enabled(1) )
+	    {
+	    	echo '<hr>';
+	      echo '<h4>' . __('odds.bet_quinella') . '</h4>';
+	      for( $i = 0; $i < count($candidates) - 1; ++$i )
+	      {
+				  echo '<div class="table-responsive">';
+	        echo '<table class="table-bordered" style="table-layout: auto;">';
+	        echo '<tr><td class="odds_value text-center" rowspan="2">' . ($candidates[$i]->disp_order+1) . '</td>';
+	        for( $j = $i + 1; $j < count($candidates); ++$j )
+	        {
+	          echo '<td class="odds_value text-center">' . ($candidates[$j]->disp_order+1) . '</td>';
+	        }
+	        echo '</tr>';
+	        echo '<tr>';
+	        for( $j = $i + 1; $j < count($candidates); ++$j )
+	        {
+	        	$id0 = $candidates[$i]->id;
+	        	$id1 = $candidates[$j]->id;
+	        	if( $id0 > $id1 )
+	        	{
+	        		$tmp = $id0;
+	        		$id0 = $id1;
+	        		$id1 = $tmp;
+	        	}
+	          echo '<td class="odds_value text-center" id="odds_quinella_' . $id0 . '_' . $id1 . '"></td>';
+	        }
+	        echo '</tr>';
+	        echo '<tr><td>' . __("odds.bet_points") . '</td>';
+	        for( $j = $i + 1; $j < count($candidates); ++$j )
+	        {
+	        	$id0 = $candidates[$i]->id;
+	        	$id1 = $candidates[$j]->id;
+	        	if( $id0 > $id1 )
+	        	{
+	        		$tmp = $id0;
+	        		$id0 = $id1;
+	        		$id1 = $tmp;
+	        	}
+	        	$bet_id = 'bet_quinella_' . $id0 . '_' . $id1;
+	          echo '<td class="odds_value text-center" id="">';
+	        	echo '<input id="' . $bet_id . '" name="' . $bet_id . '" type="number" class="form-control" style="width: 90px;" oninput="onModifyBet()" value="0">';
+		        echo '</td>';
+	        }
+	        echo '</tr>';
+	        echo '</table></div><br>';
+	      }
+	    }
 
+	    if( $game->is_enabled(2) )
+	    {
+	    	echo '<hr>';
+	      echo '<h4>' . __('odds.bet_exacta') . '</h4>';
+	      for( $i = 0; $i < count($candidates); ++$i )
+	      {
+				  echo '<div class="table-responsive">';
+	        echo '<table class="table-bordered" style="table-layout: auto;">';
+	        echo '<tr><td class="odds_value text-center" rowspan="2">' . ($candidates[$i]->disp_order+1) . '</td>';
+	        for( $j = 0; $j < count($candidates); ++$j )
+	        {
+	          if( $i == $j ) continue;
+	          echo '<td class="odds_value text-center">' . ($candidates[$j]->disp_order+1) . '</td>';
+	        }
+	        echo '</tr>';
+	        echo '<tr>';
+	        for( $j = 0; $j < count($candidates); ++$j )
+	        {
+	          if( $i == $j ) continue;
+	          echo '<td class="odds_value text-center" id="odds_exacta_' . $candidates[$i]->id . '_' . $candidates[$j]->id . '"></td>';
+	        }
+	        echo '</tr>';
+	        echo '<tr><td>' . __("odds.bet_points") . '</td>';
+	        for( $j = 0; $j < count($candidates); ++$j )
+	        {
+	          if( $i == $j ) continue;
+	        	$bet_id = 'bet_exacta_' . $candidates[$i]->id . '_' . $candidates[$j]->id;
+	          echo '<td class="odds_value text-center" id="">';
+	        	echo '<input id="' . $bet_id . '" name="' . $bet_id . '" type="number" class="form-control" style="width: 90px;" oninput="onModifyBet()" value=0>';
+		        echo '</td>';
+	        }
+	        echo '</tr>';
+	        echo '</table></div><br>';
+	      }
+	    }
+	    @endphp
 	  </form>
-  </div>
+
+  	<hr>
+
 </div>
 
+<script src="{{ asset('/js/odds_util.js') }}"></script>
 <script type="text/javascript">
 const candidates = <?php echo json_encode($candidates); ?>;
 const odds0 = <?php echo json_encode($odds0); ?>;
+const odds1 = <?php echo json_encode($odds1); ?>;
+const odds2 = <?php echo json_encode($odds2); ?>;
 const bets = <?php echo json_encode($bets); ?>;
 const initial_points = {{ $user->get_current_points() }};
 var input_bet_elements = [];
@@ -100,26 +196,90 @@ function initOddsBets()
 			{
 				if( odds0[i].candidate_id0 == candidate.id )
 				{
-					elem.innerHTML = '' + odds0[i].odds;
+					elem.innerHTML = get_disp_odds( odds0[i].odds );
 					break;
 				}
 			}
-			// Bets
-			let elem_name = 'bet_win_' + candidate.id;
-			elem = document.getElementById(elem_name);
-			elem.value = 0;
-			for( let i = 0; i < bets.length; ++i )
-			{
-				if( bets[i].type == 0
-				 && bets[i].candidate_id0 == candidate.id )
-				{
-					elem.value = bets[i].points;
-					break;
-				}
-			}
-			input_bet_elements.push(elem_name);
 		}
 	);
+
+  // quinella
+  @php
+  if( $game->is_enabled(1) )
+  {
+  @endphp
+    for( let i = 0; i < odds1.length; ++i )
+    {
+      let elem = document.getElementById('odds_quinella_' + odds1[i].candidate_id0 + '_' + odds1[i].candidate_id1);
+      if( elem )
+      {
+        elem.innerHTML = get_disp_odds( odds1[i].odds );
+      }
+    }
+  @php
+  }
+  @endphp
+  // exacta
+  @php
+  if( $game->is_enabled(2) )
+  {
+  @endphp
+    for( let i = 0; i < odds2.length; ++i )
+    {
+      let elem = document.getElementById('odds_exacta_' + odds2[i].candidate_id0 + '_' + odds2[i].candidate_id1);
+      if( elem )
+      {
+        elem.innerHTML = get_disp_odds( odds2[i].odds );
+      }
+    }
+  @php
+  }
+  @endphp
+
+	// Bets
+	bets.forEach( function(bet)
+		{
+			if( bet.type == 0 )
+			{
+				let elem_name = 'bet_win_' + bet.candidate_id0;
+				elem = document.getElementById(elem_name);
+				elem.value = bet.points;
+			}
+			else if( bet.type == 1 )
+			{
+				let elem_name = 'bet_quinella_' + bet.candidate_id0 + '_' + bet.candidate_id1;
+				elem = document.getElementById(elem_name);
+				elem.value = bet.points;
+			}
+			else if( bet.type == 2 )
+			{
+				let elem_name = 'bet_exacta_' + bet.candidate_id0 + '_' + bet.candidate_id1;
+				elem = document.getElementById(elem_name);
+				elem.value = bet.points;
+			}
+		}
+	);
+	// Collect betting cell name
+	candidates.forEach( function(candidate)
+		{
+			input_bet_elements.push('bet_win_' + candidate.id);
+		}
+	);
+	for( let i = 0; i < candidates.length - 1; ++i )
+	{
+		for( let j = i + 1; j < candidates.length; ++j )
+		{
+			input_bet_elements.push('bet_quinella_' + candidates[i].id + '_' + candidates[j].id);
+		}
+	}
+	for( let i = 0; i < candidates.length; ++i )
+	{
+		for( let j = 0; j < candidates.length; ++j )
+		{
+			if( i == j ) continue;
+			input_bet_elements.push('bet_exacta_' + candidates[i].id + '_' + candidates[j].id);
+		}
+	}
 }
 window.onload = initOddsBets;
 
