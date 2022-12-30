@@ -19,6 +19,7 @@ return new class extends Migration
             $table->timestamp('limit');
             $table->integer('user_id')->index();
             $table->integer('status')->default(0);
+            $table->unsignedInteger('enabled')->default(0xffffffff);
             $table->timestamp('next_update');
             $table->integer('exclusion_update');
             $table->timestamps();

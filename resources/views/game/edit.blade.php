@@ -61,6 +61,28 @@ if( $user->admin )
         <label>{{ __('odds.game_candidate') }}</label>
         <textarea name="game_candidate" style='height: 400px' class="form-control">{{ $candidates_name }}</textarea>
       </div>
+      <table>
+        <tr>
+          <td style="padding: 4px;">
+            <label for="enable_win">
+              <input type="checkbox" id="enable_win" name="enabled[]" value="0" {{ $enabled_win }} />
+              {{ __('odds.bet_win') }}
+            </label>
+          </td>
+          <td style="padding: 4px;">
+            <label for="enable_quinella">
+              <input type="checkbox" id="enable_quinella" name="enabled[]" value="1" {{ $enable_quinella }} />
+              {{ __('odds.bet_quinella') }}
+            </label>
+          </td>
+          <td style="padding: 4px;">
+            <label for="enable_exacta">
+              <input type="checkbox" id="enable_exacta" name="enabled[]" value="2" {{ $enable_exacta }} />
+              {{ __('odds.bet_exacta') }}
+            </label>
+          </td>
+        </tr>
+      </table>
       <input type="hidden" name="game_id" value="{{ $game_id }}">
       {{ csrf_field() }}
       <input type="button" class="btn btn-secondary" onclick="onCancel();" value="{{ __('odds.admin_cancel') }}">

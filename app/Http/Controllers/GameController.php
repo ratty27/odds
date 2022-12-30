@@ -63,6 +63,15 @@ class GameController extends Controller
 					$game->user_id = $user->id;
 					$game->next_update = date("Y/m/d H:i:s");
 					$game->exclusion_update = 0;
+
+					$game->enabled = 0;
+					$enabled = $request->input('enabled');
+					foreach( $enabled as $enabled_index )
+					{
+						$index = intval( $enabled_index );
+						$game->enabled |= 1 << $index;
+					}
+
 					//Log::info('Update game: ' . $request->input('game_name'));
 					if( $game->save() )
 					{   // Update cadidates

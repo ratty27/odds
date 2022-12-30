@@ -24,6 +24,14 @@ class Game extends Model
 	}
 
 	/**
+	 *	Check whether a type of odds is enabled
+	 */
+	public function is_enabled($type)
+	{
+		return ($this->enabled & (1 << $type)) != 0;
+	}
+
+	/**
 	 *  Update game's odds
 	 */
 	public function update_odds()
