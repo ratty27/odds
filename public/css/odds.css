@@ -30,6 +30,11 @@ footer {
 .odds_header a:visited { color: #fff; }
 .odds_header a:active { color: #fff; }
 
+.odds_number {
+	text-center fw-bold;
+	background-color: #f8f8f8;
+}
+
 .odds_value {
 	padding: 8px 12px;
 }

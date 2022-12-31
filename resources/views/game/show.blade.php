@@ -96,7 +96,7 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
       </tr>
     @foreach($candidates as $candidate)
       <tr>
-        <td class="text-center align-middle fw-bold text-center">{{ $candidate->disp_order+1 }}</td>
+        <td class="text-center align-middle odds_number">{{ $candidate->disp_order+1 }}</td>
         <td class="text-left align-middle" style="padding-left: 20px; padding-right: 20px;">{{ $candidate->name }}</td>
         <td class="text-center align-middle" id="odds_win_{{ $candidate->id }}"></td>
         <td class="text-center align-middle" id="favo_win_{{ $candidate->id }}"></td>
@@ -129,10 +129,10 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
       {
         echo '<div class="table-responsive">';
         echo '<table class="table-bordered" style="table-layout: auto;">';
-        echo '<tr><td class="odds_value text-center fw-bold text-center" rowspan="2">' . ($candidates[$i]->disp_order+1) . '</td>';
+        echo '<tr><td class="odds_value odds_number" rowspan="2">' . ($candidates[$i]->disp_order+1) . '</td>';
         for( $j = $i + 1; $j < count($candidates); ++$j )
         {
-          echo '<td class="odds_value text-center fw-bold text-center">' . ($candidates[$j]->disp_order+1) . '</td>';
+          echo '<td class="odds_value odds_number">' . ($candidates[$j]->disp_order+1) . '</td>';
         }
         echo '</tr>';
         echo '<tr>';
@@ -152,11 +152,11 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
       {
         echo '<div class="table-responsive">';
         echo '<table class="table-bordered" style="table-layout: auto;">';
-        echo '<tr><td class="odds_value text-center fw-bold text-center" rowspan="2">' . ($candidates[$i]->disp_order+1) . '</td>';
+        echo '<tr><td class="odds_value odds_number" rowspan="2">' . ($candidates[$i]->disp_order+1) . '</td>';
         for( $j = 0; $j < count($candidates); ++$j )
         {
           if( $i == $j ) continue;
-          echo '<td class="odds_value text-center fw-bold text-center">' . ($candidates[$j]->disp_order+1) . '</td>';
+          echo '<td class="odds_value odds_number">' . ($candidates[$j]->disp_order+1) . '</td>';
         }
         echo '</tr>';
         echo '<tr>';
