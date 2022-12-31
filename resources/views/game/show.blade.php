@@ -69,6 +69,7 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
   @endphp
 
   	<h3>{{ $game->name }}</h3>
+    <div class="text-end">{!! str_replace("\n", "<br>", $game->comment) !!}</div>
 
     @php
     if( count($bets) > 0 )

@@ -134,6 +134,11 @@ class GameController extends Controller
 					}
 					$game->name = $request->input('game_name');
 					$game->limit = $request->input('game_limit');
+					$game->comment = $request->input('game_comment');
+					if( $game->comment == null )
+					{
+						$game->comment = '';
+					}
 					$game->user_id = $user->id;
 					$game->next_update = date("Y/m/d H:i:s");
 					$game->exclusion_update = 0;
@@ -196,6 +201,8 @@ class GameController extends Controller
 								$candidate->save();
 							}
 						}
+
+						$game->update_odds();
 					}
 				}
 			);

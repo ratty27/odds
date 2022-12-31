@@ -58,6 +58,10 @@ if( $user->admin )
         <input name="game_limit" type="datetime" class="form-control" value="{{ $game->limit }}">
       </div>
       <div class="form-group">
+        <label>{{ __('odds.game_comment') }}</label>
+        <textarea name="game_comment" class="form-control">{{ $game->comment }}</textarea>
+      </div>
+      <div class="form-group">
         <label>{{ __('odds.game_candidate') }}</label>
         <textarea name="game_candidate" style='height: 400px' class="form-control">{{ $candidates_name }}</textarea>
       </div>

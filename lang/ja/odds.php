@@ -26,6 +26,7 @@ return [
 	'game_past' => '過去のレース',
 	'game_id' => 'ID',
 	'game_name' => 'レース名',
+	'game_comment' => 'コメント',
 	'game_limit' => '予想期限',
 	'game_limit_close' => '受付終了',
 	'game_candidate' => '出走者',

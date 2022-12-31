@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('games', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name', 256);
+            $table->text('comment');
             $table->timestamp('limit');
             $table->integer('user_id')->index();
             $table->integer('status')->default(0)->index();
