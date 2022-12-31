@@ -204,6 +204,10 @@ class Game extends Model
 	 */
 	public function update_odds_if_needs()
 	{
+		if( !config('odds.calc_odds_on_request') )
+		{
+			return;
+		}
 		if( $this->status == 0 )
 		{
 			$game = $this;

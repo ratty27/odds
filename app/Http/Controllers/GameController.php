@@ -533,8 +533,11 @@ class GameController extends Controller
 				}
 
 				// Request to update odds
-				$game->exclusion_update = 0;
-				$game->update();
+				if( !config('odds.calc_odds_on_request') )
+				{
+					$game->exclusion_update = 0;
+					$game->update();
+				}
 			}
 		);
 		return redirect()->action('App\Http\Controllers\GameController@show', ['game_id' => $game_id]);
