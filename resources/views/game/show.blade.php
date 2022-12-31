@@ -308,7 +308,8 @@ function initValues()
                          +   '</tr>';
           if( bets[i].payed == 1
            && ( (can0.result_rank == 1 && can1.result_rank == 2)
-             || (can0.result_rank == 2 && can1.result_rank == 1) ) )
+             || (can0.result_rank == 2 && can1.result_rank == 1)
+             || (can0.result_rank == 1 && can1.result_rank == 1) ) )  // arrive at the same time
           {
             elem.classList.remove('odds_ticket');
             elem.classList.add('odds_win_ticket');
@@ -340,7 +341,8 @@ function initValues()
                          +     '<td colspan="3"><div class="text-end">' + bets[i].points + 'pt</div></td>'
                          +   '</tr>';
           if( bets[i].payed == 1
-           && (can0.result_rank == 1 && can1.result_rank == 2) )
+           && ( (can0.result_rank == 1 && can1.result_rank == 2)
+             || (can0.result_rank == 1 && can1.result_rank == 1) ) )  // arrive at the same time
           {
             elem.classList.remove('odds_ticket');
             elem.classList.add('odds_win_ticket');
