@@ -143,12 +143,15 @@ class GameController extends Controller
 					$game->next_update = date("Y/m/d H:i:s");
 					$game->exclusion_update = 0;
 
-					$game->enabled = 0;
+					$game->enabled = 1;	// 'win' is awlways enabled
 					$enabled = $request->input('enabled');
-					foreach( $enabled as $enabled_index )
+					if( $enabled != null )
 					{
-						$index = intval( $enabled_index );
-						$game->enabled |= 1 << $index;
+						foreach( $enabled as $enabled_index )
+						{
+							$index = intval( $enabled_index );
+							$game->enabled |= 1 << $index;
+						}
 					}
 
 					//Log::info('Update game: ' . $request->input('game_name'));
@@ -204,6 +207,31 @@ class GameController extends Controller
 
 						$game->update_odds();
 					}
+				}
+			);
+		}
+		return redirect('/');
+	}
+
+	/**
+	 *  Delete a game (admin)
+	 */
+	public function delete_game($game_id)
+	{
+		if( !$this->is_valid_user() )
+		{
+			return $this->auth_login();
+		}
+
+		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
+		if( $user->admin )
+		{
+			DB::transaction(function () use($game_id)
+				{
+					Bet::where('game_id', $game_id)->delete();
+					Odd::where('game_id', $game_id)->delete();
+					Candidate::where('game_id', $game_id)->delete();
+					Game::where('id', $game_id)->delete();
 				}
 			);
 		}

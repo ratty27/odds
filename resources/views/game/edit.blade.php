@@ -67,19 +67,19 @@ if( $user->admin )
       </div>
       <table>
         <tr>
-          <td style="padding: 4px;">
+          <td style="padding: 8px;">
             <label for="enable_win">
               <input type="checkbox" id="enable_win" name="enabled[]" value="0" checked disabled />
               {{ __('odds.bet_win') }}
             </label>
           </td>
-          <td style="padding: 4px;">
+          <td style="padding: 8px;">
             <label for="enable_quinella">
               <input type="checkbox" id="enable_quinella" name="enabled[]" value="1" {{ $enable_quinella }} />
               {{ __('odds.bet_quinella') }}
             </label>
           </td>
-          <td style="padding: 4px;">
+          <td style="padding: 8px;">
             <label for="enable_exacta">
               <input type="checkbox" id="enable_exacta" name="enabled[]" value="2" {{ $enable_exacta }} />
               {{ __('odds.bet_exacta') }}
@@ -89,8 +89,22 @@ if( $user->admin )
       </table>
       <input type="hidden" name="game_id" value="{{ $game_id }}">
       {{ csrf_field() }}
-      <input type="button" class="btn btn-secondary" onclick="onCancel();" value="{{ __('odds.admin_cancel') }}">
-      <button type="submit" class="btn btn-success">{{ __('odds.admin_save') }}</button>
+      <div class="btn-toolbar">
+        <div class="col-5">
+          <input type="button" class="btn btn-secondary" onclick="onCancel();" value="{{ __('odds.admin_cancel') }}">
+          <button type="submit" class="btn btn-success">{{ __('odds.admin_save') }}</button>
+        </div>
+        @php
+        if( $game_id !== 'new' )
+        {
+        @endphp
+        <div class="col-5 text-end">
+          <input type="button" class="btn btn-danger" onclick="onDelete();" value="{{ __('odds.admin_delete') }}">
+        </div>
+        @php
+        }
+        @endphp
+      </div>
     </form>
   </div>
 
@@ -104,4 +118,13 @@ function onCancel()
 {
   location.href = "/";
 }
+
+function onDelete()
+{
+  if( confirm('{{ __("odds.admin_confirm_delete") }}') )
+  {
+    location.href = "/delete/{{ $game_id }}";
+  }
+}
+
 </script>

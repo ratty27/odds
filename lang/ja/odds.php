@@ -11,11 +11,13 @@ return [
 	'admin_reopen' => '再開',
 	'admin_result' => '結果',
 	'admin_save' => '保存',
+	'admin_delete' => '削除',
 	'admin_cancel' => 'キャンセル',
 	'admin_confirm_close' => "レースの予想受付を締め切ります。\nよろしいですか？",
 	'admin_confirm_reopen' => "レースの予想受付を再開します。\nよろしいですか？",
-	'admin_confirm_finish' => "レースの結果を確定してよろしいですか？\\nこの操作はやり直しできません。",	// for confirm()
-	'admin_error_input' => "入力に間違いがあります。",	// for confirm()
+	'admin_confirm_finish' => "レースの結果を確定してよろしいですか？\\nこの操作はやり直しできません。",
+	'admin_confirm_delete' => "このレースに関数すべてのデータを削除します。\\nよろしいですか？",
+	'admin_error_input' => "入力に間違いがあります。",
 
 	'dialog_title_confirm' => '確認',
 	'dialog_yes' => 'はい',
