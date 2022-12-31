@@ -14,7 +14,7 @@ $past_games = App\Models\Game::where('status', 2)->select('id', 'name')->get();
   @include('parts.header')
 
   <!-- Info -->
-  <center><div class="col-md-6 text-start text-danger" style="font-size: 0.6rem;">{!! __('odds.info_top') !!}</div></center>
+  <center><div class="col-md-6 text-start text-danger odds_tips">{!! __('odds.info_top') !!}</div></center>
 
   <!-- Future games -->
   <h3>{{ __('odds.game_future') }}</h3>

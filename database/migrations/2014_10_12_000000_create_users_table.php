@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
-            $table->integer('points');
+            $table->bigInteger('points');
             $table->string('personal_id')->unique();
             $table->boolean('admin');
             $table->timestamps();

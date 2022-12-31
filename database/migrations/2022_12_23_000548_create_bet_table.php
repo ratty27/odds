@@ -21,7 +21,7 @@ return new class extends Migration
             $table->integer('candidate_id0')->default(-1)->index();
             $table->integer('candidate_id1')->default(-1)->index();
             $table->integer('candidate_id2')->default(-1)->index();
-            $table->integer('points');
+            $table->bigInteger('points');
             $table->boolean('payed')->default(0);
             $table->timestamps();
         });

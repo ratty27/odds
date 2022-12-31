@@ -63,7 +63,7 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
   if( $game->status == 0 )
   {
   @endphp
-    <div class="text-end text-info">{!! __("odds.info_odds") !!}</div>
+    <div class="text-end text-info odds_tips">{!! __("odds.info_odds") !!}</div>
   @php
   }
   @endphp

@@ -55,3 +55,9 @@ footer {
    0%{ color : black; background:#ffffee }
  100%{ color : black; background:#eefeee }
 }
+
+.odds_tips {
+	font-size: 0.6rem;
+	margin: 0px;
+	padding: 0px;
+}
