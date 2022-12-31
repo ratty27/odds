@@ -166,12 +166,6 @@ class Game extends Model
 
 						$id0 = $candidates[$i]->id;
 						$id1 = $candidates[$j]->id;
-						if( $id0 > $id1 )
-						{
-							$tmp = $id0;
-							$id0 = $id1;
-							$id1 = $tmp;
-						}
 						$results[] = array('id0' => $id0, 'id1' => $id1, 'odds' => $odds_value);
 					}
 				}
