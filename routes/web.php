@@ -31,6 +31,7 @@ Route::get('/result/{game_id}', 'App\Http\Controllers\GameController@result');
 Route::post('/finish', 'App\Http\Controllers\GameController@finish');
 
 // User's
+Route::get('/login/{token}', 'App\Http\Controllers\GameController@login');
 Route::get('/game/{game_id}', 'App\Http\Controllers\GameController@show');
 Route::get('/bet/{game_id}', 'App\Http\Controllers\GameController@bet');
 Route::post('/bet', 'App\Http\Controllers\GameController@save_bet');

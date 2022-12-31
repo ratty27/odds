@@ -20,6 +20,7 @@ return [
 	'dialog_title_confirm' => '確認',
 	'dialog_yes' => 'はい',
 	'dialog_no' => 'いいえ',
+	'dialog_confirm_robot' => '私はロボットではありません。',
 
 	'game_future' => '今後のレース',
 	'game_past' => '過去のレース',
