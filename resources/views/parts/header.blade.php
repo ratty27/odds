@@ -9,7 +9,7 @@
 		</table>
 	</div>
 	<div class="col-md-1 text-end" style="padding-right: 32px;">
-		<a style='cursor: pointer;' data-bs-toggle='modal' data-bs-target='#UserSettings'><img src='/img/gear-fill.svg' alt='{{ __("odds.user_settings") }}'></a>
+		<a style='cursor: pointer;' data-bs-toggle='modal' data-bs-target='#UserSettings'><img src='{{ asset("/img/gear-fill.svg") }}'  alt='{{ __("odds.user_settings") }}'></a>
 	</div>
 </nav>
 <br>
