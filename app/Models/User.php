@@ -66,7 +66,9 @@ class User extends Model
 					->join('games', 'games.id', '=', 'bets.game_id')->where('games.status', 2)->distinct()->get();
 				foreach( $finished_list as $finished )
 				{
-					$bets = Bet::where('bets.user_id', $user_id)->where('bets.game_id', $finished->gid)
+					$bets = Bet::where('bets.user_id', $user_id)
+						->where('bets.game_id', $finished->gid)
+						->where('bets.payed', 0)
 						->select('bets.id', 'bets.type', 'bets.candidate_id0', 'bets.candidate_id1', 'bets.candidate_id2', 'bets.points', 'can0.result_rank as rank0', 'can1.result_rank as rank1', 'can2.result_rank as rank2')
 						->leftJoin('candidates as can0', 'can0.id', '=', 'bets.candidate_id0')
 						->leftJoin('candidates as can1', 'can1.id', '=', 'bets.candidate_id1')
@@ -83,6 +85,7 @@ class User extends Model
 					foreach( $bets as $bet )
 					{
 						$user->points -= $bet->points;
+						Log::channel('oddslog')->info('BET: ', ['id' => $bet->id, 'game_id' => $finished->gid, 'user_id' => $user->id, 'bet' => $bet->points]);
 						switch($bet->type)
 						{
 						// win
@@ -94,6 +97,7 @@ class User extends Model
 									if( $odd->candidate_id0 == $bet->candidate_id0 )
 									{
 										$rewards += (int)($bet->points * $odd->odds);
+										Log::channel('oddslog')->info('PAY OFF: ', ['id' => $bet->id, 'game_id' => $finished->gid, 'user_id' => $user->id, 'bet' => $bet->points, 'odds' => $odd->odds]);
 										break;
 									}
 								}
@@ -112,6 +116,7 @@ class User extends Model
 									 && ($odd->candidate_id1 == $bet->candidate_id1) )
 									{
 										$rewards += (int)($bet->points * $odd->odds);
+										Log::channel('oddslog')->info('PAY OFF: ', ['id' => $bet->id, 'game_id' => $finished->gid, 'user_id' => $user->id, 'bet' => $bet->points, 'odds' => $odd->odds]);
 										break;
 									}
 								}
@@ -129,6 +134,7 @@ class User extends Model
 									 && ($odd->candidate_id1 == $bet->candidate_id1) )
 									{
 										$rewards += (int)($bet->points * $odd->odds);
+										Log::channel('oddslog')->info('PAY OFF: ', ['id' => $bet->id, 'game_id' => $finished->gid, 'user_id' => $user->id, 'bet' => $bet->points, 'odds' => $odd->odds]);
 										break;
 									}
 								}

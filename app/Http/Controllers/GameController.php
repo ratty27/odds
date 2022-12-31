@@ -595,6 +595,7 @@ class GameController extends Controller
 				Bet::where('user_id', $user->id)->where('payed', 0)->delete();
 				$user->points = config('odds.initial_points');
 				$user->update();
+				Log::channel('oddslog')->info('RESET: ', ['id' => $user->id]);
 			}
 		);
 		return redirect('/');

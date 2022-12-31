@@ -89,6 +89,13 @@ return [
             ],
         ],
 
+        'oddslog' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/odds.log'),
+            'level' => 'info',
+            'days' => 120,
+        ], 
+
         'stderr' => [
             'driver' => 'monolog',
             'level' => env('LOG_LEVEL', 'debug'),
