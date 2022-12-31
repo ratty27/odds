@@ -39,7 +39,10 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
 <div class="container">
   @include('parts.header')
   <div style="width: 100%;">
-    <div style="float: left"><a href="/" class="btn btn-info">{{ __('odds.game_list') }}</a></div>
+    <div class="position-fixed top-10 start-0">
+      <div style="float: left"><a href="/" class="btn btn-info">{{ __('odds.game_list') }}</a></div>
+    </div>
+    <div class="position-fixed top-10 end-0">
     @php
     if( $game->status == 0 )
     {
@@ -54,6 +57,7 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
     @php
     }
     @endphp
+    </div>
   </div>
   <div style="clear: left;"></div>
 
