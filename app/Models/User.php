@@ -75,6 +75,10 @@ class User extends Model
 
 					$odds0 = Odd::where('game_id', $finished->gid)->where('type', 0)
 						->select('candidate_id0', 'odds')->get();
+					$odds1 = Odd::where('game_id', $finished->gid)->where('type', 1)
+						->select('candidate_id0', 'candidate_id1', 'odds')->get();
+					$odds2 = Odd::where('game_id', $finished->gid)->where('type', 2)
+						->select('candidate_id0', 'candidate_id1', 'odds')->get();
 
 					foreach( $bets as $bet )
 					{
@@ -88,6 +92,41 @@ class User extends Model
 								foreach( $odds0 as $odd )
 								{
 									if( $odd->candidate_id0 == $bet->candidate_id0 )
+									{
+										$rewards += (int)($bet->points * $odd->odds);
+										break;
+									}
+								}
+							}
+							break;
+
+						// quinella
+						case 1:
+							if( ($bet->rank0 == 1 && $bet->rank1 == 2)
+							 || ($bet->rank0 == 2 && $bet->rank1 == 1)
+							 || ($bet->rank0 == 1 && $bet->rank1 == 1) )
+							{
+								foreach( $odds1 as $odd )
+								{
+									if( ($odd->candidate_id0 == $bet->candidate_id0)
+									 && ($odd->candidate_id1 == $bet->candidate_id1) )
+									{
+										$rewards += (int)($bet->points * $odd->odds);
+										break;
+									}
+								}
+							}
+							break;
+
+						// exacta
+						case 2:
+							if( ($bet->rank0 == 1 && $bet->rank1 == 2)
+							 || ($bet->rank0 == 1 && $bet->rank1 == 1) )
+							{
+								foreach( $odds2 as $odd )
+								{
+									if( ($odd->candidate_id0 == $bet->candidate_id0)
+									 && ($odd->candidate_id1 == $bet->candidate_id1) )
 									{
 										$rewards += (int)($bet->points * $odd->odds);
 										break;
