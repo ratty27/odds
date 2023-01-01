@@ -1,5 +1,5 @@
 <nav class="navbar fixed-top odds_header">
-	<div class="col-md-9" style="padding-left: 32px"><a href="/">{{ __('odds.title') }}</a></div>
+	<div class="col-md-9 fst-italic" style="padding-left: 0px"><a href="/">{{ __('odds.title') }}</a></div>
 	<div class="col-md-2">
 		<table>
 			<tr>
