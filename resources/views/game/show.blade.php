@@ -265,6 +265,12 @@ function initValues()
         let can1 = searchCadidate( bets[i].candidate_id1 );
         if( can0 != null && can1 != null )
         {
+          if( can0.disp_order > can1.disp_order )
+          {
+            let tmp = can0;
+            can0 = can1;
+            can1 = tmp;
+          } 
           elem.innerHTML = '<table>'
                          +   '<tr>'
                          +     '<td class="border border-dark" rowspan="4"><div style="writing-mode: vertical-rl;">{{ __("odds.bet_quinella") }}</div></td>'

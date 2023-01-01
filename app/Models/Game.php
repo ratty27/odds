@@ -101,11 +101,6 @@ class Game extends Model
 				{
 					for( $j = $i + 1; $j < count($candidates); ++$j )
 					{
-						$candidate_bet = intval( Bet::where('type', 1)->where('candidate_id0', $candidates[$i]->id)->where('candidate_id1', $candidates[$j]->id)->sum('points') ) + $dummy;
-						if( $candidate_bet <= 0 )
-							$candidate_bet = 1;
-						$odds_value = round((float)$total_bets / (float)$candidate_bet, 1);
-
 						$id0 = $candidates[$i]->id;
 						$id1 = $candidates[$j]->id;
 						if( $id0 > $id1 )
@@ -114,6 +109,11 @@ class Game extends Model
 							$id0 = $id1;
 							$id1 = $tmp;
 						}
+						$candidate_bet = intval( Bet::where('type', 1)->where('candidate_id0', $id0)->where('candidate_id1', $id1)->sum('points') ) + $dummy;
+						if( $candidate_bet <= 0 )
+							$candidate_bet = 1;
+						$odds_value = round((float)$total_bets / (float)$candidate_bet, 1);
+
 						$results[] = array('id0' => $id0, 'id1' => $id1, 'odds' => $odds_value);
 					}
 				}

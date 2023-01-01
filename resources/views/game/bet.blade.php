@@ -208,7 +208,15 @@ function initOddsBets()
 	{
 		for( let j = i + 1; j < candidates.length; ++j )
 		{
-			input_bet_elements.push('bet_quinella_' + candidates[i].id + '_' + candidates[j].id);
+			let id0 = candidates[i].id;
+			let id1 = candidates[j].id;
+			if( id0 > id1 )
+			{
+				let tmp = id0;
+				id0 = id1;
+				id1 = tmp;
+			}
+			input_bet_elements.push('bet_quinella_' + id0 + '_' + id1);
 		}
 	}
 	for( let i = 0; i < candidates.length; ++i )
