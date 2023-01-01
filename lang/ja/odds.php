@@ -2,7 +2,7 @@
 
 return [
 
-	'title' => 'Odds - レース予想アプリ',
+	'title' => 'Odds - レース予想',
 
 	'admin' => '管理',
 	'admin_add' => '追加',

@@ -31,15 +31,16 @@ function make_quinella_tag(prefix, id0, id1)
  */
 function layout_quinella(elemId, candidates, forBet)
 {
+	let cellw = 100 / candidates.length;
 	let	layout = '';
 	for( let i = 0; i < candidates.length - 1; ++i )
 	{
 		layout += "<div class='table-responsive'>";
-		layout += "<table class='table-bordered' style='table-layout: auto;'>";
-		layout += "<tr><td class='odds_value odds_number' rowspan='2'>" + (candidates[i].disp_order+1) + "</td>";
+		layout += "<table class='table-bordered' style='table-layout: fixed; width: " + ((candidates.length - i) * cellw) + "%;'>";
+		layout += "<tr><th scope='row' class='odds_value odds_number text-center' rowspan='2'>" + (candidates[i].disp_order+1) + "</th>";
 		for( let j = i + 1; j< candidates.length; ++j )
 		{
-			layout += "<td class='odds_value odds_number'>" + (candidates[j].disp_order+1) + "</td>";
+			layout += "<th scope='col' class='odds_value odds_number text-center'>" + (candidates[j].disp_order+1) + "</th>";
 		}
 		layout += "</tr><tr>";
 		for( let j = i + 1; j< candidates.length; ++j )
@@ -50,7 +51,7 @@ function layout_quinella(elemId, candidates, forBet)
 		layout += "</tr>";
 		if( forBet )
 		{
-			layout += "<tr><td>" + TXT_POINTS + "</td>";
+			layout += "<tr><td class='text-center'>" + TXT_POINTS + "</td>";
 			for( let j = i + 1; j< candidates.length; ++j )
 			{
 				let tag = make_quinella_tag("bet_quinella", candidates[i].id, candidates[j].id);
@@ -86,12 +87,12 @@ function layout_exacta(elemId, candidates, forBet)
 	for( let i = 0; i < candidates.length; ++i )
 	{
 		layout += "<div class='table-responsive'>";
-		layout += "<table class='table-bordered' style='table-layout: auto;'>";
-		layout += "<tr><td class='odds_value odds_number' rowspan='2'>" + (candidates[i].disp_order+1) + "</td>";
+		layout += "<table class='table-bordered' style='table-layout: fixed; width: 100%;'>";
+		layout += "<tr><th scope='row' class='odds_value odds_number text-center' rowspan='2'>" + (candidates[i].disp_order+1) + "</th>";
 		for( let j = 0; j< candidates.length; ++j )
 		{
 			if( i == j ) continue;
-			layout += "<td class='odds_value odds_number'>" + (candidates[j].disp_order+1) + "</td>";
+			layout += "<th scope='col' class='odds_value odds_number text-center'>" + (candidates[j].disp_order+1) + "</th>";
 		}
 		layout += "</tr><tr>";
 		for( let j = 0; j< candidates.length; ++j )
@@ -103,7 +104,7 @@ function layout_exacta(elemId, candidates, forBet)
 		layout += "</tr>";
 		if( forBet )
 		{
-	        layout += "<tr><td>" + TXT_POINTS +"</td>";
+	        layout += "<tr><td class='text-center'>" + TXT_POINTS +"</td>";
 			for( let j = 0; j< candidates.length; ++j )
 			{
 				if( i == j ) continue;

@@ -24,7 +24,7 @@ input[type=checkbox] {
   <center>
   <div class="h-100 d-flex align-items-center justify-content-center">
     <div class="col-md-7 fs-3 border shadow">
-      {{ __("odds.dialog_title_confirm") }}
+      {{ __("odds.title") }}
       <hr>
       {{ __("odds.dialog_confirm_robot") }}
       <br>

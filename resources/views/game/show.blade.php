@@ -104,7 +104,7 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
       </tr>
     @foreach($candidates as $candidate)
       <tr>
-        <td class="text-center align-middle odds_number">{{ $candidate->disp_order+1 }}</td>
+        <th class="text-center align-middle odds_number">{{ $candidate->disp_order+1 }}</th>
         <td class="text-left align-middle" style="padding-left: 20px; padding-right: 20px;">{{ $candidate->name }}</td>
         <td class="text-center align-middle" id="odds_win_{{ $candidate->id }}"></td>
         <td class="text-center align-middle" id="favo_win_{{ $candidate->id }}"></td>

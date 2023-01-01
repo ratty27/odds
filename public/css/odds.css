@@ -31,7 +31,6 @@ footer {
 .odds_header a:active { color: #fff; }
 
 .odds_number {
-	text-center fw-bold;
 	background-color: #f8f8f8;
 }
 
