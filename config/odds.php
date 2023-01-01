@@ -7,6 +7,9 @@ return [
 	// Dummy user's bet points
 	'dummy_points' => 10000,
 
+	// Display count of past games
+	'past_game_count' => 10,
+
 	// Calculate odds on an user's request
 	'calc_odds_on_request' => false,
 
