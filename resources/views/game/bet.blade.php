@@ -65,7 +65,7 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
 	        <td class="text-left align-middle" style="padding-left: 20px; padding-right: 20px;">{{ $candidate->name }}</td>
 	        <td class="text-center align-middle" id="odds_win_{{ $candidate->id }}"></td>
 	        <td class="text-left align-middle">
-	        	<input id="bet_win_{{ $candidate->id }}" name="bet_win_{{ $candidate->id }}" type='number' class="form-control" oninput="onModifyBet()" value="0">
+	        	<input id="bet_win_{{ $candidate->id }}" name="bet_win_{{ $candidate->id }}" type='text' class="form-control" oninput="onModifyBet()" value="0">
 	        </td>
 	      </tr>
 	    @endforeach
@@ -76,85 +76,14 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
 	    {
 	    	echo '<hr>';
 	      echo '<h4>' . __('odds.bet_quinella') . '</h4>';
-	      for( $i = 0; $i < count($candidates) - 1; ++$i )
-	      {
-				  echo '<div class="table-responsive">';
-	        echo '<table class="table-bordered" style="table-layout: auto;">';
-	        echo '<tr><td class="odds_value odds_number" rowspan="2">' . ($candidates[$i]->disp_order+1) . '</td>';
-	        for( $j = $i + 1; $j < count($candidates); ++$j )
-	        {
-	          echo '<td class="odds_value odds_number">' . ($candidates[$j]->disp_order+1) . '</td>';
-	        }
-	        echo '</tr>';
-	        echo '<tr>';
-	        for( $j = $i + 1; $j < count($candidates); ++$j )
-	        {
-	        	$id0 = $candidates[$i]->id;
-	        	$id1 = $candidates[$j]->id;
-	        	if( $id0 > $id1 )
-	        	{
-	        		$tmp = $id0;
-	        		$id0 = $id1;
-	        		$id1 = $tmp;
-	        	}
-	          echo '<td class="odds_value text-center" id="odds_quinella_' . $id0 . '_' . $id1 . '"></td>';
-	        }
-	        echo '</tr>';
-	        echo '<tr><td>' . __("odds.bet_points") . '</td>';
-	        for( $j = $i + 1; $j < count($candidates); ++$j )
-	        {
-	        	$id0 = $candidates[$i]->id;
-	        	$id1 = $candidates[$j]->id;
-	        	if( $id0 > $id1 )
-	        	{
-	        		$tmp = $id0;
-	        		$id0 = $id1;
-	        		$id1 = $tmp;
-	        	}
-	        	$bet_id = 'bet_quinella_' . $id0 . '_' . $id1;
-	          echo '<td class="odds_value text-center" id="">';
-	        	echo '<input id="' . $bet_id . '" name="' . $bet_id . '" type="number" class="form-control" style="width: 90px;" oninput="onModifyBet()" value="0">';
-		        echo '</td>';
-	        }
-	        echo '</tr>';
-	        echo '</table></div><br>';
-	      }
+	      echo '<div id="odds_quinella"></div>';
 	    }
 
 	    if( $game->is_enabled(2) )
 	    {
 	    	echo '<hr>';
 	      echo '<h4>' . __('odds.bet_exacta') . '</h4>';
-	      for( $i = 0; $i < count($candidates); ++$i )
-	      {
-				  echo '<div class="table-responsive">';
-	        echo '<table class="table-bordered" style="table-layout: auto;">';
-	        echo '<tr><td class="odds_value odds_number" rowspan="2">' . ($candidates[$i]->disp_order+1) . '</td>';
-	        for( $j = 0; $j < count($candidates); ++$j )
-	        {
-	          if( $i == $j ) continue;
-	          echo '<td class="odds_value odds_number">' . ($candidates[$j]->disp_order+1) . '</td>';
-	        }
-	        echo '</tr>';
-	        echo '<tr>';
-	        for( $j = 0; $j < count($candidates); ++$j )
-	        {
-	          if( $i == $j ) continue;
-	          echo '<td class="odds_value text-center" id="odds_exacta_' . $candidates[$i]->id . '_' . $candidates[$j]->id . '"></td>';
-	        }
-	        echo '</tr>';
-	        echo '<tr><td>' . __("odds.bet_points") . '</td>';
-	        for( $j = 0; $j < count($candidates); ++$j )
-	        {
-	          if( $i == $j ) continue;
-	        	$bet_id = 'bet_exacta_' . $candidates[$i]->id . '_' . $candidates[$j]->id;
-	          echo '<td class="odds_value text-center" id="">';
-	        	echo '<input id="' . $bet_id . '" name="' . $bet_id . '" type="number" class="form-control" style="width: 90px;" oninput="onModifyBet()" value=0>';
-		        echo '</td>';
-	        }
-	        echo '</tr>';
-	        echo '</table></div><br>';
-	      }
+	      echo '<div id="odds_exacta"></div>';
 	    }
 	    @endphp
 	  </form>
@@ -165,6 +94,7 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
 
 <script src="{{ asset('/js/odds_util.js') }}"></script>
 <script type="text/javascript">
+const TXT_POINTS = '{{ __("odds.bet_points") }}';
 const candidates = <?php echo json_encode($candidates); ?>;
 const odds0 = <?php echo json_encode($odds0); ?>;
 const odds1 = <?php echo json_encode($odds1); ?>;
@@ -191,6 +121,10 @@ const initial_bets = calcTotalBets();
 // Initialize the values of odds, and bets.
 function initOddsBets()
 {
+  // Additional layout
+  layout_quinella("odds_quinella", candidates, true);
+  layout_exacta("odds_exacta", candidates, true);
+
 	// for win
 	candidates.forEach( function(candidate)
 		{

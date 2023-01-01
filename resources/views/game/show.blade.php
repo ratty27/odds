@@ -133,49 +133,13 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
     if( $game->is_enabled(1) )
     {
       echo '<h4>' . __('odds.bet_quinella') . '</h4>';
-      for( $i = 0; $i < count($candidates) - 1; ++$i )
-      {
-        echo '<div class="table-responsive">';
-        echo '<table class="table-bordered" style="table-layout: auto;">';
-        echo '<tr><td class="odds_value odds_number" rowspan="2">' . ($candidates[$i]->disp_order+1) . '</td>';
-        for( $j = $i + 1; $j < count($candidates); ++$j )
-        {
-          echo '<td class="odds_value odds_number">' . ($candidates[$j]->disp_order+1) . '</td>';
-        }
-        echo '</tr>';
-        echo '<tr>';
-        for( $j = $i + 1; $j < count($candidates); ++$j )
-        {
-          echo '<td class="odds_value text-center" id="odds_quinella_' . $candidates[$i]->id . '_' . $candidates[$j]->id . '"></td>';
-        }
-        echo '</tr>';
-        echo '</table></div><br>';
-      }
+      echo '<div id="odds_quinella"></div>';
     }
 
     if( $game->is_enabled(2) )
     {
       echo '<h4>' . __('odds.bet_exacta') . '</h4>';
-      for( $i = 0; $i < count($candidates); ++$i )
-      {
-        echo '<div class="table-responsive">';
-        echo '<table class="table-bordered" style="table-layout: auto;">';
-        echo '<tr><td class="odds_value odds_number" rowspan="2">' . ($candidates[$i]->disp_order+1) . '</td>';
-        for( $j = 0; $j < count($candidates); ++$j )
-        {
-          if( $i == $j ) continue;
-          echo '<td class="odds_value odds_number">' . ($candidates[$j]->disp_order+1) . '</td>';
-        }
-        echo '</tr>';
-        echo '<tr>';
-        for( $j = 0; $j < count($candidates); ++$j )
-        {
-          if( $i == $j ) continue;
-          echo '<td class="odds_value text-center" id="odds_exacta_' . $candidates[$i]->id . '_' . $candidates[$j]->id . '"></td>';
-        }
-        echo '</tr>';
-        echo '</table></div><br>';
-      }
+      echo '<div id="odds_exacta"></div>';
     }
     @endphp
 
@@ -185,6 +149,7 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
 
 <script src="{{ asset('/js/odds_util.js') }}"></script>
 <script type="text/javascript">
+const TXT_POINTS = '{{ __("odds.bet_points") }}';
 var candidates = <?php echo json_encode($candidates); ?>;
 var odds0 = <?php echo json_encode($odds0); ?>;
 var odds1 = <?php echo json_encode($odds1); ?>;
@@ -205,6 +170,10 @@ function searchCadidate(canid)
 
 function initValues()
 {
+  // Additional layout
+  layout_quinella("odds_quinella", candidates, false);
+  layout_exacta("odds_exacta", candidates, false);
+
   // Odds & Favorites
   // win
   for( let i = 0; i < odds0.length; ++i )
