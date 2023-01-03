@@ -141,8 +141,7 @@ function initOddsBets()
 			}
 		}
 	);
-
-  // quinella
+  // for quinella
   @php
   if( $game->is_enabled(1) )
   {
@@ -158,7 +157,7 @@ function initOddsBets()
   @php
   }
   @endphp
-  // exacta
+  // for exacta
   @php
   if( $game->is_enabled(2) )
   {
@@ -199,26 +198,40 @@ function initOddsBets()
 		}
 	);
 	// Collect betting cell name
+	// win
 	candidates.forEach( function(candidate)
 		{
 			input_bet_elements.push('bet_win_' + candidate.id);
 		}
 	);
-	for( let i = 0; i < candidates.length - 1; ++i )
-	{
-		for( let j = i + 1; j < candidates.length; ++j )
+  // quinella
+  @php
+  if( $game->is_enabled(1) )
+  {
+  @endphp
+		for( let i = 0; i < candidates.length - 1; ++i )
 		{
-			let id0 = candidates[i].id;
-			let id1 = candidates[j].id;
-			if( id0 > id1 )
+			for( let j = i + 1; j < candidates.length; ++j )
 			{
-				let tmp = id0;
-				id0 = id1;
-				id1 = tmp;
+				let id0 = candidates[i].id;
+				let id1 = candidates[j].id;
+				if( id0 > id1 )
+				{
+					let tmp = id0;
+					id0 = id1;
+					id1 = tmp;
+				}
+				input_bet_elements.push('bet_quinella_' + id0 + '_' + id1);
 			}
-			input_bet_elements.push('bet_quinella_' + id0 + '_' + id1);
 		}
-	}
+  @php
+  }
+  @endphp
+  // exacta
+  @php
+  if( $game->is_enabled(2) )
+  {
+  @endphp
 	for( let i = 0; i < candidates.length; ++i )
 	{
 		for( let j = 0; j < candidates.length; ++j )
@@ -227,6 +240,9 @@ function initOddsBets()
 			input_bet_elements.push('bet_exacta_' + candidates[i].id + '_' + candidates[j].id);
 		}
 	}
+  @php
+  }
+  @endphp
 }
 window.onload = initOddsBets;
 
@@ -270,6 +286,7 @@ function checkBet()
 	}
 	else
 	{
+		alert('{{ __("odds.user_points_are_missing") }}');
 		return false;
 	}
 }
