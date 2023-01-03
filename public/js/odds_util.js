@@ -12,6 +12,26 @@ function get_disp_odds(val)
 }
 
 /**
+ *	Odds type caption
+ */
+function layout_odds_caption(elemId, name, desc)
+{
+    let layout = '';
+    layout += '<table style="table-layout: fixed; width: 100%;">';
+    layout += '<tr>';
+    layout += '<td class="col-md-7"><h4>' + name + '</h4></td>';
+    layout += '<td class="col-md-3 text-end">' + desc + '</td>';
+    layout += '</tr>';
+    layout += '</table>';
+
+	let	elem = document.getElementById( elemId );
+	if( elem )
+	{
+		elem.innerHTML = layout;
+	}
+}
+
+/**
  *	Make tag for two candidates of quinella
  */
 function make_quinella_tag(prefix, id0, id1)

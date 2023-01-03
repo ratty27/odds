@@ -62,6 +62,9 @@ return [
 	'info_odds' => '※オッズは５分毎に更新されます。',
 	'info_points' => '※ポイントは受付が締め切られるまで何度でも再割り振り可能です。',
 	'info_about' => 'このサイトのソースは <a href="https://github.com/ratty27/odds">GitHub</a> にて公開しています。',
+	'info_win' => '１着を予想します。',
+	'info_quinella' => '着順に関係なく１着、２着を予想します。',
+	'info_exacta' => '１着、２着を着順通りに予想します。',
 
 	'internal_error' => '内部エラー',
 ];

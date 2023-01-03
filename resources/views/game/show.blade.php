@@ -93,7 +93,7 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
     }
     @endphp
 
-    <h4>{{ __('odds.bet_win') }}</h4>
+    <div id="caption_win"></div>
     <table class="table table-striped table-bordered">
       <tr>
         <th class="text-center col-md-1">{{ __('odds.candidate_order') }}</th>
@@ -132,13 +132,13 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
     @php
     if( $game->is_enabled(1) )
     {
-      echo '<h4>' . __('odds.bet_quinella') . '</h4>';
+      echo '<div id="caption_quinella"></div>';
       echo '<div id="odds_quinella"></div>';
     }
 
     if( $game->is_enabled(2) )
     {
-      echo '<h4>' . __('odds.bet_exacta') . '</h4>';
+      echo '<div id="caption_exacta"></div>';
       echo '<div id="odds_exacta"></div>';
     }
     @endphp
@@ -170,6 +170,11 @@ function searchCadidate(canid)
 
 function initValues()
 {
+  // Caption
+  layout_odds_caption( "caption_win", "{{ __('odds.bet_win') }}", "{{ __('odds.info_win') }}" );
+  layout_odds_caption( "caption_quinella", "{{ __('odds.bet_quinella') }}", "{{ __('odds.info_quinella') }}" );
+  layout_odds_caption( "caption_exacta", "{{ __('odds.bet_exacta') }}", "{{ __('odds.info_exacta') }}" );
+
   // Additional layout
   layout_quinella("odds_quinella", candidates, false);
   layout_exacta("odds_exacta", candidates, false);
