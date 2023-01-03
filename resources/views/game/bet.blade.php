@@ -121,14 +121,26 @@ const initial_bets = calcTotalBets();
 // Initialize the values of odds, and bets.
 function initOddsBets()
 {
-  // Caption
+  // Odds layout
   layout_odds_caption( "caption_win", "{{ __('odds.bet_win') }}", "{{ __('odds.info_win') }}" );
-  layout_odds_caption( "caption_quinella", "{{ __('odds.bet_quinella') }}", "{{ __('odds.info_quinella') }}" );
-  layout_odds_caption( "caption_exacta", "{{ __('odds.bet_exacta') }}", "{{ __('odds.info_exacta') }}" );
-
-  // Additional layout
-  layout_quinella("odds_quinella", candidates, true);
-  layout_exacta("odds_exacta", candidates, true);
+  @php
+  if( $game->is_enabled(1) )
+  {
+  @endphp
+    layout_odds_caption( "caption_quinella", "{{ __('odds.bet_quinella') }}", "{{ __('odds.info_quinella') }}" );
+    layout_quinella("odds_quinella", candidates, true);
+  @php
+  }
+  @endphp
+  @php
+  if( $game->is_enabled(2) )
+  {
+  @endphp
+    layout_odds_caption( "caption_exacta", "{{ __('odds.bet_exacta') }}", "{{ __('odds.info_exacta') }}" );
+    layout_exacta("odds_exacta", candidates, true);
+  @php
+  }
+  @endphp
 
 	// for win
 	candidates.forEach( function(candidate)
