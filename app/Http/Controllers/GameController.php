@@ -47,7 +47,16 @@ class GameController extends Controller
 	{
 		if( !$this->is_valid_user() )
 		{
-			return $this->auth_login();
+			if( config('odds.confirm_robot') )
+			{
+				return $this->auth_login();
+			}
+			else
+			{
+				$token = $this->generate_token();
+	            User::register_user($token, config('odds.initial_points'));
+	            Cookie::queue('iden_token', $token, 60*24*365*2);
+			}
 		}
 
 		return view('game/index');

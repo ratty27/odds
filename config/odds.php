@@ -15,4 +15,7 @@ return [
 
 	// Interval of calculate odds, if 'calc_odds_on_request' is true
 	'interval_calc_odds' => '5 min',
+
+	// Confirm robot
+	'confirm_robot' => false,
 ];
