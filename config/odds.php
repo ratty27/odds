@@ -7,6 +7,12 @@ return [
 	// Dummy user's bet points
 	'dummy_points' => 10000,
 
+	// Dummy user's bet points for quinella
+	'dummy_quinella_points' => 3000,
+
+	// Dummy user's bet points for exacta
+	'dummy_exacta_points' => 4000,
+
 	// Display count of past games
 	'past_game_count' => 10,
 

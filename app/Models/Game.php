@@ -94,7 +94,7 @@ class Game extends Model
 			{
 				$num = count($candidates);
 				$num = (($num * $num) - $num) / 2;
-				$dummy = config('odds.dummy_points') / $num;
+				$dummy = config('odds.dummy_quinella_points');
 				$total_bets = intval( Bet::where('game_id', $game_id)->where('type', 1)->sum('points') ) + ($dummy * $num);
 				$results = array();
 				for( $i = 0; $i < count($candidates) - 1; ++$i )
@@ -146,7 +146,7 @@ class Game extends Model
 			{
 				$num = count($candidates);
 				$num = (($num * $num) - $num);
-				$dummy = config('odds.dummy_points') / $num;
+				$dummy = config('odds.dummy_exacta_points');
 				$total_bets = intval( Bet::where('game_id', $game_id)->where('type', 2)->sum('points') ) + ($dummy * $num);
 				$results = array();
 				for( $i = 0; $i < count($candidates); ++$i )
