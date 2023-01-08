@@ -417,7 +417,11 @@ class GameController extends Controller
 				// for win
 				foreach( $candidates as &$candidate )
 				{
-					$request_bets += $request->input('bet_win_' . $candidate->id);
+					$num = $request->input('bet_win_' . $candidate->id);
+					if( is_numeric($num) )
+					{
+						$request_bets += intval($num);
+					}
 				}
 
 				// Check whether request bets over own points
@@ -440,6 +444,10 @@ class GameController extends Controller
 				foreach( $candidates as &$candidate )
 				{
 					$bet_points = $request->input('bet_win_' . $candidate->id);
+					if( !is_numeric($bet_points) )
+					{
+						$bet_points = 0;
+					}
 					if( $beti < count($bets) )
 					{
 						if( $bets[$beti]->candidate_id0 == $candidate->id )
@@ -488,6 +496,10 @@ class GameController extends Controller
 							$id0 = $candidates[$i]->id;
 							$id1 = $candidates[$j]->id;
 							$bet_points = $request->input('bet_quinella_' . $id0 . '_' . $id1);
+							if( !is_numeric($bet_points) )
+							{
+								$bet_points = 0;
+							}
 							if( $beti < count($bets) )
 							{
 								if( $bets[$beti]->candidate_id0 == $id0
@@ -541,6 +553,10 @@ class GameController extends Controller
 							$id0 = $candidates[$i]->id;
 							$id1 = $candidates[$j]->id;
 							$bet_points = $request->input('bet_exacta_' . $id0 . '_' . $id1);
+							if( !is_numeric($bet_points) )
+							{
+								$bet_points = 0;
+							}
 							if( $beti < count($bets) )
 							{
 								if( $bets[$beti]->candidate_id0 == $id0
