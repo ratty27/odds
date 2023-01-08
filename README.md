@@ -55,7 +55,7 @@ config/odds.php
 * dummy_exacta_points ... 馬単にダミーユーザが賭けるポイント
 * past_game_count ... 「過去のレース」に表示されるレース数
 * calc_odds_on_request ... ユーザのリクエストをトリガとしてオッズ更新を行うなら true
-* interval_calc_odds ... オッズ更新間隔 (単位:分) ※calc_odds_on_request=true の時のみ有効
+* interval_calc_odds ... オッズ更新間隔 ※calc_odds_on_request=true の時のみ有効
 * confirm_robot ... 初めてのユーザに「私はロボットではありません」チェックを表示するなら true
 
 ※ダミーユーザは賭け数が少ない場合にもオッズを機能させるための処置で、予め全ての枠に指定のポイントが均一に賭けられているものとしてオッズの計算を行います。
