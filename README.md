@@ -23,6 +23,7 @@ Odds はあくまでも「お遊び」としてレースの着順などを予想
 $ composer install
 ```
 * .env ファイルを編集し、最低限以下を入力
+  * APP_URL=<公開 URL>
   * DB_CONNECTION=mysql
   * DB_HOST=<MySQL のホスト名>
   * DB_PORT=<MySQL のポート番号>
