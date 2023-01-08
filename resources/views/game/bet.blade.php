@@ -264,13 +264,27 @@ function initOddsBets()
 window.onload = initOddsBets;
 
 // Total current bets
-function getTotalBets()
+function getTotalBets(withCheck)
 {
 	let	current_bets = 0;
 	for( let i = 0; i < input_bet_elements.length; ++i )
 	{
 		let elem = document.getElementById(input_bet_elements[i]);
+		if( withCheck )
+		{
+			if( isNaN(elem.value) )
+			{
+				return -1;
+			}
+		}
 		let num = Number(elem.value);
+		if( withCheck )
+		{
+			if( num < 0 )
+			{
+				return -1;
+			}
+		}
 		if( num > 0 )
 		{
 			current_bets += num;
@@ -282,7 +296,7 @@ function getTotalBets()
 // Update current own points 
 function onModifyBet()
 {
-	let	current_bets = getTotalBets();
+	let	current_bets = getTotalBets(false);
 	let current_points = initial_points + initial_bets - current_bets;
 	let elem = document.getElementById("my_points");
 	elem.innerHTML = current_points;
@@ -295,7 +309,13 @@ function onModifyBet()
 // Check whether the input bet is correct
 function checkBet()
 {
-	let	current_bets = getTotalBets();
+	let	current_bets = getTotalBets(true);
+	if( current_bets < 0 )
+	{
+		alert('{{ __("odds.user_invalid_points") }}');
+		return false;
+	}
+
 	let current_points = initial_points + initial_bets - current_bets;
 	if( current_points >= 0 )
 	{
