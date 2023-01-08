@@ -14,8 +14,8 @@ Odds はあくまでも「お遊び」としてレースの着順などを予想
 # インストール
 
 * Web サーバ、PHP 8.1、MySQL を準備
- * MySQL は予めユーザ作成、空のデータベースを作成しておいてください。
- * PHP はコマンドラインから実行できるようパスを通しておいてください。
+  * MySQL は予めユーザ作成、空のデータベースを作成しておいてください。
+  * PHP はコマンドラインから実行できるようパスを通しておいてください。
 * odds ソースを展開 (公開するのは public ディレクトリだけになるよう Web サーバを設定)
 * [composer](https://getcomposer.org/download/) がなければインストール 
 * odds のルートディレクトリで下記を実行
@@ -23,12 +23,12 @@ Odds はあくまでも「お遊び」としてレースの着順などを予想
 $ composer install
 ```
 * .env ファイルを編集し、最低限以下を入力
- * DB_CONNECTION=mysql
- * DB_HOST=<MySQL のホスト名>
- * DB_PORT=<MySQL のポート番号>
- * DB_DATABASE=<MySQL のデータベース名>
- * DB_USERNAME=<MySQL のユーザ名>
- * DB_PASSWORD=<MySQL のパスワード>
+  * DB_CONNECTION=mysql
+  * DB_HOST=<MySQL のホスト名>
+  * DB_PORT=<MySQL のポート番号>
+  * DB_DATABASE=<MySQL のデータベース名>
+  * DB_USERNAME=<MySQL のユーザ名>
+  * DB_PASSWORD=<MySQL のパスワード>
 * APP_KEY を作成
 ```
 $ php artisan key:generate
