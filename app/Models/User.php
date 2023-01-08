@@ -154,4 +154,15 @@ class User extends Model
 			}
 		);
 	}
+
+	/**
+	 *  Cleanup no-bet users
+	 */
+	public static function	CleanupUsers()
+	{
+		$users = User::where('admin', 0)->whereNotIn('id', function($q)
+			{
+				$q->select('user_id')->from('bets');
+			})->delete();
+	}
 }
