@@ -414,7 +414,7 @@ class GameController extends Controller
 
 				// Requested total bets
 				$request_bets = 0;
-				// for win
+				// - for win
 				foreach( $candidates as &$candidate )
 				{
 					$num = $request->input('bet_win_' . $candidate->id);
@@ -423,17 +423,52 @@ class GameController extends Controller
 						$request_bets += intval($num);
 					}
 				}
+				// - for quinella
+				if( $game->is_enabled(1) )
+				{
+					for( $i = 0; $i < count($candidates) - 1; ++$i )
+					{
+						for( $j = $i + 1; $j < count($candidates); ++$j )
+						{
+							$id0 = $candidates[$i]->id;
+							$id1 = $candidates[$j]->id;
+							$num = $request->input('bet_quinella_' . $id0 . '_' . $id1);
+							if( is_numeric($num) )
+							{
+								$request_bets += intval($num);
+							}
+						}
+					}
+				}
+				// - for exacta
+				if( $game->is_enabled(2) )
+				{
+					for( $i = 0; $i < count($candidates); ++$i )
+					{
+						for( $j = 0; $j < count($candidates); ++$j )
+						{
+							if( $i == $j ) continue;
+							$id0 = $candidates[$i]->id;
+							$id1 = $candidates[$j]->id;
+							$num = $request->input('bet_exacta_' . $id0 . '_' . $id1);
+							if( is_numeric($num) )
+							{
+								$request_bets += intval($num);
+							}
+						}
+					}
+				}
 
 				// Check whether request bets over own points
 				$left = $user->get_current_points() + $last_bets - $request_bets;
 				if( $left < 0 )
 				{
-					Log::warning('Invalid bettnig request : user_id=' . $user->id);
+					Log::warning('Invalid bettnig request : user_id=' . $user->id . ' / current=' . ($left + $request_bets) . ' / requested=' . $request_bets);
 					return;
 				}
 
 				// Save betting request
-				// for win
+				// - for win
 				$bets = Bet::where('game_id', $game_id)
 					->where('user_id', $user->id)
 					->where('type', 0)
@@ -478,7 +513,7 @@ class GameController extends Controller
 						$bet->save();
 					}
 				}
-				// for quinella
+				// - for quinella
 				if( $game->is_enabled(1) )
 				{
 					$bets = Bet::where('game_id', $game_id)
@@ -534,7 +569,7 @@ class GameController extends Controller
 						}
 					}
 				}
-				// for exacta
+				// - for exacta
 				if( $game->is_enabled(2) )
 				{
 					$bets = Bet::where('game_id', $game_id)
