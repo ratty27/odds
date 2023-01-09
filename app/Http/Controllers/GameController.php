@@ -383,7 +383,13 @@ class GameController extends Controller
 			return $this->auth_login();
 		}
 
-		return view('game/bet', compact('game_id'));
+		$game = Game::findOrFail($game_id);
+		if( $game->status > 0 )
+		{
+			return redirect('/game/' . $game_id);
+		}
+		$game->update_odds_if_needs();
+		return view('game/bet', compact('game'));
 	}
 
 	/**

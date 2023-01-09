@@ -2,28 +2,25 @@
 // User
 $user_token = Cookie::queued('iden_token') ? Cookie::queued('iden_token')->getValue() : Cookie::get('iden_token');
 $user = App\Models\User::where('personal_id', $user_token)->select('id', 'name', 'points')->first();
-// Game
-$game = App\Models\Game::findOrFail($game_id);
-$game->update_odds_if_needs();
 // Canddates
-$candidates = App\Models\Candidate::where('game_id', $game_id)
+$candidates = App\Models\Candidate::where('game_id', $game->id)
   ->orderBy('disp_order', 'asc')
   ->select('id', 'name', 'disp_order', 'result_rank')
   ->get();
 // Odds for win
-$odds0 = App\Models\Odd::where('game_id', $game_id)->where('type', 0)
+$odds0 = App\Models\Odd::where('game_id', $game->id)->where('type', 0)
   ->select('candidate_id0', 'odds', 'favorite')
   ->get();
 // Odds for quinella
-$odds1 = App\Models\Odd::where('game_id', $game_id)->where('type', 1)
+$odds1 = App\Models\Odd::where('game_id', $game->id)->where('type', 1)
   ->select('candidate_id0', 'candidate_id1', 'odds')
   ->get();
 // Odds for exacta
-$odds2 = App\Models\Odd::where('game_id', $game_id)->where('type', 2)
+$odds2 = App\Models\Odd::where('game_id', $game->id)->where('type', 2)
   ->select('candidate_id0', 'candidate_id1', 'odds')
   ->get();
 // Bets
-$bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
+$bets = App\Models\Bet::where('game_id', $game->id)->where('user_id', $user->id)
 	->select('type', 'candidate_id0', 'candidate_id1', 'candidate_id2', 'points', 'payed')
 	->get();
 
@@ -43,7 +40,7 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
     	<div class="position-fixed top-10 start-0">
 	      <input type="button" class="btn btn-info" onclick="if(checkBet()) submit();" value="{{ __('odds.game_bet_save') }}">
 	    </div>
-      <input type="hidden" name="game_id" value="{{ $game_id }}">
+      <input type="hidden" name="game_id" value="{{ $game->id }}">
       {{ csrf_field() }}
 
       <hr>
