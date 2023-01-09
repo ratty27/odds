@@ -1,6 +1,6 @@
 @php
 $user_token = Cookie::queued('iden_token') ? Cookie::queued('iden_token')->getValue() : Cookie::get('iden_token');
-$user = App\Models\User::where('personal_id', $user_token)->take(1)->get()[0];
+$user = App\Models\User::where('personal_id', $user_token)->first();
 $candidates_name = "";
 if( $game_id === 'new' )
 {

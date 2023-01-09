@@ -1,7 +1,7 @@
 @php
 // User
 $user_token = Cookie::queued('iden_token') ? Cookie::queued('iden_token')->getValue() : Cookie::get('iden_token');
-$user = App\Models\User::where('personal_id', $user_token)->select('id', 'name', 'points')->first();
+$user = App\Models\User::where('personal_id', $user_token)->first();
 // Canddates
 $candidates = App\Models\Candidate::where('game_id', $game->id)
   ->orderBy('disp_order', 'asc')

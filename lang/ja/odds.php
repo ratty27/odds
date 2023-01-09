@@ -52,6 +52,8 @@ return [
 	'bet_tierce' => '３連単',
 	'bet_trio' => '３連複',
 
+	'user_register' => 'ユーザ登録',
+	'user_not_authorize' => '未認証',
 	'user_tickers' => 'あなたの予想',
 	'user_settings' => '設定',
 	'user_reset' => '所持ポイントリセット',

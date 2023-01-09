@@ -23,5 +23,5 @@ return [
 	'interval_calc_odds' => '5 min',
 
 	// Confirm robot
-	'confirm_robot' => false,
+	'confirm_robot' => true,
 ];

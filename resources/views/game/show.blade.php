@@ -3,7 +3,7 @@ use Illuminate\Support\Facades\DB;
 
 // User
 $user_token = Cookie::queued('iden_token') ? Cookie::queued('iden_token')->getValue() : Cookie::get('iden_token');
-$user = App\Models\User::where('personal_id', $user_token)->select('id', 'name', 'points')->first();
+$user = App\Models\User::where('personal_id', $user_token)->first();
 // Game
 $game = App\Models\Game::findOrFail($game_id);
 $game->update_odds_if_needs();

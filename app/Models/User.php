@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\Game;
@@ -13,6 +14,54 @@ use App\Models\Bet;
 class User extends Model
 {
 	use HasFactory;
+
+	/**
+	 *  Check whether cookie has valid token
+	 */
+	public static function is_valid_user()
+	{
+        if( Cookie::has('iden_token') )
+        {
+            $iden_token = Cookie::get('iden_token');
+            if( User::exists_user($iden_token) )
+            {
+            	return true;
+            }
+        }
+        return false;
+	}
+
+    /**
+     *  Generate unique identify token
+     */
+    public static function generate_token()
+    {
+        $token = '';
+        do
+        {
+	        // Todo: Generate w/ secure random, if php8.2 later.
+	        $token = hash('sha256', uniqid(config('app.key')) . date('YmdHis') . random_int(1000000, 9999999));
+	    } while( User::exists_user($token) );
+	    return $token;
+    }
+
+	/**
+	 *	Authorize
+	 */
+	public static function auth_login()
+	{
+		$token = User::generate_token();
+		$login = new Login;
+		$login->token = $token;
+		if( $login->save() )
+		{
+			return view('auth/login', compact('token'));
+		}
+		else
+		{
+			return response(__('odds.internal_error'), 500)->header('Content-Type', 'text/plain');
+		}
+	}
 
 	/**
 	 *  Check whether an ID is exists.

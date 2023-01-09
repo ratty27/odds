@@ -1,6 +1,6 @@
 @php
 $user_token = Cookie::queued('iden_token') ? Cookie::queued('iden_token')->getValue() : Cookie::get('iden_token');
-$user = App\Models\User::where('personal_id', $user_token)->take(1)->get()[0];
+$user = App\Models\User::where('personal_id', $user_token)->first();
 $games = App\Models\Game::where('status', '<', 2)->orderBy('id', 'asc')->select('id', 'name', 'limit', 'status')->get();
 $past_games = App\Models\Game::where('status', 2)->orderBy('id', 'desc')->limit(config('odds.past_game_count'))->select('id', 'name')->get();
 @endphp

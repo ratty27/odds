@@ -1,13 +1,25 @@
 <nav class="navbar fixed-top odds_header">
-	<div class="col-md-9 fst-italic" style="padding-left: 0px"><a href="/">{{ __('odds.title') }}</a></div>
-	<div class="col-md-2">
-		<table>
-			<tr>
-				<td style="color:#fff;">所持ポイント:</td>
-				<td style="color:#fff;" id="my_points">{{ $user->get_current_points() }}</td>
-			</tr>
-		</table>
+	<div class="col-md-7 fst-italic" style="padding-left: 0px"><a href="/">{{ __('odds.title') }}</a></div>
+	<div class="col-md-2 text-end">
+		<a href="/user_info">
+		@php
+		if( $user->authorized )
+		{
+			echo $user->name;
+		}
+		else if( !is_null($user->name) && !is_null($user->email) )
+		{
+			echo $user->name . '(' . __('odds.user_not_authorize') . ')';
+		}
+		else
+		{
+			echo __('odds.user_register');
+		}
+		@endphp
+		</a>
 	</div>
+	<div class="col-md-1 text-end" style="color:#fff;">{{ __('odds.bet_points') }}:</div>
+	<div class="col-md-1 text-start" style="color:#fff;" id="my_points">{{ $user->get_current_points() }}</div>
 	<div class="col-md-1 text-end" style="padding-right: 32px;">
 		<a style='cursor: pointer;' data-bs-toggle='modal' data-bs-target='#UserSettings'><img src='{{ asset("/img/gear-fill.svg") }}'  alt='{{ __("odds.user_settings") }}'></a>
 	</div>

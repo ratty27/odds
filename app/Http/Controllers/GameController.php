@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
-use App\Models\Login;
 use App\Models\User;
 use App\Models\Game;
 use App\Models\Candidate;
@@ -16,44 +15,19 @@ use App\Models\Bet;
 class GameController extends Controller
 {
 	/**
-	 *  Check whether cookie has valid token
-	 */
-	public function is_valid_user()
-	{
-        if( Cookie::has('iden_token') )
-        {
-            $iden_token = Cookie::get('iden_token');
-            if( User::exists_user($iden_token) )
-            {
-            	return true;
-            }
-        }
-        return false;
-	}
-
-    /**
-     *  Generate unique identify token
-     */
-    protected function generate_token()
-    {
-        // Todo: Generate w/ secure random, if php8.2 later.
-        return hash('sha256', uniqid(config('app.key')) . random_int(1000000, 9999999));
-    }
-
-	/**
 	 *  Top page
 	 */
 	public function index()
 	{
-		if( !$this->is_valid_user() )
+		if( !User::is_valid_user() )
 		{
 			if( config('odds.confirm_robot') )
 			{
-				return $this->auth_login();
+				return User::auth_login();
 			}
 			else
 			{
-				$token = $this->generate_token();
+				$token = User::generate_token();
 	            User::register_user($token, config('odds.initial_points'));
 	            Cookie::queue('iden_token', $token, 60*24*365*2);
 			}
@@ -63,46 +37,13 @@ class GameController extends Controller
 	}
 
 	/**
-	 *	Authorize
-	 */
-	public function auth_login()
-	{
-		$token = $this->generate_token();
-		$login = new Login;
-		$login->token = $token;
-		if( $login->save() )
-		{
-			return view('auth/login', compact('token'));
-		}
-		else
-		{
-			return response(__('odds.internal_error'), 500)->header('Content-Type', 'text/plain');
-		}
-	}
-
-	/**
-	 *	Login
-	 */
-	public function login($token)
-	{
-		$login = Login::where('token', $token)->select('id')->get();
-		if( count($login) > 0 )
-		{
-			$login[0]->delete();
-            User::register_user($token, config('odds.initial_points'));
-            Cookie::queue('iden_token', $token, 60*24*365*2);
-		}
-		return redirect('/');
-	}
-
-	/**
 	 *  Edit a game (admin)
 	 */
 	public function edit($game_id)
 	{
-		if( !$this->is_valid_user() )
+		if( !User::is_valid_user() )
 		{
-			return $this->auth_login();
+			return User::auth_login();
 		}
 
 		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
@@ -121,9 +62,9 @@ class GameController extends Controller
 	 */
 	public function update(Request $request)
 	{
-		if( !$this->is_valid_user() )
+		if( !User::is_valid_user() )
 		{
-			return $this->auth_login();
+			return User::auth_login();
 		}
 
 		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
@@ -227,9 +168,9 @@ class GameController extends Controller
 	 */
 	public function delete_game($game_id)
 	{
-		if( !$this->is_valid_user() )
+		if( !User::is_valid_user() )
 		{
-			return $this->auth_login();
+			return User::auth_login();
 		}
 
 		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
@@ -252,9 +193,9 @@ class GameController extends Controller
 	 */
 	public function close($game_id)
 	{
-		if( !$this->is_valid_user() )
+		if( !User::is_valid_user() )
 		{
-			return $this->auth_login();
+			return User::auth_login();
 		}
 
 		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
@@ -279,9 +220,9 @@ class GameController extends Controller
 	 */
 	public function reopen($game_id)
 	{
-		if( !$this->is_valid_user() )
+		if( !User::is_valid_user() )
 		{
-			return $this->auth_login();
+			return User::auth_login();
 		}
 
 		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
@@ -306,9 +247,9 @@ class GameController extends Controller
 	 */
 	public function result($game_id)
 	{
-		if( !$this->is_valid_user() )
+		if( !User::is_valid_user() )
 		{
-			return $this->auth_login();
+			return User::auth_login();
 		}
 
 		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
@@ -327,9 +268,9 @@ class GameController extends Controller
 	 */
 	public function finish(Request $request)
 	{
-		if( !$this->is_valid_user() )
+		if( !User::is_valid_user() )
 		{
-			return $this->auth_login();
+			return User::auth_login();
 		}
 
 		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
@@ -365,9 +306,9 @@ class GameController extends Controller
 	 */
 	public function show($game_id)
 	{
-		if( !$this->is_valid_user() )
+		if( !User::is_valid_user() )
 		{
-			return $this->auth_login();
+			return User::auth_login();
 		}
 
 		return view('game/show', compact('game_id'));
@@ -378,9 +319,9 @@ class GameController extends Controller
 	 */
 	public function bet($game_id)
 	{
-		if( !$this->is_valid_user() )
+		if( !User::is_valid_user() )
 		{
-			return $this->auth_login();
+			return User::auth_login();
 		}
 
 		$game = Game::findOrFail($game_id);
@@ -397,9 +338,9 @@ class GameController extends Controller
 	 */
 	public function save_bet(Request $request)
 	{
-		if( !$this->is_valid_user() )
+		if( !User::is_valid_user() )
 		{
-			return $this->auth_login();
+			return User::auth_login();
 		}
 
 		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
@@ -642,29 +583,6 @@ class GameController extends Controller
 			}
 		);
 		return redirect()->action('App\Http\Controllers\GameController@show', ['game_id' => $game_id]);
-	}
-
-	/**
-	 *  Force reset user points
-	 */
-	public function reset_user()
-	{
-		if( !$this->is_valid_user() )
-		{
-			return $this->auth_login();
-		}
-
-		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
-		DB::transaction(function () use($user)
-			{
-				// Todo: Record to log
-				Bet::where('user_id', $user->id)->where('payed', 0)->delete();
-				$user->points = config('odds.initial_points');
-				$user->update();
-				Log::channel('oddslog')->info('RESET: ', ['id' => $user->id]);
-			}
-		);
-		return redirect('/');
 	}
 
 	/**
