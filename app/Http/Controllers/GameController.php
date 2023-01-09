@@ -424,7 +424,7 @@ class GameController extends Controller
 					}
 				}
 				// - for quinella
-				if( $game->is_enabled(1) )
+				if( $game->is_enabled(Bet::TYPE_QUINELLA) )
 				{
 					for( $i = 0; $i < count($candidates) - 1; ++$i )
 					{
@@ -441,7 +441,7 @@ class GameController extends Controller
 					}
 				}
 				// - for exacta
-				if( $game->is_enabled(2) )
+				if( $game->is_enabled(Bet::TYPE_EXACTA) )
 				{
 					for( $i = 0; $i < count($candidates); ++$i )
 					{
@@ -471,7 +471,7 @@ class GameController extends Controller
 				// - for win
 				$bets = Bet::where('game_id', $game_id)
 					->where('user_id', $user->id)
-					->where('type', 0)
+					->where('type', Bet::TYPE_WIN)
 					->where('payed', 0)
 					->orderBy('candidate_id0', 'asc')
 					->select('id', 'points', 'candidate_id0')->get();
@@ -504,7 +504,7 @@ class GameController extends Controller
 					if( $bet_points > 0 )
 					{
 						$bet = new Bet;
-						$bet->type = 0;
+						$bet->type = Bet::TYPE_WIN;
 						$bet->game_id = $game_id;
 						$bet->user_id = $user->id;
 						$bet->candidate_id0 = $candidate->id;
@@ -514,11 +514,11 @@ class GameController extends Controller
 					}
 				}
 				// - for quinella
-				if( $game->is_enabled(1) )
+				if( $game->is_enabled(Bet::TYPE_QUINELLA) )
 				{
 					$bets = Bet::where('game_id', $game_id)
 						->where('user_id', $user->id)
-						->where('type', 1)
+						->where('type', Bet::TYPE_QUINELLA)
 						->where('payed', 0)
 						->orderBy('candidate_id0', 'asc')
 						->orderBy('candidate_id1', 'asc')
@@ -557,7 +557,7 @@ class GameController extends Controller
 							if( $bet_points > 0 )
 							{
 								$bet = new Bet;
-								$bet->type = 1;
+								$bet->type = Bet::TYPE_QUINELLA;
 								$bet->game_id = $game_id;
 								$bet->user_id = $user->id;
 								$bet->candidate_id0 = $id0;
@@ -570,11 +570,11 @@ class GameController extends Controller
 					}
 				}
 				// - for exacta
-				if( $game->is_enabled(2) )
+				if( $game->is_enabled(Bet::TYPE_EXACTA) )
 				{
 					$bets = Bet::where('game_id', $game_id)
 						->where('user_id', $user->id)
-						->where('type', 2)
+						->where('type', Bet::TYPE_EXACTA)
 						->where('payed', 0)
 						->orderBy('candidate_id0', 'asc')
 						->orderBy('candidate_id1', 'asc')
@@ -614,7 +614,7 @@ class GameController extends Controller
 							if( $bet_points > 0 )
 							{
 								$bet = new Bet;
-								$bet->type = 2;
+								$bet->type = Bet::TYPE_EXACTA;
 								$bet->game_id = $game_id;
 								$bet->user_id = $user->id;
 								$bet->candidate_id0 = $id0;

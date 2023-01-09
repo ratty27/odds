@@ -60,6 +60,7 @@ class Game extends Model
 			}
 			usort( $results, [Game::class, "compare_odds"] );
 			// Write result w/ calculation of ranking of favorite
+			// for win
 			$rank = 0;
 			$last = 0.0;
 			for( $i = 0; $i < count($results); ++$i )
@@ -71,7 +72,7 @@ class Game extends Model
 					++$rank;
 				}
 
-				$odds = Odd::where('type', 0)->where('candidate_id0', $result['id'])->select('id')->get();
+				$odds = Odd::where('type', Bet::TYPE_WIN)->where('candidate_id0', $result['id'])->select('id')->get();
 				if( count($odds) > 0 )
 				{
 					$odds[0]->odds = $result['odds'];
@@ -82,7 +83,7 @@ class Game extends Model
 				{
 					$odd = new Odd;
 					$odd->game_id = $game_id;
-					$odd->type = 0;
+					$odd->type = Bet::TYPE_WIN;
 					$odd->candidate_id0 = $result['id'];
 					$odd->odds = $result['odds'];
 					$odd->favorite = $rank;
@@ -90,7 +91,7 @@ class Game extends Model
 				}
 			}
 			// for quinella
-			if( $this->is_enabled(1) )
+			if( $this->is_enabled(Bet::TYPE_QUINELLA) )
 			{
 				$num = count($candidates);
 				$num = (($num * $num) - $num) / 2;
@@ -120,7 +121,7 @@ class Game extends Model
 				for( $i = 0; $i < count($results); ++$i )
 				{
 					$result = $results[$i];
-					$odds = Odd::where('type', 1)
+					$odds = Odd::where('type', Bet::TYPE_QUINELLA)
 						->where('candidate_id0', $result['id0'])
 						->where('candidate_id1', $result['id1'])
 						->select('id')->get();
@@ -133,7 +134,7 @@ class Game extends Model
 					{
 						$odd = new Odd;
 						$odd->game_id = $game_id;
-						$odd->type = 1;
+						$odd->type = Bet::TYPE_QUINELLA;
 						$odd->candidate_id0 = $result['id0'];
 						$odd->candidate_id1 = $result['id1'];
 						$odd->odds = $result['odds'];
@@ -142,7 +143,7 @@ class Game extends Model
 				}
 			}
 			// for exacta
-			if( $this->is_enabled(2) )
+			if( $this->is_enabled(Bet::TYPE_EXACTA) )
 			{
 				$num = count($candidates);
 				$num = (($num * $num) - $num);
@@ -172,7 +173,7 @@ class Game extends Model
 				for( $i = 0; $i < count($results); ++$i )
 				{
 					$result = $results[$i];
-					$odds = Odd::where('type', 2)
+					$odds = Odd::where('type', Bet::TYPE_EXACTA)
 						->where('candidate_id0', $result['id0'])
 						->where('candidate_id1', $result['id1'])
 						->select('id')->get();
@@ -185,7 +186,7 @@ class Game extends Model
 					{
 						$odd = new Odd;
 						$odd->game_id = $game_id;
-						$odd->type = 2;
+						$odd->type = Bet::TYPE_EXACTA;
 						$odd->candidate_id0 = $result['id0'];
 						$odd->candidate_id1 = $result['id1'];
 						$odd->odds = $result['odds'];

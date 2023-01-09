@@ -75,11 +75,11 @@ class User extends Model
 						->leftJoin('candidates as can2', 'can2.id', '=', 'bets.candidate_id2')->get();
 					//Log::info('Result: ' . json_encode($bets));
 
-					$odds0 = Odd::where('game_id', $finished->gid)->where('type', 0)
+					$odds0 = Odd::where('game_id', $finished->gid)->where('type', Bet::TYPE_WIN)
 						->select('candidate_id0', 'odds')->get();
-					$odds1 = Odd::where('game_id', $finished->gid)->where('type', 1)
+					$odds1 = Odd::where('game_id', $finished->gid)->where('type', Bet::TYPE_QUINELLA)
 						->select('candidate_id0', 'candidate_id1', 'odds')->get();
-					$odds2 = Odd::where('game_id', $finished->gid)->where('type', 2)
+					$odds2 = Odd::where('game_id', $finished->gid)->where('type', Bet::TYPE_EXACTA)
 						->select('candidate_id0', 'candidate_id1', 'odds')->get();
 
 					foreach( $bets as $bet )
