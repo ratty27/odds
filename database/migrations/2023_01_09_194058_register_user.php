@@ -16,7 +16,8 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->string('email')->nullable()->after('personal_id')->index();
             $table->string('token')->nullable()->after('email');
-            $table->boolean('authorized')->default(0)->after('token');
+            $table->string('temp')->nullable()->after('token');
+            $table->boolean('authorized')->default(0)->after('temp');
         });
     }
 
@@ -29,6 +30,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('authorized');
+            $table->dropColumn('temp');
             $table->dropColumn('token');
             $table->dropColumn('email');
         });

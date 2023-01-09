@@ -1,7 +1,7 @@
 <nav class="navbar fixed-top odds_header">
 	<div class="col-md-7 fst-italic" style="padding-left: 0px"><a href="/">{{ __('odds.title') }}</a></div>
 	<div class="col-md-2 text-end">
-		<a href="/user_info">
+		<a href="{{ asset('/user_info') }}">
 		@php
 		if( $user->authorized )
 		{

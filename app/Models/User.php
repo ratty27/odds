@@ -40,10 +40,19 @@ class User extends Model
         do
         {
 	        // Todo: Generate w/ secure random, if php8.2 later.
-	        $token = hash('sha256', uniqid(config('app.key')) . date('YmdHis') . random_int(1000000, 9999999));
+	        $token = hash('sha256', uniqid(config('app.key')) . random_int(1000000, 9999999));
 	    } while( User::exists_user($token) );
 	    return $token;
     }
+
+	/**
+	 *  Make hash
+	 */
+	public static function make_hash($src)
+	{
+		$salt = config('app.key');
+		return hash('sha256', $src . $salt);
+	}
 
 	/**
 	 *	Authorize

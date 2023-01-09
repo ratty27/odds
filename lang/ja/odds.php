@@ -54,6 +54,10 @@ return [
 
 	'user_register' => 'ユーザ登録',
 	'user_not_authorize' => '未認証',
+	'user_nickname' => 'ニックネーム(任意)',
+	'user_email' => 'メール',
+	'user_password' => 'パスワード',
+	'user_password2' => 'パスワード(確認用)',
 	'user_tickers' => 'あなたの予想',
 	'user_settings' => '設定',
 	'user_reset' => '所持ポイントリセット',
@@ -68,6 +72,16 @@ return [
 	'info_win' => '１着を予想します。',
 	'info_quinella' => '着順に関係なく１着、２着を予想します。',
 	'info_exacta' => '１着、２着を着順通りに予想します。',
+	'info_user_register' => '通常はユーザ登録の必要はありませんが、Cookie の消失による所持ポイントのリセットを避けたいという場合には、ユーザ登録しておくことでポイントの復旧が可能です。',
+	'info_incorrect_password' => 'パスワードに間違いがあります。',
+	'info_password_length' => 'パスワードは8〜16文字にする必要があります。',
+	'info_incorrect_email' => 'メールアドレスが正しくありません。',
+	'info_confirm_email' => '確認メールを送信しました。<br>メールをご確認いただき、認証を完了してください。',
 
+	'email_authorize' => 'Odds - メール認証',
+	'email_confirm' => 'メール確認',
+	'email_confirm_message' => 'こちらのリンクからメール認証を完了してください。',
+
+	'back_to_top' => 'トップへ戻る',
 	'internal_error' => '内部エラー',
 ];
