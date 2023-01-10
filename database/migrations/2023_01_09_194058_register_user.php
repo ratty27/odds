@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->string('email')->nullable()->after('personal_id')->index();
             $table->string('token')->nullable()->after('email');
-            $table->string('temp')->nullable()->after('token');
+            $table->string('temp')->nullable()->after('token')->index();
             $table->boolean('authorized')->default(0)->after('temp');
         });
     }

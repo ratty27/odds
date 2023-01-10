@@ -53,7 +53,9 @@ return [
 	'bet_trio' => '３連複',
 
 	'user_register' => 'ユーザ登録',
+	'user_update' => 'ユーザ情報更新',
 	'user_not_authorize' => '未認証',
+	'user_noname' => 'ユーザ',
 	'user_nickname' => 'ニックネーム(任意)',
 	'user_email' => 'メール',
 	'user_password' => 'パスワード',
@@ -81,6 +83,8 @@ return [
 	'email_authorize' => 'Odds - メール認証',
 	'email_confirm' => 'メール確認',
 	'email_confirm_message' => 'こちらのリンクからメール認証を完了してください。',
+	'email_confirm_success' => 'メール認証に成功しました。',
+	'email_confirm_fail' => 'メール認証に失敗しました。',
 
 	'back_to_top' => 'トップへ戻る',
 	'internal_error' => '内部エラー',

@@ -5,7 +5,14 @@
 		@php
 		if( $user->authorized )
 		{
-			echo $user->name;
+			if( $user->name != '' )
+			{
+				echo $user->name;
+			}
+			else
+			{
+				echo __("odds.user_noname");
+			}
 		}
 		else if( !is_null($user->name) && !is_null($user->email) )
 		{

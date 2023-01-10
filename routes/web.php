@@ -39,6 +39,8 @@ Route::post('/bet', 'App\Http\Controllers\GameController@save_bet');
 Route::get('/reset_user', 'App\Http\Controllers\UserController@reset_user');
 Route::get('/user_info', 'App\Http\Controllers\UserController@user_info');
 Route::post('/register_user', 'App\Http\Controllers\UserController@register_user');
+Route::post('/update_user', 'App\Http\Controllers\UserController@update_user');
+Route::get('/authorize_email', 'App\Http\Controllers\UserController@authorize_email');
 
 // misc
 Route::get('/error/{errcode}', 'App\Http\Controllers\GameController@error');

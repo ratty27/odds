@@ -30,13 +30,27 @@ $user = App\Models\User::where('personal_id', $user_token)->first();
     <br>
     <div class="col-md-8 shadow rounded" style="padding: 16px;">
         @php
-        if( $user->authorized )
+        if( $user->authorized
+         || (!is_null($user->name) && !is_null($user->email)) )
         {
-          echo $user->name;
-        }
-        else if( !is_null($user->name) && !is_null($user->email) )
-        {
-          echo $user->name . '(' . __('odds.user_not_authorize') . ')';
+          echo "<form action='/update_user' method='POST'>";
+          echo "<div class='mb-3 text-start'>";
+          echo "<label for='nickname' class='form-label'>" . __("odds.user_nickname") . "</label>";
+          echo "<input type='text' class='form-control' id='nickname' name='info_name' value='" . $user->name . "'>";
+          echo "</div>";
+          echo "<div class='mb-3 text-start'>";
+          echo "<label for='email' class='form-label'>" . __("odds.user_email") . "</label>";
+          echo "<input type='email' class='form-control' id='email' name='info_email' value='" . $user->email . "'>";
+          if( !$user->authorized )
+          {
+            echo "(" . __('odds.user_not_authorize') . ")";
+          }
+          echo "</div>";
+          echo "<div class='text-start'>";
+          echo "<input type='button' class='btn btn-info' onclick='if(is_valid_infos()) submit();' value='" . __("odds.user_update") . "'>";
+          echo "</div>";
+          echo csrf_field();
+          echo "</form>";
         }
         else
         {
@@ -58,7 +72,7 @@ $user = App\Models\User::where('personal_id', $user_token)->first();
           echo "<input type='password' class='form-control' id='confirm'>";
           echo "</div>";
           echo "<div class='text-start'>";
-          echo "<input type='button' class='btn btn-info' onclick='if(is_valid_password()) submit();' value='" . __("odds.user_register") . "'>";
+          echo "<input type='button' class='btn btn-info' onclick='if(is_valid_registration()) submit();' value='" . __("odds.user_register") . "'>";
           echo "</div>";
           echo csrf_field();
           echo "</form>";
@@ -74,7 +88,7 @@ $user = App\Models\User::where('personal_id', $user_token)->first();
 /**
  *  Check whether the password is valid.
  */
-function is_valid_password()
+function is_valid_registration()
 {
     let elem0 = document.getElementById('password');
     let elem1 = document.getElementById('confirm');
@@ -99,4 +113,20 @@ function is_valid_password()
 
     return true;
 }
+
+/**
+ * 
+ */
+function is_valid_infos()
+{
+    let elem2 = document.getElementById('email');
+    if( !elem2.value.match(/.+@.+\..+/) )
+    {
+        alert('{{ __("odds.info_incorrect_email") }}'); 
+        return false;
+    }
+
+    return true;
+}
+
 </script>
