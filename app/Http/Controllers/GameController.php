@@ -27,9 +27,12 @@ class GameController extends Controller
 			}
 			else
 			{
-				$token = User::generate_token();
-	            User::register_user($token, config('odds.initial_points'));
-	            Cookie::queue('iden_token', $token, 60*24*365*2);
+				DB::transaction(function ()
+					{
+						$token = User::generate_token();
+						User::register_user($token, config('odds.initial_points'));
+						Cookie::queue('iden_token', $token, 60*24*365*2);
+					} );
 			}
 		}
 

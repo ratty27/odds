@@ -41,6 +41,10 @@ Route::get('/user_info', 'App\Http\Controllers\UserController@user_info');
 Route::post('/register_user', 'App\Http\Controllers\UserController@register_user');
 Route::post('/update_user', 'App\Http\Controllers\UserController@update_user');
 Route::get('/authorize_email', 'App\Http\Controllers\UserController@authorize_email');
+Route::get('/change_password', 'App\Http\Controllers\UserController@change_password');
+Route::post('/change_password', 'App\Http\Controllers\UserController@update_password');
+Route::get('/user_signin', 'App\Http\Controllers\UserController@user_signin');
+Route::post('/user_signin', 'App\Http\Controllers\UserController@signin');
 
 // misc
 Route::get('/error/{errcode}', 'App\Http\Controllers\GameController@error');

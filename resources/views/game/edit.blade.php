@@ -51,7 +51,7 @@ if( $user->admin )
   <div class="container">
     @include('parts.header')
     <h1>レース編集</h1>
-    <form action="/update" method="POST">
+    <form action="{{ asset('/update') }}" method="POST">
       <div class="form-group">
         <label>{{ __('odds.game_name') }}</label>
         <input name="game_name" type="text" class="form-control" value="{{ $game->name }}">

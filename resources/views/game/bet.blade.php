@@ -36,7 +36,7 @@ $bets = App\Models\Bet::where('game_id', $game->id)->where('user_id', $user->id)
 </head>
 <div class="container">
   @include('parts.header')
-    <form action="/bet" method="POST">
+    <form action="{{ asset('/bet') }}" method="POST">
     	<div class="position-fixed top-10 start-0">
 	      <input type="button" class="btn btn-info" onclick="if(checkBet()) submit();" value="{{ __('odds.game_bet_save') }}">
 	    </div>

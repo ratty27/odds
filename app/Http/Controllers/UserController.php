@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Mail;
 use App\Models\Login;
 use App\Models\User;
 use App\Models\Bet;
-use App\Mail\AuthorizeMail;
 
 class UserController extends Controller
 {
@@ -19,13 +18,16 @@ class UserController extends Controller
 	 */
 	public function login($token)
 	{
-		$login = Login::where('token', $token)->select('id')->get();
-		if( count($login) > 0 )
-		{
-			$login[0]->delete();
-			User::register_user($token, config('odds.initial_points'));
-			Cookie::queue('iden_token', $token, 60*24*365*2);
-		}
+		DB::transaction(function () use($token)
+			{
+				$login = Login::where('token', $token)->select('id')->get();
+				if( count($login) > 0 )
+				{
+					$login[0]->delete();
+					User::register_user($token, config('odds.initial_points'));
+					Cookie::queue('iden_token', $token, 60*24*365*2);
+				}
+			} );
 		return redirect('/');
 	}
 
@@ -86,12 +88,16 @@ class UserController extends Controller
 					$user->name = '';
 				}
 				$user->email = $request->input('info_email');
+				if( User::where('email', $user->email)->where('authorized', 3)->exists() )
+				{
+					$message = __('odds.user_email_exists');
+					return;
+				}
 				$user->token = User::make_hash( $request->input('info_pass') );
 				$user->temp = hash('sha256', uniqid(config('app.key')) . random_int(1000000, 9999999) . 'temp');
-				$user->authorized = 0;
+				$user->authorized = 1;
 				if( $user->save() )
 				{
-					Mail::to($user->email)->send(new AuthorizeMail($user->personal_id, $user->temp));
 					$message = __("odds.info_confirm_email");
 				}
 				else
@@ -119,31 +125,40 @@ class UserController extends Controller
 		$message = '';
 		DB::transaction(function () use($request, $user, &$message)
 			{
-				$user->name = $request->input('info_name');
+				$user->name = trim( $request->input('info_name') );
 				if( is_null($user->name) )
 				{
 					$user->name = '';
 				}
 
 				// Update email address
-				$email = $request->input('info_email');
-				if( $user->email != $email )
+				$email = trim( $request->input('info_email') );
+				if( $user->email !== $email )
 				{
+					if( User::where('email', $user->email)->where('authorized', 3)->exists() )
+					{
+						$message = __('odds.user_email_exists');
+						return;
+					}
 					$user->email = $email;
 					$user->authorized = 0;
 				}
 				// Generate a temporary token, if email isn't authorized.
 				if( $user->authorized == 0 )
 				{
-					$user->temp = hash('sha256', uniqid(config('app.key')) . random_int(1000000, 9999999) . 'temp');
+					$user->temp = $user->make_temp_token();
+					$user->authorized = 1;		// Ready to send an authorize mail
 				}
 
 				if( $user->update() )
 				{
-					if( $user->authorized == 0 )
+					if( $user->authorized == 1 )
 					{
-						Mail::to($user->email)->send(new AuthorizeMail($user->personal_id, $user->temp));
 						$message = __("odds.info_confirm_email");
+					}
+					else
+					{
+						$message = __("odds.user_info_updated");
 					}
 				}
 				else
@@ -163,20 +178,132 @@ class UserController extends Controller
 	{
 		$message = __('odds.email_confirm_fail');
 
-		$temp = $request->input('t');
-		$user = User::where('temp', $temp)->first();
-		if( !is_null($user) )
-		{
-			$user->temp = null;
-			$user->authorized = 1;
-			if( $user->update() )
+		$success = false;
+		DB::transaction(function () use($request, &$success, &$message)
 			{
-				Cookie::queue('iden_token', $user->personal_id, 60*24*365*2);
-				$message = __('odds.email_confirm_success');
-				return view('auth/user_info', compact('message'));
+				$temp = $request->input('t');
+				$user = User::where('temp', $temp)->first();
+				if( !is_null($user) )
+				{
+					if( $user->authorized == 2 )
+					{
+						if( User::where('email', $user->email)->where('authorized', 3)->exists() )
+						{
+							$message = __('odds.user_email_exists');
+							return;
+						}
+
+						$user->temp = null;
+						$user->authorized = 3;
+						if( $user->update() )
+						{
+							Cookie::queue('iden_token', $user->personal_id, 60*24*365*2);
+							$message = __('odds.email_confirm_success');
+							$success = true;
+						}
+					}
+				}
+			} );
+
+		if( $success )
+		{
+			return view('auth/user_info', compact('message'));
+		}
+		return response($message, 500)->header('Content-Type', 'text/plain');
+	}
+
+	/**
+	 *	Show change password page
+	 */
+	public function	change_password()
+	{
+		if( !User::is_valid_user() )
+		{
+			return redirect('/');
+		}
+
+		$user = User::get_current_user();
+		return view('auth/change_password', compact('user'));
+	}
+
+	/**
+	 *	Update password
+	 */
+	public function update_password(Request $request)
+	{
+		if( !User::is_valid_user() )
+		{
+			return redirect('/');
+		}
+
+		$user = User::get_current_user();
+
+		$message = '';
+		DB::transaction(function () use($request, $user, &$message)
+			{
+				$token = User::make_hash( $request->input('info_pass') );
+				if( $user->token === $token )
+				{
+					$user->token = User::make_hash( $request->input('info_new_pass') );
+					if( $user->update() )
+					{
+						$message = __('odds.user_password_updated');
+					}
+					else
+					{
+						$message = __('odds.internal_error');
+					}
+				}
+				else
+				{
+					$message = __('odds.user_incorrent_password');
+				}
+			} );
+		return view('auth/user_info', compact('message'));
+	}
+
+	/**
+	 *	Show signin page
+	 */
+	public function user_signin()
+	{
+		$message = '';
+		return view('auth/signin', compact('message'));
+	}
+
+	/**
+	 *	Signin
+	 */
+	public function signin(Request $request)
+	{
+		$user = User::get_current_user();
+
+		$email = trim( $request->input('info_email') );
+		$exists_user = User::where('email', $email)->first();
+		if( !is_null($exists_user) )
+		{
+			if( $exists_user->authorized == 3 )
+			{
+				$pass = User::make_hash( $request->input('info_pass') );
+				if( $exists_user->token === $pass )
+				{
+					Cookie::queue('iden_token', $exists_user->personal_id, 60*24*365*2);
+					if( !is_null($user) )
+					{
+						if( $user->id != $exists_user->id
+						 && $user->authorized < 3 )
+						{
+							Bet::where('user_id', $user->id)->delete();
+							Game::where('user_id', $user->id)->delete();
+							$user->delete();
+						}
+					}
+					return redirect('/');
+				}
 			}
 		}
 
-		return response($message, 500)->header('Content-Type', 'text/plain');
+		$message = __("odds.user_incorrent_emailpassword");
+		return view('auth/signin', compact('message'));
 	}
 }

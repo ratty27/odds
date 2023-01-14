@@ -30,10 +30,10 @@ $user = App\Models\User::where('personal_id', $user_token)->first();
     <br>
     <div class="col-md-8 shadow rounded" style="padding: 16px;">
         @php
-        if( $user->authorized
+        if( $user->authorized > 0
          || (!is_null($user->name) && !is_null($user->email)) )
         {
-          echo "<form action='/update_user' method='POST'>";
+          echo "<form action='" . asset("/update_user") . "' method='POST'>";
           echo "<div class='mb-3 text-start'>";
           echo "<label for='nickname' class='form-label'>" . __("odds.user_nickname") . "</label>";
           echo "<input type='text' class='form-control' id='nickname' name='info_name' value='" . $user->name . "'>";
@@ -46,15 +46,23 @@ $user = App\Models\User::where('personal_id', $user_token)->first();
             echo "(" . __('odds.user_not_authorize') . ")";
           }
           echo "</div>";
+          echo "<div style='display: flex; justify-content: space-between;'>";
           echo "<div class='text-start'>";
           echo "<input type='button' class='btn btn-info' onclick='if(is_valid_infos()) submit();' value='" . __("odds.user_update") . "'>";
+          echo "</div>";
+          echo "<div class=''>";
+          echo "<input type='button' class='btn btn-info' onclick='change_password();' value='" . __("odds.user_change_password") . "'>";
+          echo "</div>";
+          echo "<div class='text-end'>";
+          echo "<input type='button' class='btn btn-danger' onclick='delete_user();' value='" . __("odds.user_delete") . "'>";
+          echo "</div>";
           echo "</div>";
           echo csrf_field();
           echo "</form>";
         }
         else
         {
-          echo "<form action='/register_user' method='POST'>";
+          echo "<form action='" . asset("/register_user") ."' method='POST'>";
           echo "<div class='mb-3 text-start'>";
           echo "<label for='nickname' class='form-label'>" . __("odds.user_nickname") . "</label>";
           echo "<input type='text' class='form-control' id='nickname' name='info_name'>";
@@ -68,11 +76,17 @@ $user = App\Models\User::where('personal_id', $user_token)->first();
           echo "<input type='password' class='form-control' id='password' name='info_pass'>";
           echo "</div>";
           echo "<div class='mb-3 text-start'>";
-          echo "<label for='confirm' class='form-label'>" . __("odds.user_password2") . "</label>";
+          echo "<label for='confirm' class='form-label'>" . __("odds.user_password") . __("odds.user_password_confirm") . "</label>";
           echo "<input type='password' class='form-control' id='confirm'>";
           echo "</div>";
+
+          echo "<div style='display: flex; justify-content: space-between;'>";
           echo "<div class='text-start'>";
           echo "<input type='button' class='btn btn-info' onclick='if(is_valid_registration()) submit();' value='" . __("odds.user_register") . "'>";
+          echo "</div>";
+          echo "<div class='text-end'>";
+          echo "<input type='button' class='btn btn-info' onclick='signin();' value='" . __("odds.user_signin") . "'>";
+          echo "</div>";
           echo "</div>";
           echo csrf_field();
           echo "</form>";
@@ -115,7 +129,7 @@ function is_valid_registration()
 }
 
 /**
- * 
+ * Check whether the form has valid inputs.
  */
 function is_valid_infos()
 {
@@ -127,6 +141,33 @@ function is_valid_infos()
     }
 
     return true;
+}
+
+/**
+ * Go to change password
+ */
+function change_password()
+{
+  location.href = '{{ asset("/change_password") }}';
+}
+
+/**
+ *  Delete user
+ */
+function delete_user()
+{
+  if( confirm('{{ __("odds.user_confirm_delete") }}') )
+  {
+
+  }
+}
+
+/**
+ *  Signin
+ */
+function signin()
+{
+  location.href = '{{ asset("/user_signin") }}';
 }
 
 </script>

@@ -55,6 +55,18 @@ class User extends Model
 	}
 
 	/**
+	 *	Make temporary token
+	 */
+	public function make_temp_token()
+	{
+		$token = '';
+		do {
+			$token = hash('sha256', uniqid($this->personal_id, true) . mt_rand());
+		} while( User::where('temp', $token)->exists() );
+		return $token;
+	}
+
+	/**
 	 *	Authorize
 	 */
 	public static function auth_login()
@@ -77,8 +89,7 @@ class User extends Model
 	 */
 	public static function exists_user($iden)
 	{
-		$record = User::where('personal_id', $iden)->take(1)->get();
-		return count($record) > 0;
+		return User::where('personal_id', $iden)->exists();
 	}
 
 	/**
@@ -92,6 +103,15 @@ class User extends Model
 		$new_user->points = $points;
 		$new_user->admin = 0;
 		return $new_user->save();
+	}
+
+	/**
+	 *	Get current user
+	 */
+	public static function get_current_user()
+	{
+		$user_token = Cookie::queued('iden_token') ? Cookie::queued('iden_token')->getValue() : Cookie::get('iden_token');
+		return User::where('personal_id', $user_token)->first();
 	}
 
 	/**
