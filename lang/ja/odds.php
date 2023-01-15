@@ -57,7 +57,7 @@ return [
 	'user_not_authorize' => '未認証',
 	'user_noname' => 'ユーザ',
 	'user_signin' => '既存のユーザでサインイン',
-	'user_delete' => 'ユーザ削除',
+	'user_delete' => 'ユーザ情報削除',
 	'user_nickname' => 'ニックネーム(任意)',
 	'user_email' => 'メール',
 	'user_email_exists' => '指定のメールアドレスは登録済みです。',
