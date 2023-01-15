@@ -41,7 +41,7 @@ $user = App\Models\User::where('personal_id', $user_token)->first();
           echo "<div class='mb-3 text-start'>";
           echo "<label for='email' class='form-label'>" . __("odds.user_email") . "</label>";
           echo "<input type='email' class='form-control' id='email' name='info_email' value='" . $user->email . "'>";
-          if( !$user->authorized )
+          if( $user->authorized < 3 )
           {
             echo "(" . __('odds.user_not_authorize') . ")";
           }
