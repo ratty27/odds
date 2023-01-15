@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Models\Login;
 use App\Models\User;
 use App\Models\Bet;
+use App\Mail\ResetPasswordMail;
 
 class UserController extends Controller
 {
@@ -93,12 +94,20 @@ class UserController extends Controller
 					$message = __('odds.user_email_exists');
 					return;
 				}
-				$user->token = User::make_hash( $request->input('info_pass') );
-				$user->temp = hash('sha256', uniqid(config('app.key')) . random_int(1000000, 9999999) . 'temp');
-				$user->authorized = 1;
-				if( $user->save() )
+				$pass = $request->input('info_pass');
+				if( strlen($pass) >= 8 )
 				{
-					$message = __("odds.info_confirm_email");
+					$user->token = User::make_hash( $pass );
+					$user->temp = hash('sha256', uniqid(config('app.key')) . random_int(1000000, 9999999) . 'temp');
+					$user->authorized = 1;
+					if( $user->save() )
+					{
+						$message = __("odds.info_confirm_email");
+					}
+					else
+					{
+						$message = __("odds.internal_error");
+					}
 				}
 				else
 				{
@@ -244,10 +253,18 @@ class UserController extends Controller
 				$token = User::make_hash( $request->input('info_pass') );
 				if( $user->token === $token )
 				{
-					$user->token = User::make_hash( $request->input('info_new_pass') );
-					if( $user->update() )
+					$pass = $request->input('info_new_pass');
+					if( strlen($pass) >= 8 )
 					{
-						$message = __('odds.user_password_updated');
+						$user->token = User::make_hash( $pass );
+						if( $user->update() )
+						{
+							$message = __('odds.user_password_updated');
+						}
+						else
+						{
+							$message = __('odds.internal_error');
+						}
 					}
 					else
 					{
@@ -279,31 +296,124 @@ class UserController extends Controller
 		$user = User::get_current_user();
 
 		$email = trim( $request->input('info_email') );
-		$exists_user = User::where('email', $email)->first();
+		$exists_user = User::where('email', $email)->where('authorized', 3)->first();
 		if( !is_null($exists_user) )
 		{
-			if( $exists_user->authorized == 3 )
+			$pass = User::make_hash( $request->input('info_pass') );
+			if( $exists_user->token === $pass )
 			{
-				$pass = User::make_hash( $request->input('info_pass') );
-				if( $exists_user->token === $pass )
+				Cookie::queue('iden_token', $exists_user->personal_id, 60*24*365*2);
+				if( !is_null($user) )
 				{
-					Cookie::queue('iden_token', $exists_user->personal_id, 60*24*365*2);
-					if( !is_null($user) )
+					if( $user->id != $exists_user->id
+					 && $user->authorized < 3 )
 					{
-						if( $user->id != $exists_user->id
-						 && $user->authorized < 3 )
-						{
-							Bet::where('user_id', $user->id)->delete();
-							Game::where('user_id', $user->id)->delete();
-							$user->delete();
-						}
+						Bet::where('user_id', $user->id)->delete();
+						Game::where('user_id', $user->id)->delete();
+						$user->delete();
 					}
-					return redirect('/');
 				}
+				return redirect('/');
 			}
 		}
 
 		$message = __("odds.user_incorrent_emailpassword");
 		return view('auth/signin', compact('message'));
+	}
+
+	/**
+	 *	Show forget password page
+	 */
+	public function reset_password()
+	{
+		$message = '';
+		return view('auth/reset_password', compact('message'));
+	}
+
+	/**
+	 *	Send an email for reset password
+	 */
+	public function send_reset_password(Request $request)
+	{
+		$message = '';
+		DB::transaction(function () use($request, &$message)
+			{
+				$email = trim( $request->input('info_email') );
+				$exists_user = User::where('email', $email)->where('authorized', 3)->first();
+				if( !is_null($exists_user) )
+				{
+					$exists_user->temp = $exists_user->make_temp_token();
+					$exists_user->temp_limit = date('Y/m/d H:i:s');
+					if( $exists_user->update() )
+					{
+						Mail::to($exists_user->email)->send(new ResetPasswordMail($exists_user->temp));
+						$message = __("odds.email_sent");
+					}
+					else
+					{
+						$message = __("odds.internal_error");
+					}
+				}
+				else
+				{
+					$message = __("odds.email_incorrect");
+				}
+			} );
+		return view('auth/reset_password', compact('message'));
+	}
+
+	/**
+	 *	Request to reset password by email
+	 */
+	public function reset_password_email(Request $request)
+	{
+		$temp = $request->input('t');
+		$user = User::where('temp', $temp)->where('authorized', 3)->first();
+		if( !is_null($user) )
+		{
+			$limit = strtotime($user->temp_limit) + (60 * 60);	// 1 hour
+			$now = time();
+			if( $now < $limit )
+			{
+				$message = '';
+				return view('auth/input_password', compact('user', 'message'));
+			}
+		}
+		return redirect('/');
+	}
+
+	/**
+	 *	Input new password to reset
+	 */
+	public function input_password(Request $request)
+	{
+		$message = '';
+
+		$temp = $request->input('token');
+		$user = User::where('temp', $temp)->where('authorized', 3)->first();
+		if( !is_null($user) )
+		{
+			$pass = $request->input('info_pass');
+			if( strlen($pass) >= 8 )
+			{
+				$user->token = User::make_hash( $pass );
+				$user->temp = null;
+				if( $user->update() )
+				{
+					Cookie::queue('iden_token', $user->personal_id, 60*24*365*2);
+					$message = __("odds.user_password_updated");
+					return view('auth/user_info', compact('message'));
+				}
+				else
+				{
+					$message = __("odds.internal_error");
+				}
+			}
+			else
+			{
+				$message = __("odds.internal_error");
+			}
+		}
+		return response($message, 500)->header('Content-Type', 'text/plain');
 	}
 }

@@ -18,22 +18,14 @@
   <center>
     <div class="col-md-8 text-start">{{ $message }}</div>
     <div class="col-md-8 text-start shadow rounded" style="padding: 16px;">
-      <form action='{{ asset("/user_signin") }}' method='POST'>
+      <form action='{{ asset("/user_reset_password") }}' method='POST'>
+        <div class='text-center'>{{ __("odds.user_reset_password") }}</div>
         <div class='mb-3 text-start'>
           <label for='email' class='form-label'>{{ __("odds.user_email") }}</label>
           <input type='email' class='form-control' id='email' name='info_email'>
         </div>
-        <div class='mb-3 text-start'>
-          <label for='password' class='form-label'>{{ __("odds.user_password_current") }}</label>
-          <input type='password' class='form-control' id='password' name='info_pass'>
-        </div>
-        <div style='display: flex; justify-content: space-between;'>
-          <div class='text-start'>
-            <input type='button' class='btn btn-info' onclick='submit();' value='{{ __("odds.user_signin") }}'>
-          </div>
-          <div class='text-end'>
-            <input type='button' class='btn btn-info' onclick='forget_password();' value='{{ __("odds.user_forget_password") }}'>
-          </div>
+        <div class='text-start'>
+          <input type='button' class='btn btn-info' onclick='submit();' value='{{ __("odds.user_send_mail") }}'>
         </div>
         {{ csrf_field() }}
       </form>
@@ -42,12 +34,3 @@
     <a href='{{ asset("/") }}'>{{ __("odds.back_to_top") }}</a>
   </center>
 </div>
-
-<script type="text/javascript">
-
-function forget_password()
-{
-  location.href = '{{ asset("/user_reset_password") }}';
-}
-
-</script>
