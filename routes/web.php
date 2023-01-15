@@ -49,6 +49,7 @@ Route::get('/user_reset_password', 'App\Http\Controllers\UserController@reset_pa
 Route::post('/user_reset_password', 'App\Http\Controllers\UserController@send_reset_password');
 Route::get('/reset_password_email', 'App\Http\Controllers\UserController@reset_password_email');
 Route::post('/input_password', 'App\Http\Controllers\UserController@input_password');
+Route::get('/delete_user_info', 'App\Http\Controllers\UserController@delete_user_info');
 
 // misc
 Route::get('/error/{errcode}', 'App\Http\Controllers\GameController@error');

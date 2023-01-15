@@ -416,4 +416,21 @@ class UserController extends Controller
 		}
 		return response($message, 500)->header('Content-Type', 'text/plain');
 	}
+
+	/**
+	 *	Delete user registration info
+	 */
+	public function delete_user_info()
+	{
+		$user = User::get_current_user();
+		if( !is_null($user) )
+		{
+			$user->email = null;
+			$user->token = null;
+			$user->temp = null;
+			$user->authorized = 0;
+			$user->update();
+		}
+		return redirect('/');
+	}
 }

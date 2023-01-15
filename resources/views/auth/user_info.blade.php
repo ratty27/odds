@@ -158,7 +158,7 @@ function delete_user()
 {
   if( confirm('{{ __("odds.user_confirm_delete") }}') )
   {
-
+    location.href = '{{ asset("/delete_user_info") }}';
   }
 }
 
