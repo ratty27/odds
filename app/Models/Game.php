@@ -15,6 +15,10 @@ class Game extends Model
 {
 	use HasFactory;
 
+    const POLICY_IS_PRIVATE      = 0;
+    const POLICY_APPLYING_PUBLIC = 1;
+    const POLICY_PUBLIC          = 2;
+
 	/**
 	 *  Compare 'odds' element for sorting
 	 */

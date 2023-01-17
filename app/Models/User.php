@@ -243,4 +243,12 @@ class User extends Model
 				$q->select('user_id')->from('bets');
 			})->delete();
 	}
+
+	/**
+	 *	Check whether the user has the right of edit game
+	 */
+	public function CanEditGame()
+	{
+		return $this->admin || $this->authorized == 3;
+	}
 }

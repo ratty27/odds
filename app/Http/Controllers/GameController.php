@@ -40,7 +40,7 @@ class GameController extends Controller
 	}
 
 	/**
-	 *  Edit a game (admin)
+	 *  Edit a game
 	 */
 	public function edit($game_id)
 	{
@@ -50,7 +50,7 @@ class GameController extends Controller
 		}
 
 		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
-		if( $user->admin )
+		if( $user->CanEditGame() )
 		{
 			return view('game/edit', compact('game_id'));
 		}
@@ -61,7 +61,7 @@ class GameController extends Controller
 	}
 
 	/**
-	 *  Update a game (admin)
+	 *  Update a game
 	 */
 	public function update(Request $request)
 	{
@@ -71,7 +71,7 @@ class GameController extends Controller
 		}
 
 		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
-		if( $user->admin )
+		if( $user->CanEditGame() )
 		{
 			DB::transaction(function () use($request, $user)
 				{
@@ -84,6 +84,10 @@ class GameController extends Controller
 					else
 					{
 						$game = Game::find($game_id);
+						if( $game->user_id != $user->id )
+						{
+							return;
+						}
 					}
 					$game->name = $request->input('game_name');
 					$game->limit = $request->input('game_limit');
@@ -104,6 +108,19 @@ class GameController extends Controller
 						{
 							$index = intval( $enabled_index );
 							$game->enabled |= 1 << $index;
+						}
+					}
+
+					$pubset = intval( $request->input('game_pubsetting') );
+					if( $pubset == 0 )
+					{	// private
+						$game->is_public = 0;
+					}
+					else
+					{	// public
+						if( $game->is_public == 0 )
+						{	// Apply to public
+							$game->is_public = 1;
 						}
 					}
 
@@ -167,7 +184,7 @@ class GameController extends Controller
 	}
 
 	/**
-	 *  Delete a game (admin)
+	 *  Delete a game
 	 */
 	public function delete_game($game_id)
 	{
@@ -177,14 +194,21 @@ class GameController extends Controller
 		}
 
 		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
-		if( $user->admin )
+		if( $user->CanEditGame() )
 		{
-			DB::transaction(function () use($game_id)
+			DB::transaction(function () use($game_id, $user)
 				{
-					Bet::where('game_id', $game_id)->delete();
-					Odd::where('game_id', $game_id)->delete();
-					Candidate::where('game_id', $game_id)->delete();
-					Game::where('id', $game_id)->delete();
+					$game = Game::find($game_id);
+					if( !is_null($game) )
+					{
+						if( $game->user_id == $user->id )
+						{
+							Bet::where('game_id', $game_id)->delete();
+							Odd::where('game_id', $game_id)->delete();
+							Candidate::where('game_id', $game_id)->delete();
+							$game->delete();
+						}
+					}
 				}
 			);
 		}
@@ -192,7 +216,7 @@ class GameController extends Controller
 	}
 
 	/**
-	 *  Close a game (admin)
+	 *  Close a game
 	 */
 	public function close($game_id)
 	{
@@ -202,15 +226,18 @@ class GameController extends Controller
 		}
 
 		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
-		if( $user->admin )
+		if( $user->CanEditGame() )
 		{
-			DB::transaction(function () use($game_id)
+			DB::transaction(function () use($game_id, $user)
 				{
 					$game = Game::find($game_id);
-					if( $game->status == 0 )
+					if( $game->user_id == $user->id )
 					{
-						$game->status = 1;
-						$game->update_odds();
+						if( $game->status == 0 )
+						{
+							$game->status = 1;
+							$game->update_odds();
+						}
 					}
 				}
 			);
@@ -219,7 +246,7 @@ class GameController extends Controller
 	}
 
 	/**
-	 *  Re-open a game (admin)
+	 *  Re-open a game
 	 */
 	public function reopen($game_id)
 	{
@@ -229,15 +256,18 @@ class GameController extends Controller
 		}
 
 		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
-		if( $user->admin )
+		if( $user->CanEditGame() )
 		{
-			DB::transaction(function () use($game_id)
+			DB::transaction(function () use($game_id, $user)
 				{
 					$game = Game::find($game_id);
-					if( $game->status == 1 )
+					if( $game->user_id == $user->id )
 					{
-						$game->status = 0;
-						$game->update();
+						if( $game->status == 1 )
+						{
+							$game->status = 0;
+							$game->update();
+						}
 					}
 				}
 			);
@@ -246,7 +276,7 @@ class GameController extends Controller
 	}
 
 	/**
-	 *  Input result of a game (admin)
+	 *  Input result of a game
 	 */
 	public function result($game_id)
 	{
@@ -256,18 +286,19 @@ class GameController extends Controller
 		}
 
 		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
-		if( $user->admin )
+		if( $user->CanEditGame() )
 		{
-			return view('game/result', compact('game_id'));
+			$game = Game::find($game_id);
+			if( $game->user_id == $user->id )
+			{
+				return view('game/result', compact('game_id'));
+			}
 		}
-		else
-		{
-			return redirect('/');
-		}
+		return redirect('/');
 	}
 
 	/**
-	 *  Finish a game (admin)
+	 *  Finish a game
 	 */
 	public function finish(Request $request)
 	{
@@ -277,28 +308,29 @@ class GameController extends Controller
 		}
 
 		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
-		if( $user->admin )
+		if( $user->CanEditGame() )
 		{
 			DB::transaction(function () use($request, $user)
 				{
 					$game_id = $request->input('game_id');
 					$game = Game::find($game_id);
-
-					$candidates = Candidate::where('game_id', $game_id)->select('id')->get();
-					foreach( $candidates as $candidate )
+					if( $game->user_id == $user->id )
 					{
-						$ranking = intval( $request->input('ranking_' . $candidate->id) );
-						if( $ranking <= 0 )
-						{	// Invalid ranking value
-							throw new Exception(__('internal_error'));
+						$candidates = Candidate::where('game_id', $game_id)->select('id')->get();
+						foreach( $candidates as $candidate )
+						{
+							$ranking = intval( $request->input('ranking_' . $candidate->id) );
+							if( $ranking <= 0 )
+							{	// Invalid ranking value
+								throw new Exception(__('internal_error'));
+							}
+							$candidate->result_rank = $ranking;
+							$candidate->save();
 						}
-						$candidate->result_rank = $ranking;
-						$candidate->save();
-					}
 
-					$game->status = 2;
-					$game->update_odds();
-					$success = true;
+						$game->status = 2;
+						$game->update_odds();
+					}
 				});
 		}
 		return redirect('/');
@@ -594,5 +626,56 @@ class GameController extends Controller
 	public function error($errcode)
 	{
 		return response(__($errcode), 500)->header('Content-Type', 'text/plain');
+	}
+
+	/**
+	 *	Show user's applications (admin)
+	 */
+	public function applications()
+	{
+		$user = User::get_current_user();
+		if( !is_null($user) )
+		{
+			if( $user->admin )
+			{
+				return view('game/user_app', compact('user'));
+			}
+		}
+
+		return redirect('/');
+	}
+
+	/**
+	 *	Approve/Reject a game to public (admin)
+	 */
+	public function admin_pubgame(Request $request)
+	{
+		$game_id = $request->input('game_id');
+		$pub = $request->input('pub');
+
+		Log::info("Game:" . $game_id . " / pub:" . $pub);
+
+		$result = 'fail';
+		DB::transaction(function () use($game_id, $pub, &$result)
+			{
+				$game = Game::find($game_id);
+				if( !is_null($game) )
+				{
+					if( $pub == 1 )
+					{
+						$game->is_public = 3;
+						$game->update();
+						$result = 'success';
+					}
+					else if( $pub == 0 )
+					{
+						$game->is_public = 2;
+						$game->update();
+						$result = 'success';
+					}
+				}
+			} );
+
+		return response()->json(['result' => $result]);
 	}
 }

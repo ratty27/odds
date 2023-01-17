@@ -68,7 +68,7 @@ $past_games = App\Models\Game::where('status', 2)->orderBy('id', 'desc')->limit(
     if( $user->admin )
     {
       echo "<tr>";
-      echo "<td><a href='/edit/new' class='btn btn-info'>" . __('odds.admin_add') ."</a></td>";
+      echo "<td colspan='4'><a href='/edit/new' class='btn btn-info'>" . __('odds.game_register') ."</a></td>";
       echo "</tr>";
     }
     @endphp

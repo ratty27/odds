@@ -20,23 +20,21 @@ Route::get('/', function () {
 */
 
 // Top
-Route::get('/', 'App\Http\Controllers\GameController@index');
+//Route::get('/', 'App\Http\Controllers\GameController@index');
+Route::get('/', 'App\Http\Controllers\PortalController@index');
 
 // Admin
-Route::get('/edit/{game_id}', 'App\Http\Controllers\GameController@edit');
-Route::post('/update', 'App\Http\Controllers\GameController@update');
-Route::get('/delete/{game_id}', 'App\Http\Controllers\GameController@delete_game');
-Route::get('/close/{game_id}', 'App\Http\Controllers\GameController@close');
-Route::get('/reopen/{game_id}', 'App\Http\Controllers\GameController@reopen');
-Route::get('/result/{game_id}', 'App\Http\Controllers\GameController@result');
-Route::post('/finish', 'App\Http\Controllers\GameController@finish');
+Route::get('/admin_app', 'App\Http\Controllers\GameController@applications');
+Route::post('/admin_pubgame', 'App\Http\Controllers\GameController@admin_pubgame');
 
-// User's
+// User
+// - standard
 Route::get('/login/{token}', 'App\Http\Controllers\UserController@login');
 Route::get('/game/{game_id}', 'App\Http\Controllers\GameController@show');
 Route::get('/bet/{game_id}', 'App\Http\Controllers\GameController@bet');
 Route::post('/bet', 'App\Http\Controllers\GameController@save_bet');
 Route::get('/reset_user', 'App\Http\Controllers\UserController@reset_user');
+// - authorization
 Route::get('/user_info', 'App\Http\Controllers\UserController@user_info');
 Route::post('/register_user', 'App\Http\Controllers\UserController@register_user');
 Route::post('/update_user', 'App\Http\Controllers\UserController@update_user');
@@ -50,6 +48,14 @@ Route::post('/user_reset_password', 'App\Http\Controllers\UserController@send_re
 Route::get('/reset_password_email', 'App\Http\Controllers\UserController@reset_password_email');
 Route::post('/input_password', 'App\Http\Controllers\UserController@input_password');
 Route::get('/delete_user_info', 'App\Http\Controllers\UserController@delete_user_info');
+// - management game
+Route::get('/edit/{game_id}', 'App\Http\Controllers\GameController@edit');
+Route::post('/update', 'App\Http\Controllers\GameController@update');
+Route::get('/delete/{game_id}', 'App\Http\Controllers\GameController@delete_game');
+Route::get('/close/{game_id}', 'App\Http\Controllers\GameController@close');
+Route::get('/reopen/{game_id}', 'App\Http\Controllers\GameController@reopen');
+Route::get('/result/{game_id}', 'App\Http\Controllers\GameController@result');
+Route::post('/finish', 'App\Http\Controllers\GameController@finish');
 
 // misc
 Route::get('/error/{errcode}', 'App\Http\Controllers\GameController@error');

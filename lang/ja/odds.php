@@ -18,6 +18,9 @@ return [
 	'admin_confirm_finish' => "レースの結果を確定してよろしいですか？\\nこの操作はやり直しできません。",
 	'admin_confirm_delete' => "このレースに関数すべてのデータを削除します。\\nよろしいですか？",
 	'admin_error_input' => "入力に間違いがあります。",
+	'admin_apply_public' => "公開申請",
+	'admin_approve' => '許可',
+	'admin_reject' => '却下',
 
 	'dialog_title_confirm' => '確認',
 	'dialog_yes' => 'はい',
@@ -36,6 +39,11 @@ return [
 	'game_bet_save' => '<<< 予想を保存',
 	'game_list' => '<<< レース一覧',
 	'game_info_closed' => '予想受付は終了しました',
+	'game_register' => '新しいレースを登録',
+	'game_public_setting' => '公開設定',
+	'game_private' => '非公開',
+	'game_public' => '公開',
+	'game_odds_type' => 'オッズ種別',
 
 	'candidate_order' => '番号',
 	'candidate_name' => '出走者',
