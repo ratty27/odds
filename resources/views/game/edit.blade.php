@@ -130,14 +130,14 @@ if( $user->CanEditGame() )
 // Cancel clicked
 function onCancel()
 {
-  location.href = "/";
+  location.href = '{{ url("/mygames") }}';
 }
 
 function onDelete()
 {
   if( confirm('{{ __("odds.admin_confirm_delete") }}') )
   {
-    location.href = "/delete/{{ $game_id }}";
+    location.href = '{{ url("/delete/$game_id") }}';
   }
 }
 

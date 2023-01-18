@@ -12,9 +12,19 @@
   <!-- Info -->
   <center><div class="col-md-6 text-start text-danger odds_tips">{!! __('odds.info_top') !!}</div></center>
 
-  <!-- New Race -->
-  <div class="col-md-10 text-end">
-    <a href="{{ url('/edit/new') }}" class="btn btn-success">{{ __('odds.game_register') }}</a>
+  <div style="width: 100%;">
+    @php
+    if( $user->CanEditGame() )
+    {
+    @endphp
+    <div class="position-fixed top-10 end-0">
+      <div style="float: right;"><a href="/mygames" class="btn btn-info">{{ __('odds.user_mygames') }}</a></div>
+    </div>
+    @php
+    }
+    @endphp
   </div>
+  <div style="clear: left;"></div>
 
+  @include('parts.footer')
 </div>

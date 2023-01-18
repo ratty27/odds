@@ -30,6 +30,8 @@ Route::post('/admin_pubgame', 'App\Http\Controllers\GameController@admin_pubgame
 // User
 // - standard
 Route::get('/login/{token}', 'App\Http\Controllers\UserController@login');
+Route::get('/mygames', 'App\Http\Controllers\GameController@index');
+Route::get('/usergames/{user_id}', 'App\Http\Controllers\GameController@usergames');
 Route::get('/game/{game_id}', 'App\Http\Controllers\GameController@show');
 Route::get('/bet/{game_id}', 'App\Http\Controllers\GameController@bet');
 Route::post('/bet', 'App\Http\Controllers\GameController@save_bet');

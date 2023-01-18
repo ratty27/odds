@@ -19,24 +19,30 @@ class GameController extends Controller
 	 */
 	public function index()
 	{
-		if( !User::is_valid_user() )
+		$user = User::get_current_user();
+		if( !is_null($user) )
 		{
-			if( config('odds.confirm_robot') )
+			if( $user->CanEditGame() )
 			{
-				return User::auth_login();
-			}
-			else
-			{
-				DB::transaction(function ()
-					{
-						$token = User::generate_token();
-						User::register_user($token, config('odds.initial_points'));
-						Cookie::queue('iden_token', $token, 60*24*365*2);
-					} );
+				$game_user = $user->id;
+				return view('game/index', compact('user', 'game_user'));
 			}
 		}
+		return redirect('/');
+	}
 
-		return view('game/index');
+	/**
+	 *	User game list
+	 */
+	public function usergames($user_id)
+	{
+		$user = User::get_current_user();
+		if( !is_null($user) )
+		{
+			$game_user = $user_id;
+			return view('game/index', compact('user', 'game_user'));
+		}
+		return redirect('/');
 	}
 
 	/**
@@ -44,20 +50,15 @@ class GameController extends Controller
 	 */
 	public function edit($game_id)
 	{
-		if( !User::is_valid_user() )
+		$user = User::get_current_user();
+		if( !is_null($user) )
 		{
-			return User::auth_login();
+			if( $user->CanEditGame() )
+			{
+				return view('game/edit', compact('game_id'));
+			}
 		}
-
-		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
-		if( $user->CanEditGame() )
-		{
-			return view('game/edit', compact('game_id'));
-		}
-		else
-		{
-			return redirect('/');
-		}
+		return redirect('/');
 	}
 
 	/**
@@ -65,122 +66,120 @@ class GameController extends Controller
 	 */
 	public function update(Request $request)
 	{
-		if( !User::is_valid_user() )
+		$user = User::get_current_user();
+		if( !is_null($user) )
 		{
-			return User::auth_login();
-		}
-
-		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
-		if( $user->CanEditGame() )
-		{
-			DB::transaction(function () use($request, $user)
-				{
-					$game_id = $request->input('game_id');
-					// Update a game info.
-					if( $game_id === 'new' )
+			if( $user->CanEditGame() )
+			{
+				DB::transaction(function () use($request, $user)
 					{
-						$game = new Game;
-					}
-					else
-					{
-						$game = Game::find($game_id);
-						if( $game->user_id != $user->id )
+						$game_id = $request->input('game_id');
+						// Update a game info.
+						if( $game_id === 'new' )
 						{
-							return;
+							$game = new Game;
 						}
-					}
-					$game->name = $request->input('game_name');
-					$game->limit = $request->input('game_limit');
-					$game->comment = $request->input('game_comment');
-					if( $game->comment == null )
-					{
-						$game->comment = '';
-					}
-					$game->user_id = $user->id;
-					$game->next_update = date("Y/m/d H:i:s");
-					$game->exclusion_update = 0;
-
-					$game->enabled = 1;	// 'win' is awlways enabled
-					$enabled = $request->input('enabled');
-					if( $enabled != null )
-					{
-						foreach( $enabled as $enabled_index )
+						else
 						{
-							$index = intval( $enabled_index );
-							$game->enabled |= 1 << $index;
-						}
-					}
-
-					$pubset = intval( $request->input('game_pubsetting') );
-					if( $pubset == 0 )
-					{	// private
-						$game->is_public = 0;
-					}
-					else
-					{	// public
-						if( $game->is_public == 0 )
-						{	// Apply to public
-							$game->is_public = 1;
-						}
-					}
-
-					//Log::info('Update game: ' . $request->input('game_name'));
-					if( $game->save() )
-					{   // Update cadidates
-						$candidate_names = explode("\n", $request->input('game_candidate'));
-						$candidate_names = array_map('trim', $candidate_names);
-
-						$candidate_updated = array();
-
-						// Update existing records
-						$candidates = Candidate::where('game_id', $game->id)
-							->select('id', 'name', 'disp_order')
-							->get();
-						foreach( $candidates as &$candidate )
-						{
-							$index = array_search($candidate->name, $candidate_names);
-							if( $index === false )
+							$game = Game::find($game_id);
+							if( $game->user_id != $user->id )
 							{
-								Odd::where('candidate_id0', $candidate->id)
-								 ->orWhere('candidate_id1', $candidate->id)
-								 ->orWhere('candidate_id2', $candidate->id)
-								 ->delete();
-								Bet::where('candidate_id0', $candidate->id)
-								 ->orWhere('candidate_id1', $candidate->id)
-								 ->orWhere('candidate_id2', $candidate->id)
-								 ->delete();
-								$candidate->delete();
+								return;
 							}
-							else
+						}
+						$game->name = $request->input('game_name');
+						$game->limit = $request->input('game_limit');
+						$game->comment = $request->input('game_comment');
+						if( $game->comment == null )
+						{
+							$game->comment = '';
+						}
+						$game->user_id = $user->id;
+						$game->next_update = date("Y/m/d H:i:s");
+						$game->exclusion_update = 0;
+
+						$game->enabled = 1;	// 'win' is awlways enabled
+						$enabled = $request->input('enabled');
+						if( $enabled != null )
+						{
+							foreach( $enabled as $enabled_index )
 							{
-								if( $candidate->disp_order != $index )
+								$index = intval( $enabled_index );
+								$game->enabled |= 1 << $index;
+							}
+						}
+
+						$pubset = intval( $request->input('game_pubsetting') );
+						if( $pubset == 0 )
+						{	// private
+							$game->is_public = 0;
+						}
+						else
+						{	// public
+							if( $game->is_public == 0 )
+							{	// Apply to public
+								$game->is_public = 1;
+							}
+						}
+
+						//Log::info('Update game: ' . $request->input('game_name'));
+						if( $game->save() )
+						{   // Update cadidates
+							$candidate_names = explode("\n", $request->input('game_candidate'));
+							$candidate_names = array_map('trim', $candidate_names);
+
+							$candidate_updated = array();
+
+							// Update existing records
+							$candidates = Candidate::where('game_id', $game->id)
+								->select('id', 'name', 'disp_order')
+								->get();
+							foreach( $candidates as &$candidate )
+							{
+								$index = array_search($candidate->name, $candidate_names);
+								if( $index === false )
 								{
-									$candidate->disp_order = $index;
-									$candidate->update();
+									Odd::where('candidate_id0', $candidate->id)
+									 ->orWhere('candidate_id1', $candidate->id)
+									 ->orWhere('candidate_id2', $candidate->id)
+									 ->delete();
+									Bet::where('candidate_id0', $candidate->id)
+									 ->orWhere('candidate_id1', $candidate->id)
+									 ->orWhere('candidate_id2', $candidate->id)
+									 ->delete();
+									$candidate->delete();
 								}
-								array_push($candidate_updated, $candidate->name);
+								else
+								{
+									if( $candidate->disp_order != $index )
+									{
+										$candidate->disp_order = $index;
+										$candidate->update();
+									}
+									array_push($candidate_updated, $candidate->name);
+								}
 							}
-						}
 
-						// Add new records
-						for($index = 0; $index < count($candidate_names); ++$index)
-						{
-							if( !in_array($candidate_names[$index], $candidate_updated) )
+							// Add new records
+							for($index = 0; $index < count($candidate_names); ++$index)
 							{
-								$candidate = new Candidate;
-								$candidate->name = $candidate_names[$index];
-								$candidate->game_id = $game->id;
-								$candidate->disp_order = $index;
-								$candidate->save();
+								if( !in_array($candidate_names[$index], $candidate_updated) )
+								{
+									$candidate = new Candidate;
+									$candidate->name = $candidate_names[$index];
+									$candidate->game_id = $game->id;
+									$candidate->disp_order = $index;
+									$candidate->save();
+								}
 							}
-						}
 
-						$game->update_odds();
+							$game->update_odds();
+						}
 					}
-				}
-			);
+				);
+			}
 		}
-		return redirect('/');
+		return redirect('/mygames');
 	}
 
 	/**
@@ -188,31 +187,29 @@ class GameController extends Controller
 	 */
 	public function delete_game($game_id)
 	{
-		if( !User::is_valid_user() )
+		$user = User::get_current_user();
+		if( !is_null($user) )
 		{
-			return User::auth_login();
-		}
-
-		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
-		if( $user->CanEditGame() )
-		{
-			DB::transaction(function () use($game_id, $user)
-				{
-					$game = Game::find($game_id);
-					if( !is_null($game) )
+			if( $user->CanEditGame() )
+			{
+				DB::transaction(function () use($game_id, $user)
 					{
-						if( $game->user_id == $user->id )
+						$game = Game::find($game_id);
+						if( !is_null($game) )
 						{
-							Bet::where('game_id', $game_id)->delete();
-							Odd::where('game_id', $game_id)->delete();
-							Candidate::where('game_id', $game_id)->delete();
-							$game->delete();
+							if( $game->user_id == $user->id )
+							{
+								Bet::where('game_id', $game_id)->delete();
+								Odd::where('game_id', $game_id)->delete();
+								Candidate::where('game_id', $game_id)->delete();
+								$game->delete();
+							}
 						}
 					}
-				}
-			);
+				);
+			}
 		}
-		return redirect('/');
+		return redirect('/mygames');
 	}
 
 	/**
@@ -220,29 +217,27 @@ class GameController extends Controller
 	 */
 	public function close($game_id)
 	{
-		if( !User::is_valid_user() )
+		$user = User::get_current_user();
+		if( !is_null($user) )
 		{
-			return User::auth_login();
-		}
-
-		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
-		if( $user->CanEditGame() )
-		{
-			DB::transaction(function () use($game_id, $user)
-				{
-					$game = Game::find($game_id);
-					if( $game->user_id == $user->id )
+			if( $user->CanEditGame() )
+			{
+				DB::transaction(function () use($game_id, $user)
 					{
-						if( $game->status == 0 )
+						$game = Game::find($game_id);
+						if( $game->user_id == $user->id )
 						{
-							$game->status = 1;
-							$game->update_odds();
+							if( $game->status == 0 )
+							{
+								$game->status = 1;
+								$game->update_odds();
+							}
 						}
 					}
-				}
-			);
+				);
+			}
 		}
-		return redirect('/');
+		return redirect('/mygames');
 	}
 
 	/**
@@ -250,29 +245,27 @@ class GameController extends Controller
 	 */
 	public function reopen($game_id)
 	{
-		if( !User::is_valid_user() )
+		$user = User::get_current_user();
+		if( !is_null($user) )
 		{
-			return User::auth_login();
-		}
-
-		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
-		if( $user->CanEditGame() )
-		{
-			DB::transaction(function () use($game_id, $user)
-				{
-					$game = Game::find($game_id);
-					if( $game->user_id == $user->id )
+			if( $user->CanEditGame() )
+			{
+				DB::transaction(function () use($game_id, $user)
 					{
-						if( $game->status == 1 )
+						$game = Game::find($game_id);
+						if( $game->user_id == $user->id )
 						{
-							$game->status = 0;
-							$game->update();
+							if( $game->status == 1 )
+							{
+								$game->status = 0;
+								$game->update();
+							}
 						}
 					}
-				}
-			);
+				);
+			}
 		}
-		return redirect('/');
+		return redirect('/mygames');
 	}
 
 	/**
@@ -280,21 +273,19 @@ class GameController extends Controller
 	 */
 	public function result($game_id)
 	{
-		if( !User::is_valid_user() )
+		$user = User::get_current_user();
+		if( !is_null($user) )
 		{
-			return User::auth_login();
-		}
-
-		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
-		if( $user->CanEditGame() )
-		{
-			$game = Game::find($game_id);
-			if( $game->user_id == $user->id )
+			if( $user->CanEditGame() )
 			{
-				return view('game/result', compact('game_id'));
+				$game = Game::find($game_id);
+				if( $game->user_id == $user->id )
+				{
+					return view('game/result', compact('game_id'));
+				}
 			}
 		}
-		return redirect('/');
+		return redirect('/mygames');
 	}
 
 	/**
@@ -302,38 +293,36 @@ class GameController extends Controller
 	 */
 	public function finish(Request $request)
 	{
-		if( !User::is_valid_user() )
+		$user = User::get_current_user();
+		if( !is_null($user) )
 		{
-			return User::auth_login();
-		}
-
-		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
-		if( $user->CanEditGame() )
-		{
-			DB::transaction(function () use($request, $user)
-				{
-					$game_id = $request->input('game_id');
-					$game = Game::find($game_id);
-					if( $game->user_id == $user->id )
+			if( $user->CanEditGame() )
+			{
+				DB::transaction(function () use($request, $user)
 					{
-						$candidates = Candidate::where('game_id', $game_id)->select('id')->get();
-						foreach( $candidates as $candidate )
+						$game_id = $request->input('game_id');
+						$game = Game::find($game_id);
+						if( $game->user_id == $user->id )
 						{
-							$ranking = intval( $request->input('ranking_' . $candidate->id) );
-							if( $ranking <= 0 )
-							{	// Invalid ranking value
-								throw new Exception(__('internal_error'));
+							$candidates = Candidate::where('game_id', $game_id)->select('id')->get();
+							foreach( $candidates as $candidate )
+							{
+								$ranking = intval( $request->input('ranking_' . $candidate->id) );
+								if( $ranking <= 0 )
+								{	// Invalid ranking value
+									throw new Exception(__('internal_error'));
+								}
+								$candidate->result_rank = $ranking;
+								$candidate->save();
 							}
-							$candidate->result_rank = $ranking;
-							$candidate->save();
-						}
 
-						$game->status = 2;
-						$game->update_odds();
-					}
-				});
+							$game->status = 2;
+							$game->update_odds();
+						}
+					});
+			}
 		}
-		return redirect('/');
+		return redirect('/mygames');
 	}
 
 	/**
