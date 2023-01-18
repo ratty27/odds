@@ -650,31 +650,33 @@ class GameController extends Controller
 	 */
 	public function admin_pubgame(Request $request)
 	{
-		$game_id = $request->input('game_id');
-		$pub = $request->input('pub');
-
-		Log::info("Game:" . $game_id . " / pub:" . $pub);
-
 		$result = 'fail';
-		DB::transaction(function () use($game_id, $pub, &$result)
-			{
-				$game = Game::find($game_id);
-				if( !is_null($game) )
+
+		$user = User::get_current_user();
+		if( $user->admin )
+		{
+			$game_id = $request->input('game_id');
+			$pub = $request->input('pub');
+			DB::transaction(function () use($game_id, $pub, &$result)
 				{
-					if( $pub == 1 )
+					$game = Game::find($game_id);
+					if( !is_null($game) )
 					{
-						$game->is_public = 3;
-						$game->update();
-						$result = 'success';
+						if( $pub == 1 )
+						{
+							$game->is_public = 3;
+							$game->update();
+							$result = 'success';
+						}
+						else if( $pub == 0 )
+						{
+							$game->is_public = 2;
+							$game->update();
+							$result = 'success';
+						}
 					}
-					else if( $pub == 0 )
-					{
-						$game->is_public = 2;
-						$game->update();
-						$result = 'success';
-					}
-				}
-			} );
+				} );
+		}
 
 		return response()->json(['result' => $result]);
 	}

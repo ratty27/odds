@@ -40,12 +40,14 @@ $app_games = App\Models\Game::where('is_public', 1)->get();
 </div>
 
 <script type='text/javascript'>
+
+
 /**
- *  Approve a game to public
+ *  Send approve/reject
  */
-async function pubgame_approve(game_id)
+async function send_pubgame(game_id, pub, success)
 {
-  let data = { 'game_id': game_id, 'pub': 1 };
+  let data = { 'game_id': game_id, 'pub': pub };
   const res = await fetch('{{ url("/admin_pubgame") }}',
     {
       method: 'POST',
@@ -53,26 +55,27 @@ async function pubgame_approve(game_id)
         'Content-Type': 'application/json',
         'X-CSRF-TOKEN': '{{ csrf_token() }}',
       },
+      credentials: 'include',
       body: JSON.stringify(data)
     });
   const body = await res.json();
+  let elem = document.getElementById('ctrl' + game_id);
   if( body.result == 'success' )
   {
-    let elem = document.getElementById('ctrl' + game_id);
-    if( elem )
-    {
-      elem.innerHTML = '{{ __("odds.game_public") }}';
-    }
+    elem.innerHTML = success;
   }
   else
   {
-    let elem = document.getElementById('ctrl' + game_id);
-    if( elem )
-    {
-      elem.innerHTML = 'fail';
-      console.log(body);
-    }
+    elem.innerHTML = 'fail';
   }
+}
+
+/**
+ *  Approve a game to public
+ */
+function pubgame_approve(game_id)
+{
+  send_pubgame(game_id, 1, '{{ __("odds.game_public") }}');
 }
 
 /**
@@ -80,33 +83,6 @@ async function pubgame_approve(game_id)
  */
 async function pubgame_reject(game_id)
 {
-  let data = { 'game_id': game_id, 'pub': 0 };
-  const res = await fetch('{{ url("/admin_pubgame") }}',
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-      },
-      body: JSON.stringify(data)
-    });
-  const body = await res.json();
-  if( body.result == 'success' )
-  {
-    let elem = document.getElementById('ctrl' + game_id);
-    if( elem )
-    {
-      elem.innerHTML = '{{ __("odds.game_private") }}';
-    }
-  }
-  else
-  {
-    let elem = document.getElementById('ctrl' + game_id);
-    if( elem )
-    {
-      elem.innerHTML = 'fail';
-      console.log(body);
-    }
-  }
+  send_pubgame(game_id, 0, '{{ __("odds.game_private") }}');
 }
 </script>
