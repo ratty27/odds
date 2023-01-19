@@ -43,7 +43,18 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
   @include('parts.header')
   <div style="width: 100%;">
     <div class="position-fixed top-10 start-0">
-      <div style="float: left"><a href="/" class="btn btn-info">{{ __('odds.game_list') }}</a></div>
+      <div style="float: left">
+        @php
+        if( $game->user_id == $user->id )
+        {
+          echo "<a href='/mygames' class='btn btn-info'>" . __('odds.game_list') . "</a>";
+        }
+        else
+        {
+          echo "<a href='/usergames/$game->user_id' class='btn btn-info'>" . __('odds.game_list') . "</a>";
+        }
+        @endphp
+      </div>
     </div>
     <div class="position-fixed top-10 end-0">
     @php
