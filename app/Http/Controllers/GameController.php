@@ -11,6 +11,9 @@ use App\Models\Game;
 use App\Models\Candidate;
 use App\Models\Odd;
 use App\Models\Bet;
+use App\Odds\RuleWin;
+use App\Odds\RuleQuinella;
+use App\Odds\RuleExacta;
 
 class GameController extends Controller
 {
@@ -75,90 +78,41 @@ class GameController extends Controller
 		{
 			DB::transaction(function () use($request, $user)
 				{
-					$game_id = $request->input('game_id');
+					$name = $request->input('game_name');
+					$limit = $request->input('game_limit');
+					$comment = $request->input('game_comment');
+					if( $comment == null )
+					{
+						$comment = '';
+					}
+
+					$enabled = 1;	// 'win' is awlways enabled
+					$in_enabled = $request->input('enabled');
+					if( $in_enabled != null )
+					{
+						foreach( $in_enabled as $enabled_index )
+						{
+							$index = intval( $enabled_index );
+							$enabled |= 1 << $index;
+						}
+					}
+
+					$candidate_names = explode("\n", $request->input('game_candidate'));
+					$candidate_names = array_map('trim', $candidate_names);
+
 					// Update a game info.
+					$game_id = $request->input('game_id');
 					if( $game_id === 'new' )
 					{
-						$game = new Game;
+						Game::new_game($user->id, $name, $limit, $comment, $enabled, $candidate_names);
 					}
 					else
 					{
 						$game = Game::find($game_id);
-					}
-					$game->name = $request->input('game_name');
-					$game->limit = $request->input('game_limit');
-					$game->comment = $request->input('game_comment');
-					if( $game->comment == null )
-					{
-						$game->comment = '';
-					}
-					$game->user_id = $user->id;
-					$game->next_update = date("Y/m/d H:i:s");
-					$game->exclusion_update = 0;
-
-					$game->enabled = 1;	// 'win' is awlways enabled
-					$enabled = $request->input('enabled');
-					if( $enabled != null )
-					{
-						foreach( $enabled as $enabled_index )
+						if( !is_null($game) )
 						{
-							$index = intval( $enabled_index );
-							$game->enabled |= 1 << $index;
+							$game->update_game($name, $limit, $comment, $enabled, $candidate_names);
 						}
-					}
-
-					//Log::info('Update game: ' . $request->input('game_name'));
-					if( $game->save() )
-					{   // Update cadidates
-						$candidate_names = explode("\n", $request->input('game_candidate'));
-						$candidate_names = array_map('trim', $candidate_names);
-
-						$candidate_updated = array();
-
-						// Update existing records
-						$candidates = Candidate::where('game_id', $game->id)
-							->select('id', 'name', 'disp_order')
-							->get();
-						foreach( $candidates as &$candidate )
-						{
-							$index = array_search($candidate->name, $candidate_names);
-							if( $index === false )
-							{
-								Odd::where('candidate_id0', $candidate->id)
-								 ->orWhere('candidate_id1', $candidate->id)
-								 ->orWhere('candidate_id2', $candidate->id)
-								 ->delete();
-								Bet::where('candidate_id0', $candidate->id)
-								 ->orWhere('candidate_id1', $candidate->id)
-								 ->orWhere('candidate_id2', $candidate->id)
-								 ->delete();
-								$candidate->delete();
-							}
-							else
-							{
-								if( $candidate->disp_order != $index )
-								{
-									$candidate->disp_order = $index;
-									$candidate->update();
-								}
-								array_push($candidate_updated, $candidate->name);
-							}
-						}
-
-						// Add new records
-						for($index = 0; $index < count($candidate_names); ++$index)
-						{
-							if( !in_array($candidate_names[$index], $candidate_updated) )
-							{
-								$candidate = new Candidate;
-								$candidate->name = $candidate_names[$index];
-								$candidate->game_id = $game->id;
-								$candidate->disp_order = $index;
-								$candidate->save();
-							}
-						}
-
-						$game->update_odds();
 					}
 				}
 			);
@@ -181,10 +135,11 @@ class GameController extends Controller
 		{
 			DB::transaction(function () use($game_id)
 				{
-					Bet::where('game_id', $game_id)->delete();
-					Odd::where('game_id', $game_id)->delete();
-					Candidate::where('game_id', $game_id)->delete();
-					Game::where('id', $game_id)->delete();
+					$game = Game::find($game_id);
+					if( !is_null($game) )
+					{
+						$game->safe_delete();
+					}
 				}
 			);
 		}
@@ -283,22 +238,22 @@ class GameController extends Controller
 				{
 					$game_id = $request->input('game_id');
 					$game = Game::find($game_id);
-
-					$candidates = Candidate::where('game_id', $game_id)->select('id')->get();
-					foreach( $candidates as $candidate )
+					if( !is_null($game) )
 					{
-						$ranking = intval( $request->input('ranking_' . $candidate->id) );
-						if( $ranking <= 0 )
-						{	// Invalid ranking value
-							throw new Exception(__('internal_error'));
+						$candidates = Candidate::where('game_id', $game_id)->select('id')->get();
+						foreach( $candidates as $candidate )
+						{
+							$ranking = intval( $request->input('ranking_' . $candidate->id) );
+							if( $ranking <= 0 )
+							{	// Invalid ranking value
+								throw new Exception(__('odds.internal_error'));
+							}
+							$candidate->result_rank = $ranking;
+							$candidate->save();
 						}
-						$candidate->result_rank = $ranking;
-						$candidate->save();
-					}
 
-					$game->status = 2;
-					$game->update_odds();
-					$success = true;
+						$game->finish();
+					}
 				});
 		}
 		return redirect('/');
@@ -337,6 +292,29 @@ class GameController extends Controller
 	}
 
 	/**
+	 *	Calculate total bet points
+	 */
+	private static function total_bet($request, $sig, $pattern, &$points)
+	{
+		$total = 0;
+		foreach( $pattern as &$pat )
+		{
+			$num = $request->input('bet_' . $sig . '_' . implode('_', $pat));
+			if( is_numeric($num) )
+			{
+				$pt = intval($num);
+				$total += $pt;
+			}
+			else
+			{
+				$pt = 0;
+			}
+			$points[] = $pt;
+		}
+		return $total;
+	}
+
+	/**
 	 *  Save betting info
 	 */
 	public function save_bet(Request $request)
@@ -365,48 +343,22 @@ class GameController extends Controller
 				// Requested total bets
 				$request_bets = 0;
 				// - for win
-				foreach( $candidates as &$candidate )
-				{
-					$num = $request->input('bet_win_' . $candidate->id);
-					if( is_numeric($num) )
-					{
-						$request_bets += intval($num);
-					}
-				}
+				$pattern_win = RuleWin::get_patterns($candidates);
+				$request_points_win = array();
+				$request_bets += self::total_bet($request, RuleWin::get_signature(), $pattern_win, $request_points_win);
 				// - for quinella
+				$pattern_quinella = RuleQuinella::get_patterns($candidates);
+				$request_points_quinella = array();
 				if( $game->is_enabled(Bet::TYPE_QUINELLA) )
 				{
-					for( $i = 0; $i < count($candidates) - 1; ++$i )
-					{
-						for( $j = $i + 1; $j < count($candidates); ++$j )
-						{
-							$id0 = $candidates[$i]->id;
-							$id1 = $candidates[$j]->id;
-							$num = $request->input('bet_quinella_' . $id0 . '_' . $id1);
-							if( is_numeric($num) )
-							{
-								$request_bets += intval($num);
-							}
-						}
-					}
+					$request_bets += self::total_bet($request, RuleQuinella::get_signature(), $pattern_quinella, $request_points_quinella);
 				}
 				// - for exacta
+				$pattern_exacta = RuleExacta::get_patterns($candidates);
+				$request_points_exacta = array();
 				if( $game->is_enabled(Bet::TYPE_EXACTA) )
 				{
-					for( $i = 0; $i < count($candidates); ++$i )
-					{
-						for( $j = 0; $j < count($candidates); ++$j )
-						{
-							if( $i == $j ) continue;
-							$id0 = $candidates[$i]->id;
-							$id1 = $candidates[$j]->id;
-							$num = $request->input('bet_exacta_' . $id0 . '_' . $id1);
-							if( is_numeric($num) )
-							{
-								$request_bets += intval($num);
-							}
-						}
-					}
+					$request_bets += self::total_bet($request, RuleExacta::get_signature(), $pattern_exacta, $request_points_exacta);
 				}
 
 				// Check whether request bets over own points
@@ -419,162 +371,16 @@ class GameController extends Controller
 
 				// Save betting request
 				// - for win
-				$bets = Bet::where('game_id', $game_id)
-					->where('user_id', $user->id)
-					->where('type', Bet::TYPE_WIN)
-					->where('payed', 0)
-					->orderBy('candidate_id0', 'asc')
-					->select('id', 'points', 'candidate_id0')->get();
-				$beti = 0;
-				foreach( $candidates as &$candidate )
-				{
-					$bet_points = $request->input('bet_win_' . $candidate->id);
-					if( !is_numeric($bet_points) )
-					{
-						$bet_points = 0;
-					}
-					if( $beti < count($bets) )
-					{
-						if( $bets[$beti]->candidate_id0 == $candidate->id )
-						{
-							if( $bet_points > 0 )
-							{
-								$bets[$beti]->points = $bet_points;
-								$bets[$beti]->update();
-							}
-							else
-							{
-								$bets[$beti]->delete();
-							}
-							++$beti;
-							continue;
-						}
-					}
-
-					if( $bet_points > 0 )
-					{
-						$bet = new Bet;
-						$bet->type = Bet::TYPE_WIN;
-						$bet->game_id = $game_id;
-						$bet->user_id = $user->id;
-						$bet->candidate_id0 = $candidate->id;
-						$bet->points = $bet_points;
-						$bet->payed = 0;
-						$bet->save();
-					}
-				}
+				RuleWin::save_bet( $game_id, $user->id, $pattern_win, $request_points_win );
 				// - for quinella
 				if( $game->is_enabled(Bet::TYPE_QUINELLA) )
 				{
-					$bets = Bet::where('game_id', $game_id)
-						->where('user_id', $user->id)
-						->where('type', Bet::TYPE_QUINELLA)
-						->where('payed', 0)
-						->orderBy('candidate_id0', 'asc')
-						->orderBy('candidate_id1', 'asc')
-						->select('id', 'points', 'candidate_id0', 'candidate_id1')->get();
-					$beti = 0;
-					for( $i = 0; $i < count($candidates) - 1; ++$i )
-					{
-						for( $j = $i + 1; $j < count($candidates); ++$j )
-						{
-							$id0 = $candidates[$i]->id;
-							$id1 = $candidates[$j]->id;
-							$bet_points = $request->input('bet_quinella_' . $id0 . '_' . $id1);
-							if( !is_numeric($bet_points) )
-							{
-								$bet_points = 0;
-							}
-							if( $beti < count($bets) )
-							{
-								if( $bets[$beti]->candidate_id0 == $id0
-								 && $bets[$beti]->candidate_id1 == $id1 )
-								{
-									if( $bet_points > 0 )
-									{
-										$bets[$beti]->points = $bet_points;
-										$bets[$beti]->update();
-									}
-									else
-									{
-										$bets[$beti]->delete();
-									}
-									++$beti;
-									continue;
-								}
-							}
-
-							if( $bet_points > 0 )
-							{
-								$bet = new Bet;
-								$bet->type = Bet::TYPE_QUINELLA;
-								$bet->game_id = $game_id;
-								$bet->user_id = $user->id;
-								$bet->candidate_id0 = $id0;
-								$bet->candidate_id1 = $id1;
-								$bet->points = $bet_points;
-								$bet->payed = 0;
-								$bet->save();
-							}
-						}
-					}
+					RuleQuinella::save_bet( $game_id, $user->id, $pattern_quinella, $request_points_quinella );
 				}
 				// - for exacta
 				if( $game->is_enabled(Bet::TYPE_EXACTA) )
 				{
-					$bets = Bet::where('game_id', $game_id)
-						->where('user_id', $user->id)
-						->where('type', Bet::TYPE_EXACTA)
-						->where('payed', 0)
-						->orderBy('candidate_id0', 'asc')
-						->orderBy('candidate_id1', 'asc')
-						->select('id', 'points', 'candidate_id0', 'candidate_id1')->get();
-					$beti = 0;
-					for( $i = 0; $i < count($candidates); ++$i )
-					{
-						for( $j = 0; $j < count($candidates); ++$j )
-						{
-							if( $i == $j ) continue;
-							$id0 = $candidates[$i]->id;
-							$id1 = $candidates[$j]->id;
-							$bet_points = $request->input('bet_exacta_' . $id0 . '_' . $id1);
-							if( !is_numeric($bet_points) )
-							{
-								$bet_points = 0;
-							}
-							if( $beti < count($bets) )
-							{
-								if( $bets[$beti]->candidate_id0 == $id0
-								 && $bets[$beti]->candidate_id1 == $id1 )
-								{
-									if( $bet_points > 0 )
-									{
-										$bets[$beti]->points = $bet_points;
-										$bets[$beti]->update();
-									}
-									else
-									{
-										$bets[$beti]->delete();
-									}
-									++$beti;
-									continue;
-								}
-							}
-
-							if( $bet_points > 0 )
-							{
-								$bet = new Bet;
-								$bet->type = Bet::TYPE_EXACTA;
-								$bet->game_id = $game_id;
-								$bet->user_id = $user->id;
-								$bet->candidate_id0 = $id0;
-								$bet->candidate_id1 = $id1;
-								$bet->points = $bet_points;
-								$bet->payed = 0;
-								$bet->save();
-							}
-						}
-					}
+					RuleExacta::save_bet( $game_id, $user->id, $pattern_exacta, $request_points_exacta );
 				}
 
 				// Request to update odds

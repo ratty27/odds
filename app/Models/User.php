@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Game;
 use App\Models\Candidate;
 use App\Models\Bet;
+use App\Odds\RuleWin;
+use App\Odds\RuleQuinella;
+use App\Odds\RuleExacta;
 
 class User extends Model
 {
@@ -102,7 +105,15 @@ class User extends Model
 		$new_user->personal_id = $iden;
 		$new_user->points = $points;
 		$new_user->admin = 0;
-		return $new_user->save();
+		$new_user->temp_limit = date("Y/m/d H:i:s");
+		if( $new_user->save() )
+		{
+			return $new_user->id;
+		}
+		else
+		{
+			return -1;
+		}
 	}
 
 	/**
@@ -144,6 +155,8 @@ class User extends Model
 					->join('games', 'games.id', '=', 'bets.game_id')->where('games.status', 2)->distinct()->get();
 				foreach( $finished_list as $finished )
 				{
+					$game = Game::find($finished->gid);
+
 					$bets = Bet::where('bets.user_id', $user_id)
 						->where('bets.game_id', $finished->gid)
 						->where('bets.payed', 0)
@@ -153,12 +166,15 @@ class User extends Model
 						->leftJoin('candidates as can2', 'can2.id', '=', 'bets.candidate_id2')->get();
 					//Log::info('Result: ' . json_encode($bets));
 
-					$odds0 = Odd::where('game_id', $finished->gid)->where('type', Bet::TYPE_WIN)
-						->select('candidate_id0', 'odds')->get();
-					$odds1 = Odd::where('game_id', $finished->gid)->where('type', Bet::TYPE_QUINELLA)
-						->select('candidate_id0', 'candidate_id1', 'odds')->get();
-					$odds2 = Odd::where('game_id', $finished->gid)->where('type', Bet::TYPE_EXACTA)
-						->select('candidate_id0', 'candidate_id1', 'odds')->get();
+					$odds0 = RuleWin::get_odds($finished->gid);
+					if( $game->is_enabled(Bet::TYPE_QUINELLA) )
+					{
+						$odds1 = RuleQuinella::get_odds($finished->gid);
+					}
+					if( $game->is_enabled(Bet::TYPE_EXACTA) )
+					{
+						$odds2 = RuleExacta::get_odds($finished->gid);
+					}
 
 					foreach( $bets as $bet )
 					{
@@ -168,55 +184,17 @@ class User extends Model
 						{
 						// win
 						case 0:
-							if( $bet->rank0 == 1 )
-							{
-								foreach( $odds0 as $odd )
-								{
-									if( $odd->candidate_id0 == $bet->candidate_id0 )
-									{
-										$rewards += (int)($bet->points * $odd->odds);
-										Log::channel('oddslog')->info('PAY OFF: ', ['id' => $bet->id, 'game_id' => $finished->gid, 'user_id' => $user->id, 'bet' => $bet->points, 'odds' => $odd->odds]);
-										break;
-									}
-								}
-							}
+							$user->points += RuleWin::payoff($finished->gid, $user->id, $bet, $odds0);
 							break;
 
 						// quinella
 						case 1:
-							if( ($bet->rank0 == 1 && $bet->rank1 == 2)
-							 || ($bet->rank0 == 2 && $bet->rank1 == 1)
-							 || ($bet->rank0 == 1 && $bet->rank1 == 1) )
-							{
-								foreach( $odds1 as $odd )
-								{
-									if( ($odd->candidate_id0 == $bet->candidate_id0)
-									 && ($odd->candidate_id1 == $bet->candidate_id1) )
-									{
-										$rewards += (int)($bet->points * $odd->odds);
-										Log::channel('oddslog')->info('PAY OFF: ', ['id' => $bet->id, 'game_id' => $finished->gid, 'user_id' => $user->id, 'bet' => $bet->points, 'odds' => $odd->odds]);
-										break;
-									}
-								}
-							}
+							$user->points += RuleQuinella::payoff($finished->gid, $user->id, $bet, $odds1);
 							break;
 
 						// exacta
 						case 2:
-							if( ($bet->rank0 == 1 && $bet->rank1 == 2)
-							 || ($bet->rank0 == 1 && $bet->rank1 == 1) )
-							{
-								foreach( $odds2 as $odd )
-								{
-									if( ($odd->candidate_id0 == $bet->candidate_id0)
-									 && ($odd->candidate_id1 == $bet->candidate_id1) )
-									{
-										$rewards += (int)($bet->points * $odd->odds);
-										Log::channel('oddslog')->info('PAY OFF: ', ['id' => $bet->id, 'game_id' => $finished->gid, 'user_id' => $user->id, 'bet' => $bet->points, 'odds' => $odd->odds]);
-										break;
-									}
-								}
-							}
+							$user->points += RuleExacta::payoff($finished->gid, $user->id, $bet, $odds2);
 							break;
 
 						default:
@@ -226,11 +204,28 @@ class User extends Model
 						$bet->update();
 					}
 				}
-				// Todo: Record to log...
 				$user->points += $rewards;
 				$user->update();
 			}
 		);
+	}
+
+	/**
+	 *	Delete this user
+	 *
+	 *	@remarks	This function is for only debug.
+	 */
+	public function safe_delete()
+	{
+		Bet::where('user_id', $this->id)->delete();
+
+		$games = Game::where('user_id', $this->id)->get();
+		foreach( $games as $game )
+		{
+			$game->safe_delete();
+		}
+
+		$this->delete();
 	}
 
 	/**

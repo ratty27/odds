@@ -54,7 +54,7 @@ class CookieUserDetection
         while( true )
         {
             $iden_token = $this->generate_token();
-            if( User::register_user($iden_token, config('odds.initial_points')) )
+            if( User::register_user($iden_token, config('odds.initial_points')) >= 0 )
             {
                 break;
             }
