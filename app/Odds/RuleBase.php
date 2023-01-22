@@ -54,7 +54,7 @@ class RuleBase
 	 *	@param	$pattern		Returned value of get_patterns()
 	 *	@param	$request_bets	Array of betting points
 	 */
-	public static function save_bets($game_id, $user_id, $pattern, $request_bets) : void
+	public static function save_bet($game_id, $user_id, $pattern, $request_bets) : void
 	{
 		if( count($pattern) != count($request_bets) )
 		{
@@ -95,7 +95,7 @@ class RuleBase
 			if( $bet_points > 0 )
 			{
 				$bet = new Bet;
-				$bet->type = Bet::TYPE_WIN;
+				$bet->type = static::get_typeid();
 				$bet->game_id = $game_id;
 				$bet->user_id = $user_id;
 				$bet->candidate_id0 = $candidate[0];
