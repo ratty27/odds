@@ -1,3 +1,7 @@
+@php
+$games_mybets = $user->get_betted_games();
+@endphp
+
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -25,6 +29,20 @@
 
   <!-- Info -->
   <center><div class="col-md-6 text-start text-danger odds_tips">{!! __('odds.info_top') !!}</div></center>
+
+  @php
+  if( count($games_mybets) > 0 )
+  {
+  @endphp
+    <h3>{{ __("odds.user_my_betted") }}</h3>
+    <ul>
+      @foreach( $games_mybets as $game )
+        <li><a href='{{ url("/game/$game->id") }}'>{{ $game->name }}</a></li>
+      @endforeach
+    </ul>
+  @php
+  }
+  @endphp
 
   @include('parts.footer')
 </div>

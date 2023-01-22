@@ -211,6 +211,22 @@ class User extends Model
 	}
 
 	/**
+	 *	Get the list of games of betted
+	 */
+	public function get_betted_games()
+	{
+		$gameids = DB::table('bets')->where('bets.user_id', $this->id)->where('bets.payed', 0)->select('games.id as gid')
+			->join('games', 'games.id', '=', 'bets.game_id')->where('games.status', '<', 2)->distinct()->get();
+		$gids = array();
+		foreach( $gameids as $gameid )
+		{
+			$gids[] = $gameid->gid;
+		}
+		$games = Game::whereIn('id', $gids)->select('id', 'name')->get();
+		return $games;
+	}
+
+	/**
 	 *	Delete this user
 	 *
 	 *	@remarks	This function is for only debug.
