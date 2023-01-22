@@ -60,6 +60,7 @@ class RuleBase
 		// Calculate sum of bets
 		$total_bets = 0;
 		$results = array();
+		$ranks = array();
 		for( $i = 0; $i < count($pattern); ++$i )
 		{
 			$pat = $pattern[$i];
@@ -77,11 +78,24 @@ class RuleBase
 				$candidate_bet = 1;
 			$results[] = $candidate_bet;
 			$total_bets += $candidate_bet;
+
+			// Ranking
+			$rank = 0;
+			for( $j = 0; $j < $i; ++$j )
+			{
+				if( $candidate_bet > $results[$j] )
+				{
+					++$ranks[$j];
+				}
+				else if( $candidate_bet < $results[$j] )
+				{
+					++$rank;
+				}
+			}
+			$ranks[] = $rank;
 		}
 
 		// Calculate odds, then save it
-		$rank = 0;
-		$last = 0.0;
 		for( $i = 0; $i < count($pattern); ++$i )
 		{
 			$pat = $pattern[$i];
@@ -90,13 +104,6 @@ class RuleBase
 			$odds_value = round((float)$total_bets / (float)$results[$i], 1);
 			if( $odds_value < 1.1 )
 				$odds_value = 1.1;
-
-			// Ranking
-			if( $last < $results[$i] )
-			{
-				$last = $results[$i];
-				++$rank;
-			}
 
 			$query = Odd::where('type', static::get_typeid())->where('candidate_id0', $pat[0]);
 			if( count($pat) >= 2 )
@@ -111,7 +118,7 @@ class RuleBase
 			if( !is_null($odds) )
 			{
 				$odds->odds = $odds_value;
-				$odds->favorite = $rank;
+				$odds->favorite = $ranks[$i] + 1;
 				$odds->update();
 			}
 			else
@@ -129,7 +136,7 @@ class RuleBase
 					}
 				}
 				$odd->odds = $odds_value;
-				$odd->favorite = $rank;
+				$odd->favorite = $ranks[$i] + 1;
 				$odd->save();
 			}
 		}
