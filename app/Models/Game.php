@@ -203,6 +203,7 @@ class Game extends Model
 				RuleExacta::update_odds( $this->id, $candidates, config('odds.dummy_points') );
 		}
 
+		$this->visibility = Bet::where('game_id', $this->id)->distinct('user_id')->count();
 		$this->next_update = date('Y/m/d H:i:s', strtotime('+' . config('odds.interval_calc_odds')));
 		$this->update();
 	}
@@ -239,5 +240,16 @@ class Game extends Model
 				}
 			);
 		}
+	}
+
+	/**
+	 *	Get favorite games
+	 * 
+	 *	@param	$num		$ of games to pick
+	 */
+	public static function get_favorite_games($num)
+	{
+		return Game::where('status', 0)->orderBy('visibility', "desc")->take($num)
+			->select('id', 'name', 'comment')->get();
 	}
 }

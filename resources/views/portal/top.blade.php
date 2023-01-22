@@ -1,5 +1,6 @@
 @php
 $games_mybets = $user->get_betted_games();
+$games_favorite = App\Models\Game::get_favorite_games(10);
 @endphp
 
 <head>
@@ -37,6 +38,20 @@ $games_mybets = $user->get_betted_games();
     <h3>{{ __("odds.user_my_betted") }}</h3>
     <ul>
       @foreach( $games_mybets as $game )
+        <li><a href='{{ url("/game/$game->id") }}'>{{ $game->name }}</a></li>
+      @endforeach
+    </ul>
+  @php
+  }
+  @endphp
+
+  @php
+  if( count($games_favorite) > 0 )
+  {
+  @endphp
+    <h3>{{ __("odds.user_favorite_games") }}</h3>
+    <ul>
+      @foreach( $games_favorite as $game )
         <li><a href='{{ url("/game/$game->id") }}'>{{ $game->name }}</a></li>
       @endforeach
     </ul>
