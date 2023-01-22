@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use App\Models\Game;
 
 class UpdateOdds extends Command
@@ -31,7 +32,12 @@ class UpdateOdds extends Command
         $games = Game::where('status', '0')->get();
         foreach( $games as $game )
         {
-            $game->update_odds();
+            DB::transaction(
+                function () use($game)
+                {
+                    $game->update_odds();
+                }
+            );
         }
         return Command::SUCCESS;
     }
