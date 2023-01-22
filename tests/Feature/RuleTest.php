@@ -23,11 +23,11 @@ class RuleTest extends TestCase
 		$user_id = User::register_user(User::generate_token(), 10000);
 		$this->assertTrue( $user_id >= 1 );
 
-		$game_id = Game::new_game($user_id, 'TestGame', date("Y/m/d H:i:s"), '', 1, ['A', 'B', 'C', 'D', 'E']);
+		$game_id = Game::new_game($user_id, 'TestGame', date("Y/m/d H:i:s"), '', 1, ['A', 'B', 'C', 'D', 'E'], 0);
 		$this->assertTrue( $user_id >= 1 );
 
 		$game = Game::find($game_id);
-		$game->update_game('TestGame', date("Y/m/d H:i:s"), '', 1, ['A', 'C', 'B', 'D', 'F']);
+		$game->update_game('TestGame', date("Y/m/d H:i:s"), '', 1, ['A', 'C', 'B', 'D', 'F'], 0);
 
 		$this->assertSame( Odd::where('game_id', $game_id)->count(), 5 );
 
@@ -71,7 +71,7 @@ class RuleTest extends TestCase
 		$user_id = User::register_user(User::generate_token(), 10000);
 		$this->assertTrue( $user_id >= 1 );
 
-		$game_id = Game::new_game($user_id, 'TestGame', date("Y/m/d H:i:s"), '', 7, ['A', 'B', 'C', 'D', 'E']);
+		$game_id = Game::new_game($user_id, 'TestGame', date("Y/m/d H:i:s"), '', 7, ['A', 'B', 'C', 'D', 'E'], 0);
 		$this->assertTrue( $user_id >= 1 );
 
 		$candidates = Candidate::where('game_id', $game_id)->get();
@@ -115,7 +115,7 @@ class RuleTest extends TestCase
 		$user_id = User::register_user(User::generate_token(), 10000);
 		$this->assertTrue( $user_id >= 1 );
 
-		$game_id = Game::new_game($user_id, 'TestGame', date("Y/m/d H:i:s"), '', 7, ['A', 'B', 'C', 'D', 'E']);
+		$game_id = Game::new_game($user_id, 'TestGame', date("Y/m/d H:i:s"), '', 7, ['A', 'B', 'C', 'D', 'E'], 0);
 		$this->assertTrue( $user_id >= 1 );
 
 		$candidates = Candidate::where('game_id', $game_id)->get();
@@ -159,7 +159,7 @@ class RuleTest extends TestCase
 		$user_id = User::register_user(User::generate_token(), 10000);
 		$this->assertTrue( $user_id >= 1 );
 
-		$game_id = Game::new_game($user_id, 'TestGame', date("Y/m/d H:i:s"), '', 7, ['A', 'B', 'C', 'D', 'E']);
+		$game_id = Game::new_game($user_id, 'TestGame', date("Y/m/d H:i:s"), '', 7, ['A', 'B', 'C', 'D', 'E'], 0);
 		$this->assertTrue( $user_id >= 1 );
 
 		$candidates = Candidate::where('game_id', $game_id)->get();
