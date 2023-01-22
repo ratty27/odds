@@ -22,24 +22,30 @@ class GameController extends Controller
 	 */
 	public function index()
 	{
-		if( !User::is_valid_user() )
+		$user = User::get_current_user();
+		if( !is_null($user) )
 		{
-			if( config('odds.confirm_robot') )
+			if( $user->CanEditGame() )
 			{
-				return User::auth_login();
-			}
-			else
-			{
-				DB::transaction(function ()
-					{
-						$token = User::generate_token();
-						User::register_user($token, config('odds.initial_points'));
-						Cookie::queue('iden_token', $token, 60*24*365*2);
-					} );
+				$game_user = $user->id;
+				return view('game/index', compact('user', 'game_user'));
 			}
 		}
+		return redirect('/');
+	}
 
-		return view('game/index');
+	/**
+	 *	User game list
+	 */
+	public function usergames($user_id)
+	{
+		$user = User::get_current_user();
+		if( !is_null($user) )
+		{
+			$game_user = $user_id;
+			return view('game/index', compact('user', 'game_user'));
+		}
+		return redirect('/');
 	}
 
 	/**
@@ -92,11 +98,13 @@ class GameController extends Controller
 						$candidate_names = explode("\n", $request->input('game_candidate'));
 						$candidate_names = array_map('trim', $candidate_names);
 
+						$pubset = intval( $request->input('game_pubsetting') );
+
 						// Update a game info.
 						$game_id = $request->input('game_id');
 						if( $game_id === 'new' )
 						{
-							Game::new_game($user->id, $name, $limit, $comment, $enabled, $candidate_names);
+							Game::new_game($user->id, $name, $limit, $comment, $enabled, $candidate_names, $pubset);
 						}
 						else
 						{
@@ -105,7 +113,7 @@ class GameController extends Controller
 							{
 								if( $user->admin || $game->user_id == $user->id )
 								{
-									$game->update_game($name, $limit, $comment, $enabled, $candidate_names);
+									$game->update_game($name, $limit, $comment, $enabled, $candidate_names, $pubset);
 								}
 							}
 						}
@@ -388,5 +396,58 @@ class GameController extends Controller
 	public function error($errcode)
 	{
 		return response(__($errcode), 500)->header('Content-Type', 'text/plain');
+	}
+
+	/**
+	 *	Show user's applications (admin)
+	 */
+	public function applications()
+	{
+		$user = User::get_current_user();
+		if( !is_null($user) )
+		{
+			if( $user->admin )
+			{
+				return view('game/user_app', compact('user'));
+			}
+		}
+
+		return redirect('/');
+	}
+
+	/**
+	 *	Approve/Reject a game to public (admin)
+	 */
+	public function admin_pubgame(Request $request)
+	{
+		$result = 'fail';
+
+		$user = User::get_current_user();
+		if( $user->admin )
+		{
+			$game_id = $request->input('game_id');
+			$pub = $request->input('pub');
+			DB::transaction(function () use($game_id, $pub, &$result)
+				{
+					$game = Game::find($game_id);
+					if( !is_null($game) )
+					{
+						if( $pub == 1 )
+						{
+							$game->is_public = 3;
+							$game->update();
+							$result = 'success';
+						}
+						else if( $pub == 0 )
+						{
+							$game->is_public = 2;
+							$game->update();
+							$result = 'success';
+						}
+					}
+				} );
+		}
+
+		return response()->json(['result' => $result]);
 	}
 }

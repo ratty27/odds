@@ -22,7 +22,7 @@ class Game extends Model
 	/**
 	 *	Create new game
 	 */
-	public static function new_game($user_id, $name, $limit, $comment, $enabled, $candidate_names)
+	public static function new_game($user_id, $name, $limit, $comment, $enabled, $candidate_names, $pubset)
 	{
 		$game = new Game;
 		$game->name = $name;
@@ -37,6 +37,16 @@ class Game extends Model
 		$game->exclusion_update = 0;
 
 		$game->enabled = $enabled;
+
+		if( $pubset == 0 )
+		{	// private
+			$game->is_public = 0;
+		}
+		else
+		{	// public
+			$game->is_public = 1;
+		}
+
 		if( $game->save() )
 		{
 			$records = array();
@@ -58,7 +68,7 @@ class Game extends Model
 	/**
 	 *	Update an existed game
 	 */
-	public function update_game($name, $limit, $comment, $enabled, $candidate_names)
+	public function update_game($name, $limit, $comment, $enabled, $candidate_names, $pubset)
 	{
 		$this->name = $name;
 		$this->limit = $limit;
@@ -70,6 +80,19 @@ class Game extends Model
 		$this->next_update = date("Y/m/d H:i:s");
 		$this->exclusion_update = 0;
 		$this->enabled = $enabled;
+
+		if( $pubset == 0 )
+		{	// private
+			$this->is_public = 0;
+		}
+		else
+		{	// public
+			if( $this->is_public == 0 )
+			{	// Apply to public
+				$this->is_public = 1;
+			}
+		}
+
 		if( $this->update() )
 		{
 			$candidate_updated = array();
