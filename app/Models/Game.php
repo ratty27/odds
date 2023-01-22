@@ -170,8 +170,10 @@ class Game extends Model
 		{
 			// Calculate odds for each candidate
 			RuleWin::update_odds( $this->id, $candidates, config('odds.dummy_points') );
-			RuleQuinella::update_odds( $this->id, $candidates, config('odds.dummy_points') );
-			RuleExacta::update_odds( $this->id, $candidates, config('odds.dummy_points') );
+			if( $this->is_enabled(Bet::TYPE_QUINELLA) )
+				RuleQuinella::update_odds( $this->id, $candidates, config('odds.dummy_points') );
+			if( $this->is_enabled(Bet::TYPE_EXACTA) )
+				RuleExacta::update_odds( $this->id, $candidates, config('odds.dummy_points') );
 		}
 
 		$this->next_update = date('Y/m/d H:i:s', strtotime('+' . config('odds.interval_calc_odds')));
