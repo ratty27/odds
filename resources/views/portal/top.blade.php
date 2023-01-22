@@ -9,9 +9,6 @@
 <div class="container">
   @include('parts.header')
 
-  <!-- Info -->
-  <center><div class="col-md-6 text-start text-danger odds_tips">{!! __('odds.info_top') !!}</div></center>
-
   <div style="width: 100%;">
     @php
     if( $user->CanEditGame() )
@@ -25,6 +22,9 @@
     @endphp
   </div>
   <div style="clear: left;"></div>
+
+  <!-- Info -->
+  <center><div class="col-md-6 text-start text-danger odds_tips">{!! __('odds.info_top') !!}</div></center>
 
   @include('parts.footer')
 </div>

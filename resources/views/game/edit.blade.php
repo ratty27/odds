@@ -1,6 +1,4 @@
 @php
-$user_token = Cookie::queued('iden_token') ? Cookie::queued('iden_token')->getValue() : Cookie::get('iden_token');
-$user = App\Models\User::where('personal_id', $user_token)->first();
 $candidates_name = "";
 if( $game_id === 'new' )
 {
@@ -11,6 +9,10 @@ if( $game_id === 'new' )
 else
 {
   $game = App\Models\Game::findOrFail($game_id);
+  if( !$user->admin && $game->user_id != $user->id )
+  {
+    die();
+  }
   $candidates = App\Models\Candidate::where('game_id', $game_id)->orderBy('disp_order', 'asc')->get();
   foreach( $candidates as $candidate )
   {
@@ -70,7 +72,7 @@ if( $user->CanEditGame() )
         </div>
         <div class="form-group text-start">
           <label>{{ __('odds.game_public_setting') }}</label>
-          <select name="game_pubsetting" style='width: 180px;' class="form-control">
+          <select id='game_pubsetting' name='game_pubsetting' style='width: 180px;' class='form-control'>
             <option value="0">{{ __('odds.game_private') }}</option>
             <option value="1">{{ __('odds.game_public') }}</option>
           </select>
@@ -127,6 +129,25 @@ if( $user->CanEditGame() )
 @endphp
 
 <script type="text/javascript">
+
+function initValues()
+{
+  let elem = document.getElementById('game_pubsetting');
+  if( elem )
+  {
+    @php
+    $pub = 0;
+    if( $game->is_public > 0 )
+    {
+      $pub = 1;
+    }
+    @endphp
+    elem.selectedIndex = {{ $pub }};
+  }
+}
+window.onload = initValues;
+
+
 // Cancel clicked
 function onCancel()
 {

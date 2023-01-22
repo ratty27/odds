@@ -58,7 +58,7 @@ class GameController extends Controller
 		{
 			if( $user->CanEditGame() )
 			{
-				return view('game/edit', compact('game_id'));
+				return view('game/edit', compact('user', 'game_id'));
 			}
 		}
 		return redirect('/');
