@@ -36,9 +36,13 @@ class Game extends Model
 		if( $game->save() )
 		{
 			$records = array();
+			$now = date("Y/m/d H:i:s");
 			for( $i = 0; $i < count($candidate_names); ++$i )
 			{
-				$records[] = ['name' => $candidate_names[$i], 'game_id' => $game->id, 'disp_order' => $i];
+				$records[] = [
+					'name' => $candidate_names[$i], 'game_id' => $game->id, 'disp_order' => $i,
+					'created_at' => $now, 'updated_at' => $now,
+				];
 			}
 			Candidate::insert( $records );
 
@@ -93,13 +97,20 @@ class Game extends Model
 			}
 
 			// Add new candidates
+			$now = date("Y/m/d H:i:s");
+			$records = array();
 			for($index = 0; $index < count($candidate_names); ++$index)
 			{
-				$records = array();
 				if( !in_array($candidate_names[$index], $candidate_updated) )
 				{
-					$records[] = ['name' => $candidate_names[$index], 'game_id' => $this->id, 'disp_order' => $index];
+					$records[] = [
+						'name' => $candidate_names[$index], 'game_id' => $this->id, 'disp_order' => $index,
+						'created_at' => $now, 'updated_at' => $now,
+					];
 				}
+			}
+			if( count($records) > 0 )
+			{
 				Candidate::insert( $records );
 			}
 
