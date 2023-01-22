@@ -48,6 +48,94 @@ class RuleBase
 	}
 
 	/**
+	 *	Update odds of a game
+	 *	@param	$game_id		Game ID
+	 *	@param	$candidates		Array of candidates thhat is sorted by ID
+	 *	@param	$dummy			Bet points that is by dummy user
+	 */
+	public static function update_odds($game_id, $candidates, $dummy)
+	{
+		$pattern = static::get_patterns($candidates);
+
+		// Calculate sum of bets
+		$total_bets = 0;
+		$results = array();
+		for( $i = 0; $i < count($pattern); ++$i )
+		{
+			$pat = $pattern[$i];
+			$query = Bet::where('type', static::get_typeid())->where('candidate_id0', $pat[0]);
+			if( count($pat) >= 2 )
+			{
+				$query = $query->where('candidate_id1', $pat[1]);
+				if( count($pat) >= 3 )
+				{
+					$query = $query->where('candidate_id2', $pat[2]);
+				}
+			}
+			$candidate_bet = $query->sum('points') + $dummy;
+			if( $candidate_bet <= 0 )
+				$candidate_bet = 1;
+			$results[] = $candidate_bet;
+			$total_bets += $candidate_bet;
+		}
+
+		// Calculate odds, then save it
+		$rank = 0;
+		$last = 0.0;
+		for( $i = 0; $i < count($pattern); ++$i )
+		{
+			$pat = $pattern[$i];
+
+			// Odds
+			$odds_value = round((float)$total_bets / (float)$results[$i], 1);
+			if( $odds_value < 1.1 )
+				$odds_value = 1.1;
+
+			// Ranking
+			if( $last < $results[$i] )
+			{
+				$last = $results[$i];
+				++$rank;
+			}
+
+			$query = Odd::where('type', static::get_typeid())->where('candidate_id0', $pat[0]);
+			if( count($pat) >= 2 )
+			{
+				$query = $query->where('candidate_id1', $pat[1]);
+				if( count($pat) >= 3 )
+				{
+					$query = $query->where('candidate_id2', $pat[2]);
+				}
+			}
+			$odds = $query->select('id')->first();
+			if( !is_null($odds) )
+			{
+				$odds->odds = $odds_value;
+				$odds->favorite = $rank;
+				$odds->update();
+			}
+			else
+			{
+				$odd = new Odd;
+				$odd->game_id = $game_id;
+				$odd->type = static::get_typeid();
+				$odd->candidate_id0 = $pat[0];
+				if( count($pat) >= 2 )
+				{
+					$odd->candidate_id1 = $pat[1];
+					if( count($pat) >= 3 )
+					{
+						$odd->candidate_id2 = $pat[2];
+					}
+				}
+				$odd->odds = $odds_value;
+				$odd->favorite = $rank;
+				$odd->save();
+			}
+		}
+	}
+
+	/**
 	 *	Save betting points
 	 *	@param	$game_id		Game ID
 	 *	@param	$user_id		User ID
