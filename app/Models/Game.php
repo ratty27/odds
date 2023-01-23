@@ -249,7 +249,7 @@ class Game extends Model
 	 */
 	public static function get_favorite_games($num)
 	{
-		return Game::where('status', 0)->orderBy('visibility', "desc")->take($num)
+		return Game::where('status', 0)->where('is_public', 3)->orderBy('visibility', "desc")->take($num)
 			->select('id', 'name', 'comment')->get();
 	}
 }
