@@ -245,7 +245,7 @@ class Game extends Model
 	/**
 	 *	Get favorite games
 	 * 
-	 *	@param	$num		$ of games to pick
+	 *	@param	$num		# of games to pick
 	 */
 	public static function get_favorite_games($num)
 	{
