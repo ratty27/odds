@@ -281,6 +281,10 @@ function getTotalBets(withCheck)
 			{
 				return -1;
 			}
+			if( num > {{ config('odds.limit_bet_points') }} )
+			{
+				return -2;
+			}
 		}
 		if( num > 0 )
 		{
@@ -309,7 +313,14 @@ function checkBet()
 	let	current_bets = getTotalBets(true);
 	if( current_bets < 0 )
 	{
-		alert('{{ __("odds.user_invalid_points") }}');
+		if( current_bets == -2 )
+		{
+			alert( '{{ __("odds.user_over_limit_points") }}' + {{ config('odds.limit_bet_points') }} );
+		}
+		else
+		{
+			alert( '{{ __("odds.user_invalid_points") }}' );
+		}
 		return false;
 	}
 

@@ -296,6 +296,7 @@ class GameController extends Controller
 	 */
 	private static function total_bet($request, $sig, $pattern, &$points)
 	{
+		$limit = config('odds.limit_bet_points');
 		$total = 0;
 		foreach( $pattern as &$pat )
 		{
@@ -303,6 +304,14 @@ class GameController extends Controller
 			if( is_numeric($num) )
 			{
 				$pt = intval($num);
+				if( $pt < 0 )
+				{
+					$pt = 0;
+				}
+				else if( $pt > $limit )
+				{
+					$pt = $limit;
+				}
 				$total += $pt;
 			}
 			else

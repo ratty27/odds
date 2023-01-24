@@ -4,6 +4,9 @@ return [
 	// User's initial points
 	'initial_points' => 30000,
 
+	// User's bet limit
+	'limit_bet_points' => 100000,
+
 	// Dummy user's bet points
 	'dummy_points' => 10000,
 
