@@ -1,6 +1,6 @@
 <nav class="navbar fixed-top odds_header">
-	<div class="col-md-7 fst-italic" style="padding-left: 0px"><a href="/">{{ __('odds.title') }}</a></div>
-	<div class="col-md-2 text-end">
+	<div class="col-sm-3 col-md-6 fst-italic odds_left_padding32"><a href="/">{{ __('odds.title') }}</a></div>
+	<div class="col-sm-2 col-md-2 text-end">
 		<a href="{{ asset('/user_info') }}">
 		@php
 		if( $user->authorized )
@@ -25,9 +25,11 @@
 		@endphp
 		</a>
 	</div>
-	<div class="col-md-1 text-end" style="color:#fff;">{{ __('odds.bet_points') }}:</div>
-	<div class="col-md-1 text-start" style="color:#fff;" id="my_points">{{ $user->get_current_points() }}</div>
-	<div class="col-md-1 text-end" style="padding-right: 32px;">
+	<div class="col-sm-4 col-md-3 text-end" style="color:#fff;">
+		<div style="display: inline-block;">{{ __('odds.bet_points') }}:</div>
+		<div style="display: inline-block; color:#fff;" id="my_points">{{ $user->get_current_points() }}</div>
+	</div>
+	<div class="col-sm-1 col-md-1 text-end odds_right_padding32">
 		<a style='cursor: pointer;' data-bs-toggle='modal' data-bs-target='#UserSettings'><img src='{{ asset("/img/gear-fill.svg") }}'  alt='{{ __("odds.user_settings") }}'></a>
 	</div>
 </nav>

@@ -61,7 +61,7 @@ $bets = App\Models\Bet::where('game_id', $game->id)->where('user_id', $user->id)
 	        <th class="text-center align-middle odds_number">{{ $candidate->disp_order+1 }}</th>
 	        <td class="text-left align-middle" style="padding-left: 20px; padding-right: 20px;">{{ $candidate->name }}</td>
 	        <td class="text-center align-middle" id="odds_win_{{ $candidate->id }}"></td>
-	        <td class="text-left align-middle">
+	        <td class="text-left odds_bet">
 	        	<input id="bet_win_{{ $candidate->id }}" name="bet_win_{{ $candidate->id }}" type='text' class="form-control" oninput="onModifyBet()" value="0">
 	        </td>
 	      </tr>
