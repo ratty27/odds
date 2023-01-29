@@ -55,29 +55,57 @@ if( $user->CanEditGame() )
     <div class="col-md-10 shadow rounded" style="padding: 16px;">
       <form action="{{ asset('/update') }}" method="POST">
         <div class="form-group text-start">
-          <label>{{ __('odds.game_name') }}</label>
-          <input name="game_name" type="text" class="form-control" value="{{ $game->name }}">
+          <label for="game_name" class="form-label fw-bold">{{ __('odds.game_name') }}</label>
+          <input id="game_name" name="game_name" type="text" class="form-control" value="{{ $game->name }}">
         </div>
         <div class="form-group text-start">
-          <label>{{ __('odds.game_limit') }}</label>
-          <input name="game_limit" type="datetime-local" class="form-control" value="{{ $game->limit }}">
+          <label for="game_limit" class="form-label">
+            <table style="width: 100%; table-layout: fixed;">
+              <tr>
+                <td class="col-md-3 text-start fw-bold">{{ __('odds.game_limit') }}</td>
+                <td class="col-md-7 text-end">{{ __('odds.game_limit_desc') }}</td>
+              </tr>
+            </table>
+          </label>
+          <input id="game_limit" name="game_limit" type="datetime-local" class="form-control" value="{{ $game->limit }}">
         </div>
         <div class="form-group text-start">
-          <label>{{ __('odds.game_comment') }}</label>
-          <textarea name="game_comment" class="form-control">{{ $game->comment }}</textarea>
+          <label for="game_comment" class="form-label">
+            <table style="width: 100%; table-layout: fixed;">
+              <tr>
+                <td class="col-md-3 text-start fw-bold">{{ __('odds.game_comment') }}</td>
+                <td class="col-md-7 text-end">{{ __('odds.game_comment_desc') }}</td>
+              </tr>
+            </table>
+          </label>
+          <textarea id="game_comment" name="game_comment" class="form-control">{{ $game->comment }}</textarea>
         </div>
         <div class="form-group text-start">
-          <label>{{ __('odds.game_candidate') }}</label>
-          <textarea name="game_candidate" style='height: 400px' class="form-control">{{ $candidates_name }}</textarea>
+          <label for="game_candidate" class="form-label">
+            <table style="width: 100%; table-layout: fixed;">
+              <tr>
+                <td class="col-md-3 text-start fw-bold">{{ __('odds.game_candidate') }}</td>
+                <td class="col-md-7 text-end">{{ __('odds.game_candidate_desc') }}</td>
+              </tr>
+            </table>
+          </label>
+          <textarea id="game_candidate" name="game_candidate" style='height: 400px' class="form-control">{{ $candidates_name }}</textarea>
         </div>
         <div class="form-group text-start">
-          <label>{{ __('odds.game_public_setting') }}</label>
+          <label for="game_pubsetting" class="form-label">
+            <table style="width: 100%; table-layout: fixed;">
+              <tr>
+                <td class="col-md-3 text-start fw-bold">{{ __('odds.game_public_setting') }}</td>
+                <td class="col-md-7 text-end">{{ __('odds.game_public_setting_desc') }}</td>
+              </tr>
+            </table>
+          </label>
           <select id='game_pubsetting' name='game_pubsetting' style='width: 180px;' class='form-control'>
             <option value="0">{{ __('odds.game_private') }}</option>
             <option value="1">{{ __('odds.game_public') }}</option>
           </select>
         </div>
-        <div class="text-start">
+        <div class="text-start fw-bold">
           {{ __('odds.game_odds_type') }}
         </div>
         <div class="text-start">
