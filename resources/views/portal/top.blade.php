@@ -31,7 +31,7 @@ $games_favorite = App\Models\Game::get_favorite_games(10);
 
   <!-- Info -->
   <h3>{{ __("odds.info_about_title") }}</h3>
-  <div>{!! __("odds.info_about") !!}</div>
+  <div>{!! __("odds.info_about_desc") !!}</div>
   <br>
 
   @php
