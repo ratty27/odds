@@ -26,6 +26,7 @@ $past_games = App\Models\Game::where('status', 2)->where('user_id', $game_user)-
   @php
   }
   @endphp
+  <br>
 
   <!-- Future games -->
   <h3>{{ __('odds.game_future') }}</h3>

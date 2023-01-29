@@ -27,9 +27,12 @@ $games_favorite = App\Models\Game::get_favorite_games(10);
     @endphp
   </div>
   <div style="clear: left;"></div>
+  <br>
 
   <!-- Info -->
-  <center><div class="col-md-6 text-start text-danger odds_tips">{!! __('odds.info_top') !!}</div></center>
+  <h3>{{ __("odds.info_about_title") }}</h3>
+  <div>{!! __("odds.info_about") !!}</div>
+  <br>
 
   @php
   if( count($games_mybets) > 0 )
