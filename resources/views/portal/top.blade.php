@@ -1,6 +1,6 @@
 @php
-$games_mybets = $user->get_betted_games(true);
-$games_mypast = $user->get_betted_games(false);
+$games_mybets = $user->get_betted_games(true, 10);
+$games_mypast = $user->get_betted_games(false, 5);
 $games_favorite = App\Models\Game::get_favorite_games(10);
 
 $infos = App\Models\Info::orderBy('created_at', 'desc')->take(3)->select('message')->get();
