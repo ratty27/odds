@@ -58,7 +58,7 @@ if( $user->admin )
       </div>
       <div class="form-group">
         <label>{{ __('odds.game_limit') }}</label>
-        <input name="game_limit" type="datetime" class="form-control" value="{{ $game->limit }}">
+        <input name="game_limit" type="datetime-local" class="form-control" value="{{ $game->limit }}">
       </div>
       <div class="form-group">
         <label>{{ __('odds.game_comment') }}</label>
