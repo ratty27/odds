@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Info;
 
 class PortalController extends Controller
 {
@@ -33,9 +37,56 @@ class PortalController extends Controller
 				return response(__("odds.internal_error"), 500)->header('Content-Type', 'text/plain');
 			}
 		}
-
-		User::update_cookie(false);
+		else
+		{
+			DB::transaction(function ()
+				{
+					User::update_cookie(false);
+				} );
+		}
 
 		return view('portal/top', compact('user'));
+	}
+
+	/**
+	 *	Edit info page (admin)
+	 */
+	public function edit_info()
+	{
+		$user = User::get_current_user();
+		if( !is_null($user) )
+		{
+			if( $user->admin )
+			{
+				return view('portal/edit_info', compact('user'));
+			}
+		}
+		return redirect('/');
+	}
+
+	/**
+	 *	Add info (admin)
+	 */
+	public function add_info(Request $request)
+	{
+		$user = User::get_current_user();
+		if( !is_null($user) )
+		{
+			if( $user->admin )
+			{
+				$message = $request->input('info_message');
+				if( !is_null($message) )
+				{
+					$message = trim($message);
+					if( strlen($message) > 0 )
+					{
+						$info = new Info;
+						$info->message = $message;
+						$info->save();
+					}
+				}
+			}
+		}
+		return redirect('/');
 	}
 }

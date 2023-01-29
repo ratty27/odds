@@ -50,7 +50,7 @@ if( $user->CanEditGame() )
   @include('parts.header')
   <center>
     <div class="col-md-10 text-start">
-      <h3>レース編集</h3>
+      <h3>{{ __("odds.game_edit") }}</h3>
     </div>
     <div class="col-md-10 shadow rounded" style="padding: 16px;">
       <form action="{{ asset('/update') }}" method="POST">

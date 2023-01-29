@@ -26,6 +26,9 @@ Route::get('/', 'App\Http\Controllers\PortalController@index');
 // Admin
 Route::get('/admin_app', 'App\Http\Controllers\GameController@applications');
 Route::post('/admin_pubgame', 'App\Http\Controllers\GameController@admin_pubgame');
+Route::get('/admin_edit_info', 'App\Http\Controllers\PortalController@edit_info');
+Route::post('/admin_add_info', 'App\Http\Controllers\PortalController@add_info');
+
 
 // User
 // - standard

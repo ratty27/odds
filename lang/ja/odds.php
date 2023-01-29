@@ -21,6 +21,9 @@ return [
 	'admin_apply_public' => "公開申請",
 	'admin_approve' => '許可',
 	'admin_reject' => '却下',
+	'admin_applications' => '公開申請の確認',
+	'admin_edit_info' => 'お知らせの編集',
+	'admin_info_message' => 'メッセージ',
 
 	'dialog_title_confirm' => '確認',
 	'dialog_yes' => 'はい',
@@ -48,6 +51,7 @@ return [
 	'game_private' => '非公開',
 	'game_public' => '公開',
 	'game_odds_type' => 'オッズ種別',
+	'game_edit' => 'レース編集',
 
 	'candidate_order' => '番号',
 	'candidate_name' => '出走者',
@@ -114,6 +118,7 @@ return [
 	'info_confirm_email' => '確認メールを送信しました。<br>メールをご確認いただき、認証を完了してください。',
 	'info_about_title' => 'このサイトについて',
 	'info_about_desc' => 'このサイトは、開催される予定のレースに仲間うちで勝手なオッズをつけ予想しようというサイトです。<br>あくまでも「お遊び」です。課金要素は一切ありません。得られたポイントは次回別のレースへ持ち越せるという以外に用途はありません。<br><br>参加するだけなら特にユーザ登録の必要はありません。そのままレースを選んで予想してください。<br>レースを新規に登録する場合にはユーザ登録(無料)が必要になります。',
+	'info_infos' => 'お知らせ',
 
 	'email_authorize' => 'Odds - メール認証',
 	'email_confirm' => 'メール確認',

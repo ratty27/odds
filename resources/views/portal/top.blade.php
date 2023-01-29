@@ -1,6 +1,15 @@
 @php
 $games_mybets = $user->get_betted_games();
 $games_favorite = App\Models\Game::get_favorite_games(10);
+
+$infos = App\Models\Info::orderBy('created_at', 'desc')->take(3)->select('message')->get();
+
+$applications = array();
+if( $user->admin )
+{
+  $applications = App\Models\Game::where('is_public', 1)->get();
+}
+
 @endphp
 
 <head>
@@ -28,6 +37,33 @@ $games_favorite = App\Models\Game::get_favorite_games(10);
   </div>
   <div style="clear: left;"></div>
   <br>
+
+  @php
+  if( $user->admin )
+  {
+    if( count($applications) > 0 )
+    {
+      echo "<a class='btn btn-info' href='" . url("/admin_app") . "'>" . __("odds.admin_applications") . "</a>";
+      echo "<br>";
+    }
+    echo "<a class='btn btn-info' href='" . url("/admin_edit_info") . "'>" . __("odds.admin_edit_info") . "</a>";
+    echo "<br>";
+    echo "<br>";
+  }
+  @endphp
+
+  @php
+  if( count($infos) > 0 )
+  {
+    echo "<h3>" . __("odds.info_infos") . "</h3><ul>";
+    foreach( $infos as $info )
+    {
+      echo "<li>" . $info->message . "</li>";
+    }
+    echo "</ul>";
+    echo "<br>";
+  }
+  @endphp
 
   <!-- Info -->
   <h3>{{ __("odds.info_about_title") }}</h3>
