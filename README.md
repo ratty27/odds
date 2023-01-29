@@ -30,6 +30,13 @@ $ composer install
   * DB_DATABASE=<MySQL のデータベース名>
   * DB_USERNAME=<MySQL のユーザ名>
   * DB_PASSWORD=<MySQL のパスワード>
+  * MAIL_MAILER=smtp
+  * MAIL_HOST=<smtp サーバ>
+  * MAIL_PORT=<smtp サーバのポート番号>
+  * MAIL_USERNAME=<smtp サーバのユーザ名>
+  * MAIL_PASSWORD=<smtp サーバのパスワード>
+  * MAIL_ENCRYPTION=<"ssl" など>
+  * MAIL_FROM_ADDRESS=<メールアドレス>
 * APP_KEY を作成
 ```
 $ php artisan key:generate
@@ -69,6 +76,13 @@ calc_odds_on_request は false にして、オッズ更新は cron で行うの�
 $ php artisan command:update-odds
 ```
 を定期実行してください。
+
+## 確認メール送信
+
+確認メール送信は、バッチでまとめて送信します。以下のコマンドを cron で１分毎程度で実行してください。
+```
+$ php artisan command:send-auth-mail
+```
 
 ## 文言
 
