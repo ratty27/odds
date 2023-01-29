@@ -231,10 +231,21 @@ class User extends Model
 	/**
 	 *	Get the list of games of betted
 	 */
-	public function get_betted_games()
+	public function get_betted_games($available)
 	{
-		$gameids = DB::table('bets')->where('bets.user_id', $this->id)->where('bets.payed', 0)->select('games.id as gid')
-			->join('games', 'games.id', '=', 'bets.game_id')->where('games.status', '<', 2)->distinct()->get();
+		$gameids = DB::table('bets')->where('bets.user_id', $this->id)->select('games.id as gid')
+			->join('games', 'games.id', '=', 'bets.game_id');
+		if( $available )
+		{
+			$gameids = $gameids->where('games.status', '<', 2);
+		}
+		else
+		{
+			$gameids = $gameids->where('games.status', 2);
+		}
+		$gameids = $gameids->distinct();
+		Log::info( $gameids->toSql() );
+		$gameids = $gameids->get();
 		$gids = array();
 		foreach( $gameids as $gameid )
 		{

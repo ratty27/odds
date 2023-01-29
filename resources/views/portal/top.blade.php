@@ -1,5 +1,6 @@
 @php
-$games_mybets = $user->get_betted_games();
+$games_mybets = $user->get_betted_games(true);
+$games_mypast = $user->get_betted_games(false);
 $games_favorite = App\Models\Game::get_favorite_games(10);
 
 $infos = App\Models\Info::orderBy('created_at', 'desc')->take(3)->select('message')->get();
@@ -85,6 +86,20 @@ if( $user->admin )
   @endphp
 
   @php
+  if( count($games_mypast) > 0 )
+  {
+  @endphp
+    <h3>{{ __("odds.game_past") }}</h3>
+    <ul>
+      @foreach( $games_mypast as $game )
+        <li><a href='{{ url("/game/$game->id") }}'>{{ $game->name }}</a></li>
+      @endforeach
+    </ul>
+  @php
+  }
+  @endphp
+
+  @php
   if( count($games_favorite) > 0 )
   {
   @endphp
@@ -100,3 +115,8 @@ if( $user->admin )
 
   @include('parts.footer')
 </div>
+
+
+<script type="text/javascript">
+const pasts = {{ $games_mypast }};
+</script>
