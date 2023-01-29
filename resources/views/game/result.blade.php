@@ -2,7 +2,7 @@
 // Game
 $game->update_odds_if_needs();
 // Canddates
-$candidates = App\Models\Candidate::where('game_id', $game_id)
+$candidates = App\Models\Candidate::where('game_id', $game->id)
   ->orderBy('disp_order', 'asc')
   ->select('id', 'name', 'disp_order')
   ->get();
@@ -19,7 +19,7 @@ $candidates = App\Models\Candidate::where('game_id', $game_id)
 </head>
 
 @php
-if( $user->admin )
+if( $user->admin || $game->user_id == $user->id)
 {
 @endphp
 
@@ -27,7 +27,7 @@ if( $user->admin )
   @include('parts.header')
   <div class="table-responsive">
     <form action="/finish" method="POST">
-      <input type="hidden" name="game_id" value="{{ $game_id }}">
+      <input type="hidden" name="game_id" value="{{ $game->id }}">
       {{ csrf_field() }}
       <h3>{{ $game->name }}</h3>
       <table class="table table-striped table-bordered">
