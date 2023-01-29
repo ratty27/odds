@@ -109,7 +109,7 @@ return [
 	'info_top' => '* 重要 *<br>これはあくまでも「お遊び」です。課金要素は一切ありません。得られたポイントは次回のレースへ持ち越せるという以外に用途はありません。',
 	'info_odds' => '※オッズは５分毎に更新されます。',
 	'info_points' => '※ポイントは受付が締め切られるまで何度でも再割り振り可能です。',
-	'info_about' => 'このサイトのソースは <a href="https://github.com/ratty27/odds">GitHub</a> にて公開しています。',
+	'info_about' => 'このサイトのソースは <a href="https://github.com/ratty27/odds">GitHub</a> にて公開しています。不具合などありましたら、<a href="https://github.com/ratty27/odds/discussions">こちら</a>までお知らせください。',
 	'info_win' => '１着を予想します。',
 	'info_quinella' => '着順に関係なく１着、２着を予想します。',
 	'info_exacta' => '１着、２着を着順通りに予想します。',
