@@ -40,7 +40,7 @@ return [
 	'game_limit_desc' => '予定をユーザに知らせるためのものであり、この日時で自動的に締め切られることはありません。',
 	'game_limit_close' => '受付終了',
 	'game_candidate' => '出走者',
-	'game_candidate_desc' => '出走者リストを改行区切りで入力してください。',
+	'game_candidate_desc' => '出走者名を改行区切りで入力してください。',
 	'game_bet' => 'このレースを予想する >>>',
 	'game_bet_save' => '<<< 予想を保存',
 	'game_list' => '<<< レース一覧',
