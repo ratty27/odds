@@ -6,6 +6,16 @@ h3 {
 	border-bottom: 6px double #000;
 }
 
+h3:before {
+	content: "　";
+	background:
+		linear-gradient(45deg, #111 25%, transparent 25%, transparent 75%, #111 75%),
+		linear-gradient(45deg, #111 25%, transparent 25%, transparent 75%, #111 75%);
+	background-color: #FFF;
+	background-size: 12px 12px;
+	background-position: 0 0, 6px 6px;
+}
+
 h4 {
 	border-bottom: 3px dotted #000;
 }
@@ -38,6 +48,11 @@ footer {
 	padding: 8px 12px;
 }
 
+.odds_bet {
+	margin: 0px;
+	padding: 0px;
+}
+
 .odds_ticket {
 	margin: 4px;
 	padding: 8px 24px;
@@ -59,4 +74,38 @@ footer {
 	font-size: 0.6rem;
 	margin: 0px;
 	padding: 0px;
+}
+
+.odds_checker {
+	background: linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%),
+		linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%);
+	background-color: #FFF;
+	background-size: 12px 12px;
+	background-position: 0 0, 6px 6px;
+}
+
+.odds_left_padding32
+{
+	padding-left: 32px;
+}
+
+.odds_right_padding32
+{
+	padding-right: 32px;
+}
+
+@media only screen and (max-width : 768px){
+	.odds_header {
+		font-size: 16px;
+		color: #fff;
+		background-color: #000;
+	}
+	.odds_left_padding32
+	{
+		padding-left: 0px;
+	}
+	.odds_right_padding32
+	{
+		padding-right: 0px;
+	}
 }

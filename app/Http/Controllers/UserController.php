@@ -26,7 +26,7 @@ class UserController extends Controller
 				{
 					$login[0]->delete();
 					User::register_user($token, config('odds.initial_points'));
-					Cookie::queue('iden_token', $token, 60*24*365*2);
+					Cookie::queue('iden_token', $token, config('odds.cookie_expires'));
 				}
 			} );
 		return redirect('/');
@@ -206,7 +206,7 @@ class UserController extends Controller
 						$user->authorized = 3;
 						if( $user->update() )
 						{
-							Cookie::queue('iden_token', $user->personal_id, 60*24*365*2);
+							Cookie::queue('iden_token', $user->personal_id, config('odds.cookie_expires'));
 							$message = __('odds.email_confirm_success');
 							$success = true;
 						}
@@ -302,7 +302,7 @@ class UserController extends Controller
 			$pass = User::make_hash( $request->input('info_pass') );
 			if( $exists_user->token === $pass )
 			{
-				Cookie::queue('iden_token', $exists_user->personal_id, 60*24*365*2);
+				Cookie::queue('iden_token', $exists_user->personal_id, config('odds.cookie_expires'));
 				if( !is_null($user) )
 				{
 					if( $user->id != $exists_user->id
@@ -400,7 +400,7 @@ class UserController extends Controller
 				$user->temp = null;
 				if( $user->update() )
 				{
-					Cookie::queue('iden_token', $user->personal_id, 60*24*365*2);
+					Cookie::queue('iden_token', $user->personal_id, config('odds.cookie_expires'));
 					$message = __("odds.user_password_updated");
 					return view('auth/user_info', compact('message'));
 				}

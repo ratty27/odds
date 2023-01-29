@@ -24,7 +24,7 @@ class PortalController extends Controller
 				{
 					$token = User::generate_token();
 					User::register_user($token, config('odds.initial_points'));
-					Cookie::queue('iden_token', $token, 60*24*365*2);
+					Cookie::queue('iden_token', $token, config('odds.cookie_expires'));
 				} );
 
 			$user = User::get_current_user();
@@ -33,6 +33,8 @@ class PortalController extends Controller
 				return response(__("odds.internal_error"), 500)->header('Content-Type', 'text/plain');
 			}
 		}
+
+		User::update_cookie(false);
 
 		return view('portal/top', compact('user'));
 	}

@@ -126,6 +126,24 @@ class User extends Model
 	}
 
 	/**
+	 *	Update cookie
+	 *	@param	$regen		Re-generate token, if true
+	 */
+	public static function update_cookie($regen)
+	{
+		$user = self::get_current_user();
+		if( !is_null($user) )
+		{
+			if( $regen )
+			{
+				$user->personal_id = self::generate_token();
+				$user->update();
+			}
+            Cookie::queue('iden_token', $user->personal_id, config('odds.cookie_expires'));
+		}
+	}
+
+	/**
 	 *  Get betting points
 	 */
 	public function get_betting_points()
