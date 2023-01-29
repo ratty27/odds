@@ -62,14 +62,14 @@ $past_games = App\Models\Game::where('status', 2)->where('user_id', $game_user)-
             @php
               if( $game->status == 0 )
               {
-                echo "<a class='btn btn-info' href='/close/{{ $game->id }}'>" . __('odds.admin_close') . "</a> ";
+                echo "<a class='btn btn-info' href='/close/" . $game->id . "'>" . __('odds.admin_close') . "</a> ";
               }
               else if( $game->status == 1 )
               {
-                echo "<a class='btn btn-info' href='/reopen/{{ $game->id }}'>" . __('odds.admin_reopen') . "</a> ";
+                echo "<a class='btn btn-info' href='/reopen/" . $game->id . "'>" . __('odds.admin_reopen') . "</a> ";
               }
             @endphp
-            <!-- Result buttion -->
+            <!-- Result button -->
             <a class='btn btn-info' href='/result/{{ $game->id }}'>{{ __('odds.admin_result') }}</a>
           </td>
         @php

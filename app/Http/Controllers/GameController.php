@@ -121,7 +121,7 @@ class GameController extends Controller
 				);
 			}
 		}
-		return redirect('/');
+		return redirect('/mygames');
 	}
 
 	/**
@@ -146,7 +146,7 @@ class GameController extends Controller
 				);
 			}
 		}
-		return redirect('/');
+		return redirect('/mygames');
 	}
 
 	/**
@@ -172,7 +172,7 @@ class GameController extends Controller
 				);
 			}
 		}
-		return redirect('/');
+		return redirect('/mygames');
 	}
 
 	/**
@@ -198,7 +198,7 @@ class GameController extends Controller
 				);
 			}
 		}
-		return redirect('/');
+		return redirect('/mygames');
 	}
 
 	/**
@@ -215,7 +215,7 @@ class GameController extends Controller
 				return view('game/result', compact('user', 'game'));
 			}
 		}
-		return redirect('/');
+		return redirect('/mygames');
 	}
 
 	/**
@@ -252,7 +252,7 @@ class GameController extends Controller
 				}
 			);
 		}
-		return redirect('/');
+		return redirect('/mygames');
 	}
 
 	/**
