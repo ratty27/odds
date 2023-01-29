@@ -16,7 +16,7 @@ return [
 	'admin_confirm_close' => "レースの予想受付を締め切ります。\nよろしいですか？",
 	'admin_confirm_reopen' => "レースの予想受付を再開します。\nよろしいですか？",
 	'admin_confirm_finish' => "レースの結果を確定してよろしいですか？\\nこの操作はやり直しできません。",
-	'admin_confirm_delete' => "このレースに関数すべてのデータを削除します。\\nよろしいですか？",
+	'admin_confirm_delete' => "このレースに関するすべてのデータを削除します。\\nよろしいですか？",
 	'admin_error_input' => "入力に間違いがあります。",
 	'admin_apply_public' => "公開申請",
 	'admin_approve' => '許可',
