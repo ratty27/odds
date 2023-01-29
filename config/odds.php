@@ -27,4 +27,7 @@ return [
 
 	// Confirm robot
 	'confirm_robot' => true,
+
+	// Cookie expire minutes
+	'cookie_expires' => 60*24*365,
 ];

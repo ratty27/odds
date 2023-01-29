@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Log;
 use App\Models\User;
 
+// deprecated
 class CookieUserDetection
 {
     /**

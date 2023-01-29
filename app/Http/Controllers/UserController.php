@@ -26,7 +26,7 @@ class UserController extends Controller
 				{
 					$login[0]->delete();
 					User::register_user($token, config('odds.initial_points'));
-					Cookie::queue('iden_token', $token, 60*24*365*2);
+					Cookie::queue('iden_token', $token, config('odds.cookie_expires'));
 				}
 			} );
 		return redirect('/');
