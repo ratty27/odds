@@ -5,10 +5,10 @@ $games_favorite = App\Models\Game::get_favorite_games(10);
 
 $infos = App\Models\Info::orderBy('created_at', 'desc')->take(3)->select('message')->get();
 
-$applications = array();
+$app_exists = false;
 if( $user->admin )
 {
-  $applications = App\Models\Game::where('is_public', 1)->get();
+  $app_exists = App\Models\Game::where('is_public', 1)->exists();
 }
 
 @endphp
@@ -42,7 +42,7 @@ if( $user->admin )
   @php
   if( $user->admin )
   {
-    if( count($applications) > 0 )
+    if( $app_exists )
     {
       echo "<a class='btn btn-info' href='" . url("/admin_app") . "'>" . __("odds.admin_applications") . "</a>";
       echo "<br>";

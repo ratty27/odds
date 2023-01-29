@@ -233,7 +233,7 @@ class User extends Model
 	 */
 	public function get_betted_games($available, $num)
 	{
-		$gameids = DB::table('bets')->where('bets.user_id', $this->id)->select('games.id as gid')
+		$gameids = DB::table('bets')->where('bets.user_id', $this->id)->select('games.id as gid', 'games.updated_at')
 			->join('games', 'games.id', '=', 'bets.game_id');
 		if( $available )
 		{
@@ -243,7 +243,7 @@ class User extends Model
 		{
 			$gameids = $gameids->where('games.status', 2);
 		}
-		$gameids = $gameids->distinct()->take($num)->get();
+		$gameids = $gameids->orderBy('games.updated_at', 'desc')->distinct()->take($num)->get();
 		$gids = array();
 		foreach( $gameids as $gameid )
 		{
