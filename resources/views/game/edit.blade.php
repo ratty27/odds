@@ -3,7 +3,7 @@ $candidates_name = "";
 if( $game_id === 'new' )
 {
   $game = new App\Models\Game;
-  $game->limit = date("Y/m/d H:i:s");
+  $game->limit = date("Y-m-d") . 'T' . date("H:i:00");
   $game->user_id = $user->id;
 }
 else
@@ -194,6 +194,22 @@ function onDelete()
 //
 function checkEdit()
 {
+  let elemTitle = document.getElementById('game_name');
+  let title = elemTitle.value.trim();
+  if( !title )
+  {
+    alert('{{ __("odds.game_title_empty") }}');
+    return false;
+  }
+
+  let elemCandidate = document.getElementById('game_candidate');
+  let candidates = elemCandidate.value.split(/\r\n|\n/);
+  if( candidates.length < 2 )
+  {
+    alert('{{ __("odds.game_needs_candidates") }}');
+    return false;
+  }
+
   return true;
 }
 

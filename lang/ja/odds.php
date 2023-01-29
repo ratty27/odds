@@ -52,6 +52,8 @@ return [
 	'game_public' => '公開',
 	'game_odds_type' => 'オッズ種別',
 	'game_edit' => 'レース編集',
+	'game_title_empty' => 'レース名を入力してください。',
+	'game_needs_candidates' => '出走者は2名以上当目区する必要があります。',
 
 	'candidate_order' => '番号',
 	'candidate_name' => '出走者',
