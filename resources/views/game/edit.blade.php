@@ -106,7 +106,7 @@ if( $user->CanEditGame() )
         <div class="btn-toolbar text-start">
           <div class="col-5">
             <input type="button" class="btn btn-secondary" onclick="onCancel();" value="{{ __('odds.admin_cancel') }}">
-            <button type="submit" class="btn btn-success">{{ __('odds.admin_save') }}</button>
+            <input type="button" class="btn btn-success" onclick="if(checkEdit()) submit();" value="{{ __('odds.admin_save') }}">
           </div>
           @php
           if( $game_id !== 'new' )
@@ -154,12 +154,19 @@ function onCancel()
   location.href = '{{ url("/mygames") }}';
 }
 
+//
 function onDelete()
 {
   if( confirm('{{ __("odds.admin_confirm_delete") }}') )
   {
     location.href = '{{ url("/delete/$game_id") }}';
   }
+}
+
+//
+function checkEdit()
+{
+  return true;
 }
 
 </script>
