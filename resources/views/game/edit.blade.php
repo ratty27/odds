@@ -50,7 +50,7 @@ if( $user->admin )
 
   <div class="container">
     @include('parts.header')
-    <h1>レース編集</h1>
+    <h1>{{ __("odds.game_edit") }}</h1>
     <form action="{{ asset('/update') }}" method="POST">
       <div class="form-group">
         <label>{{ __('odds.game_name') }}</label>

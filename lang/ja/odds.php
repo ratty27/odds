@@ -36,6 +36,7 @@ return [
 	'game_bet_save' => '<<< 予想を保存',
 	'game_list' => '<<< レース一覧',
 	'game_info_closed' => '予想受付は終了しました',
+	'game_edit' => 'レース編集',
 
 	'candidate_order' => '番号',
 	'candidate_name' => '出走者',
