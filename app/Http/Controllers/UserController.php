@@ -313,6 +313,9 @@ class UserController extends Controller
 						$user->delete();
 					}
 				}
+				// Note:
+				//	Redirect by 'GET' explicitly.
+				//	Becasue the function "redirect()" execute by 'POST', if it in 'POST' request.
 				return response()->redirectTo('/');
 			}
 		}
