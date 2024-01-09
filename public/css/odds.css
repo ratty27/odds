@@ -7,13 +7,10 @@ h3 {
 }
 
 h3:before {
-	content: "　";
-	background:
-		linear-gradient(45deg, #111 25%, transparent 25%, transparent 75%, #111 75%),
-		linear-gradient(45deg, #111 25%, transparent 25%, transparent 75%, #111 75%);
-	background-color: #FFF;
-	background-size: 12px 12px;
-	background-position: 0 0, 6px 6px;
+	background-image: url("/img/checkerflag.png");
+	background-size: 30px;
+	background-repeat: no-repeat;
+	content: "　 ";
 }
 
 h4 {
