@@ -94,6 +94,14 @@ footer {
 	padding-right: 32px;
 }
 
+.odds_vertical_rect
+{
+	white-space: pre;
+	writing-mode: vertical-rl;
+	display: inline-block;
+	width: 20px;
+}
+
 @media only screen and (max-width : 768px){
 	.odds_header {
 		font-size: 16px;

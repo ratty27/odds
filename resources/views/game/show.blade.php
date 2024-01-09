@@ -37,7 +37,7 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ __('odds.title') }}</title>
   <link rel="stylesheet" href="{{ asset('/css/bootstrap.min.css')  }}">
-  <link rel="stylesheet" href="{{ asset('/css/odds.css')  }}" >
+  <link rel="stylesheet" href="{{ asset('/css/odds.css?v=1')  }}" >
 </head>
 <div class="container">
   @include('parts.header')
@@ -264,7 +264,7 @@ function initValues()
         {
           elem.innerHTML = '<table>'
                          +   '<tr>'
-                         +     '<td class="border border-dark" rowspan="4"><div style="writing-mode: vertical-rl;">{{ __("odds.bet_win") }}</div></td>'
+                         +     '<td class="border border-dark" rowspan="4"><div class="odds_vertical_rect">{{ __("odds.bet_win") }}</div></td>'
                          +     '<td colspan="3"></td>'
                          +   '</tr>'
                          +   '<tr>'
@@ -301,7 +301,7 @@ function initValues()
           } 
           elem.innerHTML = '<table>'
                          +   '<tr>'
-                         +     '<td class="border border-dark" rowspan="4"><div style="writing-mode: vertical-rl;">{{ __("odds.bet_quinella") }}</div></td>'
+                         +     '<td class="border border-dark" rowspan="4"><div class="odds_vertical_rect">{{ __("odds.bet_quinella") }}</div></td>'
                          +     '<td colspan="3"></td>'
                          +   '</tr>'
                          +   '<tr>'
@@ -335,7 +335,7 @@ function initValues()
         {
           elem.innerHTML = '<table>'
                          +   '<tr>'
-                         +     '<td class="border border-dark" rowspan="4"><div style="writing-mode: vertical-rl;">{{ __("odds.bet_exacta") }}</div></td>'
+                         +     '<td class="border border-dark" rowspan="4"><div class="odds_vertical_rect">{{ __("odds.bet_exacta") }}</div></td>'
                          +     '<td colspan="3"></td>'
                          +   '</tr>'
                          +   '<tr>'
