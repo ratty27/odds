@@ -37,7 +37,7 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ __('odds.title') }}</title>
   <link rel="stylesheet" href="{{ asset('/css/bootstrap.min.css')  }}">
-  <link rel="stylesheet" href="{{ asset('/css/odds.css?v=1')  }}" >
+  <link rel="stylesheet" href="{{ asset('/css/odds.css?v=' . __('odds.css_ver')) }}" >
 </head>
 <div class="container">
   @include('parts.header')

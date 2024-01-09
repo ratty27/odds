@@ -1,7 +1,7 @@
 <head>
   <title>{{ __('odds.title') }}</title>
   <link rel="stylesheet" href="{{ asset('/css/bootstrap.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('/css/odds.css')  }}" >
+  <link rel="stylesheet" href="{{ asset('/css/odds.css?v=' . __('odds.css_ver')) }}" >
 <style type="text/css">
 body {
   height: 100%
