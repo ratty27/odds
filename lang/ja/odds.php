@@ -136,4 +136,7 @@ return [
 
 	'back_to_top' => 'トップへ戻る',
 	'internal_error' => '内部エラー',
+
+	// css version
+	'css_ver' => '3',
 ];
