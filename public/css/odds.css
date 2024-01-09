@@ -34,6 +34,10 @@ footer {
 	font-size: 20px;
 	color: #fff;
 	background-color: #000;
+	background-image: url("/img/enjoyodds_bg.png");
+	background-size: 370px;
+	background-position: left 0px bottom 0px;
+	background-repeat: no-repeat;
 }
 
 .odds_header a:link { color: #fff; }

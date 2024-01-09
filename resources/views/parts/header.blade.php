@@ -1,5 +1,9 @@
-<nav class="navbar fixed-top odds_header" style="padding: 0px;">
-	<div class="col-sm-3 col-md-6" style="padding: 0px; margin: 0px; vertical-align: bottom;"><a href="/"><img src='{{ asset("/img/enjoyodds.png") }}' style='width:342px;' alt='{{ __("odds.title") }}'></a></div>
+<nav class="navbar fixed-top odds_header odds_header_bg" style="padding: 0px;">
+	<div class="col-sm-3 col-md-6" style="padding: 8px 0px 8px 16px; margin: 0px; ">
+		<a href="/">
+			<img src='{{ asset("/img/enjoyodds.png") }}' style='width: 180px;' alt='{{ __("odds.title") }}'>
+		</a>
+	</div>
 	<div class="col-sm-2 col-md-2 text-end">
 		<a href="{{ asset('/user_info') }}">
 		@php
