@@ -75,16 +75,8 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
   </div>
   <div style="clear: left;"></div>
 
-  <hr>
-
-  @php
-  if( $game->status == 0 )
-  {
-  @endphp
-    <div class="text-end text-info odds_tips">{!! __("odds.info_odds") !!}</div>
-  @php
-  }
-  @endphp
+  <br>
+  <br>
 
   	<h3>{{ $game->name }}</h3>
     <div class="text-end">{!! str_replace("\n", "<br>", $game->comment) !!}</div>

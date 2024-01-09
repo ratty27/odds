@@ -43,9 +43,8 @@ $bets = App\Models\Bet::where('game_id', $game->id)->where('user_id', $user->id)
       <input type="hidden" name="game_id" value="{{ $game->id }}">
       {{ csrf_field() }}
 
-      <hr>
-
-		  <div class="text-end text-info odds_tips">{!! __("odds.info_points") !!}</div>
+		  <br>
+		  <br>
 
 	  	<h3>{{ $game->name }}</h3>
 	    <div id="caption_win"></div>
