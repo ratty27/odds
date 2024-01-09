@@ -264,7 +264,7 @@ function initValues()
         {
           elem.innerHTML = '<table>'
                          +   '<tr>'
-                         +     '<td class="border border-dark" rowspan="4"><div style="writing-mode: vertical-rl;">{{ __("odds.bet_win") }}</div></td>'
+                         +     '<td class="border border-dark" rowspan="4"><div class="odds_vertical_rect">{{ __("odds.bet_win") }}</div></td>'
                          +     '<td colspan="3"></td>'
                          +   '</tr>'
                          +   '<tr>'
@@ -301,7 +301,7 @@ function initValues()
           } 
           elem.innerHTML = '<table>'
                          +   '<tr>'
-                         +     '<td class="border border-dark" rowspan="4"><div style="writing-mode: vertical-rl;">{{ __("odds.bet_quinella") }}</div></td>'
+                         +     '<td class="border border-dark" rowspan="4"><div class="odds_vertical_rect">{{ __("odds.bet_quinella") }}</div></td>'
                          +     '<td colspan="3"></td>'
                          +   '</tr>'
                          +   '<tr>'
@@ -335,7 +335,7 @@ function initValues()
         {
           elem.innerHTML = '<table>'
                          +   '<tr>'
-                         +     '<td class="border border-dark" rowspan="4"><div style="writing-mode: vertical-rl;">{{ __("odds.bet_exacta") }}</div></td>'
+                         +     '<td class="border border-dark" rowspan="4"><div class="odds_vertical_rect">{{ __("odds.bet_exacta") }}</div></td>'
                          +     '<td colspan="3"></td>'
                          +   '</tr>'
                          +   '<tr>'

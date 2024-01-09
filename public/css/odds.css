@@ -24,6 +24,10 @@ label, input[type='checkbox'] {
 	cursor: pointer;
 }
 
+td {
+	background-clip: padding-box;
+}
+
 footer {
 	font-size: 20px;
 	color: #fff;
@@ -92,6 +96,12 @@ footer {
 .odds_right_padding32
 {
 	padding-right: 32px;
+}
+
+.odds_vertical_rect
+{
+	writing-mode: vertical-rl;
+	width: 20px;
 }
 
 @media only screen and (max-width : 768px){
