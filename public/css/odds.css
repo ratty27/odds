@@ -58,17 +58,20 @@ footer {
 	margin: 4px;
 	padding: 8px 24px;
 	background-color: #eefeee;
+	background-image: url("/img/ticket.png");
+	background-repeat: repeat;
+	background-position: 25px 0px;
 }
 
 .odds_win_ticket {
 	margin: 4px;
 	padding: 8px 24px;
-  animation: blinkAnime 1s infinite alternate;
+   animation: blinkAnime 1s infinite alternate;
 }
 
 @keyframes blinkAnime {
-   0%{ color : black; background:#ffffee }
- 100%{ color : black; background:#eefeee }
+   0%{ color : black; background:#ffffee; background-image: url("/img/ticket.png"); background-repeat: repeat; background-position: 25px 0px; }
+ 100%{ color : black; background:#eefeee; background-image: url("/img/ticket.png"); background-repeat: repeat; background-position: 25px 0px; }
 }
 
 .odds_tips {
