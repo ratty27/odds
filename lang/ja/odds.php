@@ -32,6 +32,7 @@ return [
 
 	'game_future' => '今後のレース',
 	'game_past' => '過去のレース',
+	'game_past_all' => 'すべての過去のレース >>>',
 	'game_id' => 'ID',
 	'game_name' => 'レース名',
 	'game_comment' => 'コメント',

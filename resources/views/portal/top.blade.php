@@ -129,6 +129,13 @@ if( $user->admin )
   }
   @endphp
 
+  <!-- Behinds of footer -->
+  <br>
+  <br>
+  <br>
+  <br>
+
+  <!-- Footer -->
   @include('parts.footer')
 </div>
 

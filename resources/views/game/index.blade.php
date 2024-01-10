@@ -1,6 +1,7 @@
 @php
 $games = App\Models\Game::where('status', '<', 2)->where('user_id', $game_user)->orderBy('id', 'asc')->select('id', 'name', 'limit', 'status')->get();
 $past_games = App\Models\Game::where('status', 2)->where('user_id', $game_user)->orderBy('id', 'desc')->limit(config('odds.past_game_count'))->select('id', 'name')->get();
+$past_games_num = App\Models\Game::where('status', 2)->where('user_id', $game_user)->count();
 @endphp
 
 <head>
@@ -108,6 +109,12 @@ $past_games = App\Models\Game::where('status', 2)->where('user_id', $game_user)-
       </tr>
     @endforeach
   </table>
+  @php
+  if( $past_games_num > count($past_games) )
+  {
+      echo "<div class='text-end' style='width: 100%;'><a class='btn btn-info' href='" . url("/pastgames/" . $game_user) . "'>" . __("odds.game_past_all") . "</a></div>";
+  }
+  @endphp
 
 </div>
 

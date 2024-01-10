@@ -17,7 +17,7 @@ return [
 	'dummy_exacta_points' => 4000,
 
 	// Display count of past games
-	'past_game_count' => 10,
+	'past_game_count' => 3,
 
 	// Calculate odds on an user's request
 	'calc_odds_on_request' => false,
