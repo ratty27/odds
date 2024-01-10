@@ -36,6 +36,11 @@ footer a:link { color: #7070f8; }
 footer a:visited { color: #7070f8; }
 footer a:active { color: #7070f8; }
 
+.table-striped>tbody>tr:nth-child(odd)>td, 
+.table-striped>tbody>tr:nth-child(odd)>th {
+	color: #444;
+}
+
 .odds_header {
 	font-size: 20px;
 	color: #e8e8e8;
@@ -51,7 +56,12 @@ footer a:active { color: #7070f8; }
 .odds_header a:active { color: #e8e8e8; }
 
 .odds_number {
+	color: #444;
 	background-color: #f8f8f8;
+}
+
+.odds_textcolor {
+	color: #444;
 }
 
 .odds_value {
