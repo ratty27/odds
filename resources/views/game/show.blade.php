@@ -123,13 +123,13 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
           if( $candidate->result_rank < 0 )
           {
         @endphp
-            <td class="text-center">-</td>
+            <td class="text-center align-middle odds_textcolor">-</td>
         @php
           }
           else
           {
         @endphp
-            <td class="text-center">{{ $candidate->result_rank }}</td>
+            <td class="text-center align-middle odds_textcolor">{{ $candidate->result_rank }}</td>
         @php
           }
         @endphp
