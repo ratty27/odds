@@ -24,7 +24,7 @@ $past_games = App\Models\Game::where('status', 2)->where('user_id', $game_user)-
         }
         else
         {
-          echo "<a href='/usergames/$game->user_id' class='btn btn-info'>" . __('odds.game_list') . "</a>";
+          echo "<a href='/usergames/$game_user' class='btn btn-info'>" . __('odds.game_list') . "</a>";
         }
         @endphp
       </div>
