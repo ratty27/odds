@@ -2,7 +2,7 @@
 
 return [
 
-	'title' => 'Odds - レース予想',
+	'title' => 'Enjoy Odds - みんなでレース予想',
 
 	'admin' => '管理',
 	'admin_add' => '追加',
