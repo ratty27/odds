@@ -1,30 +1,5 @@
 <nav class="navbar fixed-top odds_header">
-	<div class="col-sm-3 col-md-6 fst-italic odds_left_padding32"><a href="/">{{ __('odds.title') }}</a></div>
-	<div class="col-sm-2 col-md-2 text-end">
-		<a href="{{ asset('/user_info') }}">
-		@php
-		if( $user->authorized )
-		{
-			if( $user->name != '' )
-			{
-				echo $user->name;
-			}
-			else
-			{
-				echo __("odds.user_noname");
-			}
-		}
-		else if( !is_null($user->name) && !is_null($user->email) )
-		{
-			echo $user->name . '(' . __('odds.user_not_authorize') . ')';
-		}
-		else
-		{
-			echo __('odds.user_register');
-		}
-		@endphp
-		</a>
-	</div>
+	<div class="col-sm-3 col-md-8 fst-italic odds_left_padding32"><a href="/">{{ __('odds.title') }}</a></div>
 	<div class="col-sm-4 col-md-3 text-end" style="color:#fff;">
 		<div style="display: inline-block;">{{ __('odds.bet_points') }}:</div>
 		<div style="display: inline-block; color:#fff;" id="my_points">{{ $user->get_current_points() }}</div>
