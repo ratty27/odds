@@ -53,6 +53,7 @@ if( $user->admin )
   }
   @endphp
 
+  <!-- Informations -->
   @php
   if( count($infos) > 0 )
   {
@@ -66,11 +67,24 @@ if( $user->admin )
   }
   @endphp
 
-  <!-- Info -->
+  <!-- About this site -->
   <h3>{{ __("odds.info_about_title") }}</h3>
   <div>{!! __("odds.info_about_desc") !!}</div>
+  @php
+  if( $user->authorized < 3 )
+  {
+    echo "<a class='btn btn-primary' href='" . url("/user_info") . "'>" . __("odds.user_register") . "</a>　";
+    echo "<a class='btn btn-primary' href='" . url("/user_signin") . "'>" . __("odds.user_signin") . "</a>";
+  }
+  else
+  {
+    echo "<a class='btn btn-primary' href='" . url("/user_info") . "'>" . __("odds.user_info") . "</a>　";
+  }
+  @endphp
+  <br>
   <br>
 
+  <!-- Betted games -->
   @php
   if( count($games_mybets) > 0 )
   {
@@ -85,6 +99,7 @@ if( $user->admin )
   }
   @endphp
 
+  <!-- Past games -->
   @php
   if( count($games_mypast) > 0 )
   {
@@ -99,6 +114,7 @@ if( $user->admin )
   }
   @endphp
 
+  <!-- Featured games -->
   @php
   if( count($games_favorite) > 0 )
   {

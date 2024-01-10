@@ -24,7 +24,7 @@
           <input type='email' class='form-control' id='email' name='info_email'>
         </div>
         <div class='mb-3 text-start'>
-          <label for='password' class='form-label'>{{ __("odds.user_password_current") }}</label>
+          <label for='password' class='form-label'>{{ __("odds.user_password") }}</label>
           <input type='password' class='form-control' id='password' name='info_pass'>
         </div>
         <div style='display: flex; justify-content: space-between;'>
