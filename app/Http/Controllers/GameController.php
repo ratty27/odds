@@ -49,6 +49,20 @@ class GameController extends Controller
 	}
 
 	/**
+	 *	User's past game list
+	 */
+	public function pastgames($user_id)
+	{
+		$user = User::get_current_user();
+		if( !is_null($user) )
+		{
+			$game_user = $user_id;
+			return view('game/past', compact('user', 'game_user'));
+		}
+		return redirect('/');
+	}
+
+	/**
 	 *  Edit a game
 	 */
 	public function edit($game_id)
