@@ -107,18 +107,18 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
     <div id="caption_win"></div>
     <table class="table table-striped table-bordered">
       <tr>
-        <th class="text-center col-md-1">{{ __('odds.candidate_order') }}</th>
-        <th class="text-center col-md-6">{{ __('odds.candidate_name') }}</th>
-        <th class="text-center col-md-1">{{ __('odds.candidate_odds') }}</th>
-        <th class="text-center col-md-1">{{ __('odds.candidate_favorite') }}</th>
-        <th class="text-center col-md-1">{{ __('odds.candidate_result') }}</th>
+        <th class="text-center col-md-1 odds_textcolor">{{ __('odds.candidate_order') }}</th>
+        <th class="text-center col-md-6 odds_textcolor">{{ __('odds.candidate_name') }}</th>
+        <th class="text-center col-md-1 odds_textcolor">{{ __('odds.candidate_odds') }}</th>
+        <th class="text-center col-md-1 odds_textcolor">{{ __('odds.candidate_favorite') }}</th>
+        <th class="text-center col-md-1 odds_textcolor">{{ __('odds.candidate_result') }}</th>
       </tr>
     @foreach($candidates as $candidate)
       <tr>
         <th class="text-center align-middle odds_number">{{ $candidate->disp_order+1 }}</th>
-        <td class="text-left align-middle" style="padding-left: 20px; padding-right: 20px;">{{ $candidate->name }}</td>
-        <td class="text-center align-middle" id="odds_win_{{ $candidate->id }}"></td>
-        <td class="text-center align-middle" id="favo_win_{{ $candidate->id }}"></td>
+        <td class="text-left align-middle odds_textcolor" style="padding-left: 20px; padding-right: 20px;">{{ $candidate->name }}</td>
+        <td class="text-center align-middle odds_textcolor" id="odds_win_{{ $candidate->id }}"></td>
+        <td class="text-center align-middle odds_textcolor" id="favo_win_{{ $candidate->id }}"></td>
         @php
           if( $candidate->result_rank < 0 )
           {
