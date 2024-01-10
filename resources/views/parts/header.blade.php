@@ -1,32 +1,7 @@
 <nav class="navbar fixed-top odds_header odds_header_bg" style="padding: 0px;">
-	<div class="col-sm-3 col-md-6" style="padding: 8px 0px 8px 16px; margin: 0px; ">
+	<div class="col-sm-3 col-md-8" style="padding: 8px 0px 8px 16px; margin: 0px; ">
 		<a href="/">
 			<img src='{{ asset("/img/enjoyodds.png") }}' style='width: 180px;' alt='{{ __("odds.title") }}'>
-		</a>
-	</div>
-	<div class="col-sm-2 col-md-2 text-end">
-		<a href="{{ asset('/user_info') }}">
-		@php
-		if( $user->authorized )
-		{
-			if( $user->name != '' )
-			{
-				echo $user->name;
-			}
-			else
-			{
-				echo __("odds.user_noname");
-			}
-		}
-		else if( !is_null($user->name) && !is_null($user->email) )
-		{
-			echo $user->name . '(' . __('odds.user_not_authorize') . ')';
-		}
-		else
-		{
-			echo __('odds.user_register');
-		}
-		@endphp
 		</a>
 	</div>
 	<div class="col-sm-4 col-md-3 text-end" style="color:#fff;">
