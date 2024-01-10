@@ -1,9 +1,14 @@
+body {
+	color: #444;
+	background-color: #fff;
+}
+
 a {
 	text-decoration: none;
 }
 
 h3 {
-	border-bottom: 6px double #000;
+	border-bottom: 6px double #444;
 }
 
 h3:before {
@@ -17,7 +22,7 @@ h3:before {
 }
 
 h4 {
-	border-bottom: 3px dotted #000;
+	border-bottom: 3px dotted #444;
 }
 
 label, input[type='checkbox'] {
@@ -26,19 +31,23 @@ label, input[type='checkbox'] {
 
 footer {
 	font-size: 20px;
-	color: #fff;
-	background-color: #000;
+	color: #e8e8e8;
+	background-color: #383838;
 }
+
+footer a:link { color: #7070f8; }
+footer a:visited { color: #7070f8; }
+footer a:active { color: #7070f8; }
 
 .odds_header {
 	font-size: 20px;
-	color: #fff;
-	background-color: #000;
+	color: #e8e8e8;
+	background-color: #383838;
 }
 
-.odds_header a:link { color: #fff; }
-.odds_header a:visited { color: #fff; }
-.odds_header a:active { color: #fff; }
+.odds_header a:link { color: #e8e8e8; }
+.odds_header a:visited { color: #e8e8e8; }
+.odds_header a:active { color: #e8e8e8; }
 
 .odds_number {
 	background-color: #f8f8f8;
@@ -66,8 +75,8 @@ footer {
 }
 
 @keyframes blinkAnime {
-   0%{ color : black; background:#ffffee }
- 100%{ color : black; background:#eefeee }
+   0%{ color : #333; background:#ffffee }
+ 100%{ color : #333; background:#eefeee }
 }
 
 .odds_tips {
@@ -79,7 +88,7 @@ footer {
 .odds_checker {
 	background: linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%),
 		linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%);
-	background-color: #FFF;
+	background-color: #e8e8e8;
 	background-size: 12px 12px;
 	background-position: 0 0, 6px 6px;
 }
@@ -105,8 +114,8 @@ footer {
 @media only screen and (max-width : 768px){
 	.odds_header {
 		font-size: 16px;
-		color: #fff;
-		background-color: #000;
+		color: #e8e8e8;
+		background-color: #333;
 	}
 	.odds_left_padding32
 	{
