@@ -7,6 +7,8 @@ a {
 	text-decoration: none;
 }
 
+a.widelink { display: block; }
+
 h3 {
 	border-bottom: 6px double #444;
 }
