@@ -48,7 +48,7 @@ $past_games_num = App\Models\Game::where('status', 2)->where('user_id', $game_us
     @foreach($games as $game)
       <tr>
         <td class="align-middle">{{ $game->id }}</td>
-        <td class="align-middle">
+        <td class="align-middle text-start">
           <a href="/game/{{ $game->id }}" class="widelink">{{ $game->name }}</a>
         </td>
         <td class="align-middle">{{ $game->status == 0 ? $game->limit : __('odds.game_limit_close') }}</td>
@@ -102,7 +102,7 @@ $past_games_num = App\Models\Game::where('status', 2)->where('user_id', $game_us
     @foreach($past_games as $game)
       <tr>
         <td class="align-middle">{{ $game->id }}</td>
-        <td class="align-middle">
+        <td class="align-middle text-start">
           <a href="/game/{{ $game->id }}" class="widelink">{{ $game->name }}</a>
         </td>
         <td class="align-middle">{{ __('odds.game_limit_close') }}</td>

@@ -34,6 +34,16 @@ footer {
 	background-color: #383838;
 }
 
+li a:link { color: #444; text-decoration:underline; }
+li a:visited { color: #444; text-decoration:underline; }
+li a:active { color: #444; text-decoration:underline; }
+li a:hover { color: #888; text-decoration:underline; }
+
+td a:link { color: #444; text-decoration:underline; }
+td a:visited { color: #444; text-decoration:underline; }
+td a:active { color: #444; text-decoration:underline; }
+td a:hover { color: #888; text-decoration:underline; }
+
 footer a:link { color: #7070f8; }
 footer a:visited { color: #7070f8; }
 footer a:active { color: #7070f8; }
