@@ -39,11 +39,6 @@ li a:visited { color: #444; text-decoration:underline; }
 li a:active { color: #444; text-decoration:underline; }
 li a:hover { color: #888; text-decoration:underline; }
 
-td a:link { color: #444; text-decoration:underline; }
-td a:visited { color: #444; text-decoration:underline; }
-td a:active { color: #444; text-decoration:underline; }
-td a:hover { color: #888; text-decoration:underline; }
-
 footer a:link { color: #7070f8; }
 footer a:visited { color: #7070f8; }
 footer a:active { color: #7070f8; }
@@ -100,6 +95,11 @@ footer a:active { color: #7070f8; }
    animation: blinkAnime 1s infinite alternate;
 }
 
+.odds_link:link { color: #444; text-decoration:underline; }
+.odds_link:visited { color: #444; text-decoration:underline; }
+.odds_link:active { color: #444; text-decoration:underline; }
+.odds_link:hover { color: #888; text-decoration:underline; }
+
 @keyframes blinkAnime {
    0%{ color : #333; background:#ffffee; background-image: url("/img/ticket.png"); background-repeat: repeat; background-position: 25px 0px; }
  100%{ color : #333; background:#eefeee; background-image: url("/img/ticket.png"); background-repeat: repeat; background-position: 25px 0px; }
@@ -151,4 +151,72 @@ footer a:active { color: #7070f8; }
 	{
 		padding-right: 0px;
 	}
+}
+
+.btn-primary,
+.btn-primary:hover, .btn-primary:focus, 
+.btn-primary:active, .btn-primary:active:focus, .btn-primary:active:hover, .btn-primary:active.focus,
+.btn-primary.active, .btn-primary.active:focus, .btn-primary.active:hover, .btn-primary.active.focus,
+.open > .dropdown-toggle.btn-primary, 
+.open > .dropdown-toggle.btn-primary:hover,
+.open > .dropdown-toggle.btn-primary:focus, 
+.open > .dropdown-toggle.btn-primary.focus,
+.btn-primary.disabled:hover, .btn-primary[disabled]:hover, fieldset[disabled] .btn-primary:hover,
+.btn-primary.disabled:focus, .btn-primary[disabled]:focus, fieldset[disabled] .btn-primary:focus,
+.btn-primary.disabled.focus, .btn-primary[disabled].focus, fieldset[disabled] .btn-primary.focus
+{
+    border: none;
+    background: #40c080;
+    color: #fff;
+}
+
+.btn-info,
+.btn-info:hover, .btn-info:focus, 
+.btn-info:active, .btn-info:active:focus, .btn-info:active:hover, .btn-info:active.focus,
+.btn-info.active, .btn-info.active:focus, .btn-info.active:hover, .btn-info.active.focus,
+.open > .dropdown-toggle.btn-info, 
+.open > .dropdown-toggle.btn-info:hover,
+.open > .dropdown-toggle.btn-info:focus, 
+.open > .dropdown-toggle.btn-info.focus,
+.btn-info.disabled:hover, .btn-info[disabled]:hover, fieldset[disabled] .btn-info:hover,
+.btn-info.disabled:focus, .btn-info[disabled]:focus, fieldset[disabled] .btn-info:focus,
+.btn-info.disabled.focus, .btn-info[disabled].focus, fieldset[disabled] .btn-info.focus
+{
+    border: none;
+    background: #4080c0;
+    color: #fff;
+}
+
+.btn-danger,
+.btn-danger:hover, .btn-danger:focus, 
+.btn-danger:active, .btn-danger:active:focus, .btn-danger:active:hover, .btn-danger:active.focus,
+.btn-danger.active, .btn-danger.active:focus, .btn-danger.active:hover, .btn-danger.active.focus,
+.open > .dropdown-toggle.btn-danger, 
+.open > .dropdown-toggle.btn-danger:hover,
+.open > .dropdown-toggle.btn-danger:focus, 
+.open > .dropdown-toggle.btn-danger.focus,
+.btn-danger.disabled:hover, .btn-danger[disabled]:hover, fieldset[disabled] .btn-danger:hover,
+.btn-danger.disabled:focus, .btn-danger[disabled]:focus, fieldset[disabled] .btn-danger:focus,
+.btn-danger.disabled.focus, .btn-danger[disabled].focus, fieldset[disabled] .btn-danger.focus
+{
+    border: none;
+    background: #c04040;
+    color: #fff;
+}
+
+.btn-dark,
+.btn-dark:hover, .btn-dark:focus, 
+.btn-dark:active, .btn-dark:active:focus, .btn-dark:active:hover, .btn-dark:active.focus,
+.btn-dark.active, .btn-dark.active:focus, .btn-dark.active:hover, .btn-dark.active.focus,
+.open > .dropdown-toggle.btn-dark, 
+.open > .dropdown-toggle.btn-dark:hover,
+.open > .dropdown-toggle.btn-dark:focus, 
+.open > .dropdown-toggle.btn-dark.focus,
+.btn-dark.disabled:hover, .btn-dark[disabled]:hover, fieldset[disabled] .btn-dark:hover,
+.btn-dark.disabled:focus, .btn-dark[disabled]:focus, fieldset[disabled] .btn-dark:focus,
+.btn-dark.disabled.focus, .btn-dark[disabled].focus, fieldset[disabled] .btn-dark.focus
+{
+    border: none;
+    background: #444;
+    color: #fff;
 }
