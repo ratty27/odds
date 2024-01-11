@@ -138,8 +138,3 @@ if( $user->admin )
   <!-- Footer -->
   @include('parts.footer')
 </div>
-
-
-<script type="text/javascript">
-const pasts = {{ $games_mypast }};
-</script>
