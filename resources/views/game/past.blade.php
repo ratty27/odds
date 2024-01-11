@@ -46,8 +46,8 @@ $past_games = App\Models\Game::where('status', 2)->where('user_id', $game_user)-
     @foreach($past_games as $game)
       <tr>
         <td class="align-middle">{{ $game->id }}</td>
-        <td class="align-middle">
-          <a href="/game/{{ $game->id }}">{{ $game->name }}</a>
+        <td class="align-middle text-start">
+          <a href="/game/{{ $game->id }}" class="odds_link widelink">{{ $game->name }}</a>
         </td>
         <td class="align-middle">{{ __('odds.game_limit_close') }}</td>
       </tr>
