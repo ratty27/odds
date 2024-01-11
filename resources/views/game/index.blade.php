@@ -49,7 +49,7 @@ $past_games_num = App\Models\Game::where('status', 2)->where('user_id', $game_us
       <tr>
         <td class="align-middle">{{ $game->id }}</td>
         <td class="align-middle">
-          <a href="/game/{{ $game->id }}">{{ $game->name }}</a>
+          <a href="/game/{{ $game->id }}" class="widelink">{{ $game->name }}</a>
         </td>
         <td class="align-middle">{{ $game->status == 0 ? $game->limit : __('odds.game_limit_close') }}</td>
         @php
@@ -103,7 +103,7 @@ $past_games_num = App\Models\Game::where('status', 2)->where('user_id', $game_us
       <tr>
         <td class="align-middle">{{ $game->id }}</td>
         <td class="align-middle">
-          <a href="/game/{{ $game->id }}">{{ $game->name }}</a>
+          <a href="/game/{{ $game->id }}" class="widelink">{{ $game->name }}</a>
         </td>
         <td class="align-middle">{{ __('odds.game_limit_close') }}</td>
       </tr>
