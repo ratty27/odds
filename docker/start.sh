@@ -7,4 +7,7 @@ if [ ! -f /var/www/html/.env ]; then
     php artisan key:generate
 fi
 
-apache2-foreground
+php-fpm -D
+
+# Start Nginx in foreground
+nginx -g "daemon off;"

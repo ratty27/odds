@@ -1,5 +1,5 @@
 # Multi-stage build for Laravel application
-FROM php:8.1-apache as base
+FROM php:8.1-fpm as base
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     cron \
+    nginx \
     && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions required by Laravel
@@ -33,9 +34,8 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage \
     && chmod -R 755 /var/www/html/bootstrap/cache
 
-# Configure Apache
-RUN a2enmod rewrite
-COPY docker/apache-config.conf /etc/apache2/sites-available/000-default.conf
+# Configure Nginx
+COPY docker/nginx.conf /etc/nginx/sites-available/default
 
 # Set up cron jobs for Laravel commands
 COPY docker/crontab /etc/cron.d/laravel-cron

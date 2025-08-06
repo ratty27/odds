@@ -38,7 +38,7 @@ docker run -p 8080:80 \
 ## Configuration
 
 The Docker setup includes:
-- PHP 8.1 with Apache web server
+- PHP 8.1-FPM with Nginx web server
 - All required PHP extensions for Laravel
 - Automatic cron jobs for odds updates and email sending
 - Health checks for container monitoring
