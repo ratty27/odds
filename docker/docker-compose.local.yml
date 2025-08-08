@@ -24,6 +24,7 @@ services:
       - ../app:/var/www/html/app:delegated
       - ../routes:/var/www/html/routes:delegated
       - ../config:/var/www/html/config:delegated
+      - ../lang:/var/www/html/lang:delegated
 
   mysql:
     image: mysql:8.0
