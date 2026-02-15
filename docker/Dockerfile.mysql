@@ -1,0 +1,33 @@
+FROM rockylinux:9
+
+# Install MySQL 8.0 and required packages
+RUN dnf install -y mysql-server mysql libcap && \
+		dnf clean all
+
+# Set capabilities for mysqld to allow user switching
+RUN setcap 'cap_sys_nice+ep' /usr/sbin/mysqld 2>/dev/null || \
+		chmod u+s /usr/sbin/mysqld 2>/dev/null || true
+
+# Create MySQL data directory and runtime directory
+RUN mkdir -p /var/lib/mysql && \
+		mkdir -p /var/run/mysqld && \
+		mkdir -p /docker-entrypoint-initdb.d && \
+		chown -R mysql:mysql /var/lib/mysql /var/run/mysqld
+
+# Copy initialization and entrypoint scripts
+COPY mysql-init.sh /docker-entrypoint-initdb.d/
+COPY mysql-entrypoint.sh /usr/local/bin/
+RUN chmod +x /docker-entrypoint-initdb.d/mysql-init.sh && \
+		chmod +x /usr/local/bin/mysql-entrypoint.sh
+
+# Set environment variables
+ENV MYSQL_ROOT_PASSWORD=rootpassword
+ENV MYSQL_DATABASE=odds
+ENV MYSQL_USER=odds_user
+ENV MYSQL_PASSWORD=odds_password
+
+# Expose MySQL port
+EXPOSE 3306
+
+# Set entrypoint
+ENTRYPOINT ["/usr/local/bin/mysql-entrypoint.sh"]

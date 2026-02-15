@@ -1,33 +1,49 @@
-version: '3.8'
-
 services:
-  app:
-    build: 
-      context: ..
-      dockerfile: docker/Dockerfile
-    ports:
-      - "8080:80"
-    environment:
-      - DB_HOST=mysql
-      - DB_DATABASE=${DB_DATABASE:-odds}
-      - DB_USERNAME=${DB_USERNAME:-odds_user}
-      - DB_PASSWORD=${DB_PASSWORD:-changeme}
-    depends_on:
-      - mysql
-    volumes:
-      - ../storage:/var/www/html/storage:delegated
-
   mysql:
     image: mysql:8.0
+    container_name: odds_mysql
+    restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-changeme}
-      MYSQL_DATABASE: ${DB_DATABASE:-odds}
-      MYSQL_USER: ${DB_USERNAME:-odds_user}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-changeme}
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: odds
+      MYSQL_USER: odds_user
+      MYSQL_PASSWORD: odds_password
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./mysql-init.sh:/docker-entrypoint-initdb.d/mysql-init.sh
+    networks:
+      - odds_network
+    command: --default-authentication-plugin=mysql_native_password
+
+  nginx-php:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.nginx-php
+    container_name: odds_nginx_php
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ../:/var/www/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./php.ini:/etc/php.d/custom.ini
+      - ./env_local:/var/www/html/.env
+    depends_on:
+      - mysql
+    networks:
+      - odds_network
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: odds
+      DB_USERNAME: odds_user
+      DB_PASSWORD: odds_password
 
 volumes:
   mysql_data:
+
+networks:
+  odds_network:
+    driver: bridge

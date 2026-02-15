@@ -38,6 +38,7 @@ $ composer install
   * MAIL_ENCRYPTION=<"ssl" など>
   * MAIL_FROM_ADDRESS=<メールアドレス>
 * APP_KEY を作成
+これは Laravel フレームワークでの暗号化に使用されます。
 ```
 $ php artisan key:generate
 ```
@@ -131,3 +132,16 @@ admin が 1 になった状態でトップページにアクセスすると、�
 「馬連」... 馬連による賭けを有効にします。
 
 「馬単」... 馬単による賭けを有効にします。
+
+# Docker 開発環境について
+
+- 開始
+$ cd docker
+$ ./up.sh
+
+- composer install & migration
+$ ./setup.sh
+
+- Dockerfile を変更したあと反映させる場合
+$ ./build-up.sh
+
