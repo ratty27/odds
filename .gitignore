@@ -20,3 +20,4 @@ yarn-error.log
 /.vscode
 .cursor
 upload
+docker/env_local
