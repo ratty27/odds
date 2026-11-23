@@ -96,6 +96,9 @@ return [
 	'user_incorrent_emailpassword' => 'メールアドレスまたはパスワードに間違いがあります。',
 	'user_tickers' => 'あなたの予想',
 	'user_settings' => '設定',
+	'user_theme' => '表示テーマ',
+	'theme_light' => 'ライト',
+	'theme_dark' => 'ダーク',
 	'user_reset' => '所持ポイントリセット',
 	'user_reset_confirm' => 'すべての予想を破棄して所持ポイントをリセットします。\\nよろしいですか？',
 	'user_points_are_missing' => 'ポイントが不足しています。',
@@ -144,5 +147,5 @@ return [
 	'internal_error' => '内部エラー',
 
 	// css version
-	'css_ver' => '7',
+	'css_ver' => '9',
 ];

@@ -56,6 +56,14 @@ footer a:active { color: #7070f8; }
 .odds_header a:visited { color: #e8e8e8; }
 .odds_header a:active { color: #e8e8e8; }
 
+.odds_header_points {
+	color: #fff;
+}
+
+.odds_header_points #my_points {
+	color: #fff;
+}
+
 .odds_number {
 	color: #444;
 	background-color: #f8f8f8;
@@ -137,4 +145,219 @@ footer a:active { color: #7070f8; }
 	{
 		padding-right: 0px;
 	}
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+	color-scheme: dark;
+}
+
+[data-theme="dark"] body {
+	color: #ddd;
+	background-color: #1a1a1a;
+}
+
+[data-theme="dark"] a:not(.btn):link,
+[data-theme="dark"] a:not(.btn):visited {
+	color: #8ab4ff;
+}
+
+[data-theme="dark"] a:not(.btn):hover,
+[data-theme="dark"] a:not(.btn):active {
+	color: #a8c7ff;
+}
+
+/* Keep Bootstrap button text colors (e.g. dark text on btn-info) */
+[data-theme="dark"] a.btn:link,
+[data-theme="dark"] a.btn:visited,
+[data-theme="dark"] a.btn:hover,
+[data-theme="dark"] a.btn:active {
+	color: var(--bs-btn-color);
+}
+
+[data-theme="dark"] .odds_header a:link,
+[data-theme="dark"] .odds_header a:visited,
+[data-theme="dark"] .odds_header a:active {
+	color: #e8e8e8;
+}
+
+[data-theme="dark"] footer a:link,
+[data-theme="dark"] footer a:visited,
+[data-theme="dark"] footer a:active {
+	color: #9aa0ff;
+}
+
+[data-theme="dark"] h3 {
+	border-bottom-color: #aaa;
+}
+
+[data-theme="dark"] h3:before {
+	background:
+		linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%),
+		linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%);
+	background-color: #1a1a1a;
+	background-size: 12px 12px;
+	background-position: 0 0, 6px 6px;
+}
+
+[data-theme="dark"] h4 {
+	border-bottom-color: #888;
+}
+
+[data-theme="dark"] hr {
+	border-color: #555;
+	opacity: 1;
+}
+
+[data-theme="dark"] .table {
+	color: #ddd;
+	--bs-table-bg: transparent;
+	--bs-table-color: #ddd;
+	--bs-table-border-color: #555;
+	--bs-table-striped-bg: #2a2a2a;
+	--bs-table-striped-color: #ddd;
+	--bs-table-hover-bg: #333;
+	--bs-table-hover-color: #eee;
+}
+
+[data-theme="dark"] .table-striped>tbody>tr:nth-child(odd)>td,
+[data-theme="dark"] .table-striped>tbody>tr:nth-child(odd)>th {
+	color: #ddd;
+}
+
+[data-theme="dark"] .table-bordered>:not(caption)>* {
+	border-color: #555;
+}
+
+[data-theme="dark"] .odds_number {
+	color: #ddd;
+	background-color: #2a2a2a;
+}
+
+[data-theme="dark"] .odds_textcolor {
+	color: #ddd;
+}
+
+[data-theme="dark"] .odds_ticket {
+	background-color: #1e3a2f;
+	color: #ddd;
+}
+
+[data-theme="dark"] .odds_win_ticket {
+	animation: blinkAnimeDark 1s infinite alternate;
+}
+
+@keyframes blinkAnimeDark {
+	0% { color: #eee; background: #3a3a1e; }
+	100% { color: #eee; background: #1e3a2f; }
+}
+
+[data-theme="dark"] .odds_checker {
+	background: linear-gradient(45deg, #666 25%, transparent 25%, transparent 75%, #666 75%),
+		linear-gradient(45deg, #666 25%, transparent 25%, transparent 75%, #666 75%);
+	background-color: #2a2a2a;
+	background-size: 12px 12px;
+	background-position: 0 0, 6px 6px;
+}
+
+[data-theme="dark"] .modal-content {
+	background-color: #2a2a2a;
+	color: #ddd;
+	border-color: #555;
+}
+
+[data-theme="dark"] .modal-header,
+[data-theme="dark"] .modal-footer {
+	border-color: #555;
+}
+
+[data-theme="dark"] .modal-header .modal-title {
+	color: #eee;
+}
+
+[data-theme="dark"] .btn-close {
+	filter: invert(1) grayscale(100%);
+	opacity: 0.8;
+}
+
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select {
+	background-color: #1a1a1a;
+	color: #ddd;
+	border-color: #555;
+}
+
+[data-theme="dark"] .form-control:focus,
+[data-theme="dark"] .form-select:focus {
+	background-color: #1a1a1a;
+	color: #eee;
+	border-color: #6ea8fe;
+}
+
+[data-theme="dark"] .form-control::placeholder {
+	color: #888;
+}
+
+[data-theme="dark"] .shadow {
+	box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-theme="dark"] .border {
+	border-color: #555 !important;
+}
+
+[data-theme="dark"] .form-check-input {
+	background-color: #555;
+	border-color: #777;
+}
+
+[data-theme="dark"] .form-check-input:checked {
+	background-color: #0d6efd;
+	border-color: #0d6efd;
+}
+
+[data-theme="dark"] .list-group-item {
+	background-color: #2a2a2a;
+	color: #ddd;
+	border-color: #555;
+}
+
+[data-theme="dark"] .card {
+	background-color: #2a2a2a;
+	color: #ddd;
+	border-color: #555;
+}
+
+[data-theme="dark"] .dropdown-menu {
+	background-color: #2a2a2a;
+	color: #ddd;
+	border-color: #555;
+}
+
+[data-theme="dark"] .dropdown-item {
+	color: #ddd;
+}
+
+[data-theme="dark"] .dropdown-item:hover,
+[data-theme="dark"] .dropdown-item:focus {
+	background-color: #3a3a3a;
+	color: #fff;
+}
+
+[data-theme="dark"] input[type="datetime-local"],
+[data-theme="dark"] input[type="date"],
+[data-theme="dark"] input[type="time"],
+[data-theme="dark"] input[type="number"],
+[data-theme="dark"] input[type="text"],
+[data-theme="dark"] input[type="email"],
+[data-theme="dark"] input[type="password"],
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+	background-color: #1a1a1a;
+	color: #ddd;
+	border-color: #555;
+}
+
+[data-theme="dark"] .text-muted {
+	color: #999 !important;
 }

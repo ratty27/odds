@@ -9,6 +9,7 @@ $past_games_num = App\Models\Game::where('status', 2)->where('user_id', $game_us
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ __('odds.title') }}</title>
+  @include('parts.theme_boot')
   <link rel="stylesheet" href="{{ asset('/css/bootstrap.min.css') }}">
   <link rel="stylesheet" href="{{ asset('/css/odds.css?v=' . __('odds.css_ver')) }}" >
 </head>
