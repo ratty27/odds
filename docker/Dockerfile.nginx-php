@@ -4,14 +4,14 @@ FROM rockylinux:9
 RUN dnf update -y && \
 		dnf install -y git
 
-# Install EPEL and Remi repositories for PHP 8.2
+# Install EPEL and Remi repositories for PHP 8.5
 RUN dnf install -y epel-release && \
 		dnf install -y https://rpms.remirepo.net/enterprise/remi-release-9.rpm && \
 		dnf makecache
 
-# Enable PHP 8.2 module
+# Enable PHP 8.5 module
 RUN dnf module reset php -y && \
-		dnf module enable php:remi-8.2 -y
+		dnf module enable php:remi-8.5 -y
 
 # Install system dependencies (nginx is available in EPEL or base repo)
 # Use --allowerasing to replace curl-minimal with curl

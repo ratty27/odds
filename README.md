@@ -145,3 +145,8 @@ $ ./setup.sh
 - Dockerfile を変更したあと反映させる場合
 $ ./build-up.sh
 
+- アプリ: http://localhost:8000
+- phpMyAdmin: http://localhost:8080
+  - サーバは `mysql` 固定
+  - ログイン例: `odds_user` / `odds_password`、または `root` / `rootpassword`
+
