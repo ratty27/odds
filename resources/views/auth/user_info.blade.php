@@ -36,7 +36,7 @@ $user = App\Models\User::where('personal_id', $user_token)->first();
           echo "<form action='" . asset("/update_user") . "' method='POST'>";
           echo "<div class='mb-3 text-start'>";
           echo "<label for='nickname' class='form-label'>" . __("odds.user_nickname") . "</label>";
-          echo "<input type='text' class='form-control' id='nickname' name='info_name' value='" . $user->name . "'>";
+          echo "<input type='text' class='form-control' id='nickname' name='info_name' maxlength='16' value='" . $user->name . "'>";
           echo "</div>";
           echo "<div class='mb-3 text-start'>";
           echo "<label for='email' class='form-label'>" . __("odds.user_email") . "</label>";
@@ -65,7 +65,7 @@ $user = App\Models\User::where('personal_id', $user_token)->first();
           echo "<form action='" . asset("/register_user") ."' method='POST'>";
           echo "<div class='mb-3 text-start'>";
           echo "<label for='nickname' class='form-label'>" . __("odds.user_nickname") . "</label>";
-          echo "<input type='text' class='form-control' id='nickname' name='info_name'>";
+          echo "<input type='text' class='form-control' id='nickname' name='info_name' maxlength='16'>";
           echo "</div>";
           echo "<div class='mb-3 text-start'>";
           echo "<label for='email' class='form-label'>" . __("odds.user_email") . "</label>";
@@ -100,10 +100,31 @@ $user = App\Models\User::where('personal_id', $user_token)->first();
 
 <script type="text/javascript">
 /**
+ *  Check whether the nickname length is valid.
+ */
+function is_valid_nickname()
+{
+    let elem = document.getElementById('nickname');
+    let len = elem.value.trim().length;
+    if( len < 1 || len > 16 )
+    {
+        alert('{{ __("odds.info_nickname_length") }}');
+        return false;
+    }
+
+    return true;
+}
+
+/**
  *  Check whether the password is valid.
  */
 function is_valid_registration()
 {
+    if( !is_valid_nickname() )
+    {
+        return false;
+    }
+
     let elem0 = document.getElementById('password');
     let elem1 = document.getElementById('confirm');
     if( elem0.value != elem1.value )
@@ -133,6 +154,11 @@ function is_valid_registration()
  */
 function is_valid_infos()
 {
+    if( !is_valid_nickname() )
+    {
+        return false;
+    }
+
     let elem2 = document.getElementById('email');
     if( !elem2.value.match(/.+@.+\..+/) )
     {

@@ -83,10 +83,12 @@ class UserController extends Controller
 		$message = '';
 		DB::transaction(function () use($request, $user, &$message)
 			{
-				$user->name = $request->input('info_name');
-				if( is_null($user->name) )
+				$user->name = trim( (string)$request->input('info_name') );
+				$name_len = mb_strlen($user->name);
+				if( $name_len < 1 || $name_len > 16 )
 				{
-					$user->name = '';
+					$message = __('odds.info_nickname_length');
+					return;
 				}
 				$user->email = $request->input('info_email');
 				if( User::where('email', $user->email)->where('authorized', 3)->exists() )
@@ -134,10 +136,12 @@ class UserController extends Controller
 		$message = '';
 		DB::transaction(function () use($request, $user, &$message)
 			{
-				$user->name = trim( $request->input('info_name') );
-				if( is_null($user->name) )
+				$user->name = trim( (string)$request->input('info_name') );
+				$name_len = mb_strlen($user->name);
+				if( $name_len < 1 || $name_len > 16 )
 				{
-					$user->name = '';
+					$message = __('odds.info_nickname_length');
+					return;
 				}
 
 				// Update email address
