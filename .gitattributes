@@ -1,5 +1,11 @@
 * text=auto
 
+# Shell entrypoints must stay LF; CRLF breaks shebang on Linux/cron.
+*.sh text eol=lf
+artisan text eol=lf
+update_odds text eol=lf
+update_auth text eol=lf
+
 *.blade.php diff=html
 *.css diff=css
 *.html diff=html
