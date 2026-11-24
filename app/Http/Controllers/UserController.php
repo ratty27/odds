@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Models\Login;
 use App\Models\User;
 use App\Models\Bet;
+use App\Models\Game;
 use App\Mail\ResetPasswordMail;
 
 class UserController extends Controller
