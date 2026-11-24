@@ -22,120 +22,86 @@ if( $user->admin )
   <link rel="stylesheet" href="{{ asset('/css/bootstrap.min.css') }}">
   <link rel="stylesheet" href="{{ asset('/css/odds.css?v=' . __('odds.css_ver')) }}" >
 </head>
-<div class="container">
+<div class="container odds-portal">
   @include('parts.header')
 
-  <div style="width: 100%;">
-    @php
-    if( $user->CanEditGame() )
-    {
-    @endphp
-    <div class="position-fixed top-10 end-0">
-      <div style="float: right;"><a href="/mygames" class="btn btn-info">{{ __('odds.user_mygames') }}</a></div>
-    </div>
-    @php
-    }
-    @endphp
+  @if( $user->CanEditGame() || $user->admin )
+  <div class="odds-portal-actions">
+    @if( $user->CanEditGame() )
+      <a href="/mygames" class="btn btn-info">{{ __('odds.user_mygames') }}</a>
+    @endif
+    @if( $user->admin )
+      @if( $app_exists )
+        <a class="btn btn-info" href="{{ url('/admin_app') }}">{{ __('odds.admin_applications') }}</a>
+      @endif
+      <a class="btn btn-info" href="{{ url('/admin_edit_info') }}">{{ __('odds.admin_edit_info') }}</a>
+    @endif
   </div>
-  <div style="clear: left;"></div>
-  <br>
+  @endif
 
-  @php
-  if( $user->admin )
-  {
-    if( $app_exists )
-    {
-      echo "<a class='btn btn-info' href='" . url("/admin_app") . "'>" . __("odds.admin_applications") . "</a>";
-      echo "<br>";
-    }
-    echo "<a class='btn btn-info' href='" . url("/admin_edit_info") . "'>" . __("odds.admin_edit_info") . "</a>";
-    echo "<br>";
-    echo "<br>";
-  }
-  @endphp
+  @if( count($infos) > 0 )
+  <section class="odds-portal-section">
+    <h3>{{ __('odds.info_infos') }}</h3>
+    <ul class="odds-portal-info-list">
+      @foreach( $infos as $info )
+        <li>{{ $info->message }}</li>
+      @endforeach
+    </ul>
+  </section>
+  @endif
 
-  <!-- Informations -->
-  @php
-  if( count($infos) > 0 )
-  {
-    echo "<h3>" . __("odds.info_infos") . "</h3><ul>";
-    foreach( $infos as $info )
-    {
-      echo "<li>" . $info->message . "</li>";
-    }
-    echo "</ul>";
-    echo "<br>";
-  }
-  @endphp
+  <section class="odds-portal-section odds-portal-about">
+    <h3>{{ __('odds.info_about_title') }}</h3>
+    <div class="odds-portal-about-body">{!! __('odds.info_about_desc') !!}</div>
+    <div class="odds-portal-cta">
+      @if( $user->authorized < 3 )
+        <a class="btn btn-primary" href="{{ url('/user_info') }}">{{ __('odds.user_register') }}</a>
+        <a class="btn btn-primary" href="{{ url('/user_signin') }}">{{ __('odds.user_signin') }}</a>
+      @else
+        <a class="btn btn-primary" href="{{ url('/user_info') }}">{{ __('odds.user_info') }}</a>
+      @endif
+    </div>
+  </section>
 
-  <!-- About this site -->
-  <h3>{{ __("odds.info_about_title") }}</h3>
-  <div>{!! __("odds.info_about_desc") !!}</div>
-  @php
-  if( $user->authorized < 3 )
-  {
-    echo "<a class='btn btn-primary' href='" . url("/user_info") . "'>" . __("odds.user_register") . "</a>　";
-    echo "<a class='btn btn-primary' href='" . url("/user_signin") . "'>" . __("odds.user_signin") . "</a>";
-  }
-  else
-  {
-    echo "<a class='btn btn-primary' href='" . url("/user_info") . "'>" . __("odds.user_info") . "</a>　";
-  }
-  @endphp
-  <br>
-  <br>
-
-  <!-- Betted games -->
-  @php
-  if( count($games_mybets) > 0 )
-  {
-  @endphp
-    <h3>{{ __("odds.user_my_betted") }}</h3>
-    <ul>
+  @if( count($games_mybets) > 0 )
+  <section class="odds-portal-section">
+    <h3>{{ __('odds.user_my_betted') }}</h3>
+    <ul class="odds-portal-game-list">
       @foreach( $games_mybets as $game )
-        <li><a href='{{ url("/game/$game->id") }}'>{{ $game->name }}</a></li>
+        <li>
+          <a href="{{ url("/game/$game->id") }}">{{ $game->name }}</a>
+        </li>
       @endforeach
     </ul>
-  @php
-  }
-  @endphp
+  </section>
+  @endif
 
-  <!-- Past games -->
-  @php
-  if( count($games_mypast) > 0 )
-  {
-  @endphp
-    <h3>{{ __("odds.game_past") }}</h3>
-    <ul>
+  @if( count($games_mypast) > 0 )
+  <section class="odds-portal-section">
+    <h3>{{ __('odds.game_past') }}</h3>
+    <ul class="odds-portal-game-list">
       @foreach( $games_mypast as $game )
-        <li><a href='{{ url("/game/$game->id") }}'>{{ $game->name }}</a></li>
+        <li>
+          <a href="{{ url("/game/$game->id") }}">{{ $game->name }}</a>
+        </li>
       @endforeach
     </ul>
-  @php
-  }
-  @endphp
+  </section>
+  @endif
 
-  <!-- Featured games -->
-  @php
-  if( count($games_favorite) > 0 )
-  {
-  @endphp
-    <h3>{{ __("odds.user_favorite_games") }}</h3>
-    <ul>
+  @if( count($games_favorite) > 0 )
+  <section class="odds-portal-section">
+    <h3>{{ __('odds.user_favorite_games') }}</h3>
+    <ul class="odds-portal-game-list">
       @foreach( $games_favorite as $game )
-        <li><a href='{{ url("/game/$game->id") }}'>{{ $game->name }}</a></li>
+        <li>
+          <a href="{{ url("/game/$game->id") }}">{{ $game->name }}</a>
+        </li>
       @endforeach
     </ul>
-  @php
-  }
-  @endphp
+  </section>
+  @endif
 
-  <!-- Behinds of footer -->
-  <br>
-  <br>
-  <br>
-  <br>
-
-  <!-- Footer -->
+  <div class="odds-portal-footer-spacer"></div>
   @include('parts.footer')
 </div>
