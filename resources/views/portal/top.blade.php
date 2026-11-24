@@ -44,7 +44,7 @@ if( $user->admin )
     <h3>{{ __('odds.info_infos') }}</h3>
     <ul class="odds-portal-info-list">
       @foreach( $infos as $info )
-        <li>{{ $info->message }}</li>
+        <li>{!! $info->message !!}</li>
       @endforeach
     </ul>
   </section>
