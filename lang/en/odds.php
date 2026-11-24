@@ -147,5 +147,5 @@ return [
 	'internal_error' => 'Internal error',
 
 	// css version
-	'css_ver' => '14',
+	'css_ver' => '16',
 ];

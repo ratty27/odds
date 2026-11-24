@@ -128,6 +128,30 @@ footer a:active,
 	flex: 0 0 auto;
 }
 
+.odds_header_user {
+	display: inline-block;
+	max-width: 12rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: 0.92rem;
+	font-weight: 600;
+	color: #e8e8e8;
+}
+
+.odds_header_user:link,
+.odds_header_user:visited,
+.odds_header_user:hover,
+.odds_header_user:active {
+	color: #e8e8e8;
+}
+
+.odds_header_user:hover,
+.odds_header_user:focus {
+	opacity: 0.85;
+	text-decoration: underline;
+}
+
 .odds_header_points {
 	display: inline-flex;
 	align-items: baseline;
@@ -198,14 +222,14 @@ footer a:active,
 .odds_ticket {
 	margin: 0.35rem;
 	padding: 0.65rem 1.1rem;
-	border-radius: 8px;
+	border-radius: 0;
 	background-color: #eefeee;
 }
 
 .odds_win_ticket {
 	margin: 0.35rem;
 	padding: 0.65rem 1.1rem;
-	border-radius: 8px;
+	border-radius: 0;
 	animation: blinkAnime 1s infinite alternate;
 }
 
@@ -254,6 +278,10 @@ footer a:active,
 
 	.odds_header_inner {
 		padding: 0 0.7rem;
+	}
+
+	.odds_header_user {
+		display: none;
 	}
 
 	.odds_header_points {

@@ -5,6 +5,19 @@
       <span class="odds_header_title">{{ __('odds.title') }}</span>
     </a>
     <div class="odds_header_meta">
+      <a class="odds_header_user" href="{{ url('/user_info') }}">
+        @if( $user->authorized )
+          @if( $user->name != '' )
+            {{ $user->name }}
+          @else
+            {{ __('odds.user_noname') }}
+          @endif
+        @elseif( !is_null($user->name) && !is_null($user->email) )
+          {{ $user->name }}({{ __('odds.user_not_authorize') }})
+        @else
+          {{ __('odds.user_register') }}
+        @endif
+      </a>
       <div class="odds_header_points">
         <span class="odds_header_points_label">{{ __('odds.bet_points') }}</span>
         <span id="my_points">{{ $user->get_current_points() }}</span>
