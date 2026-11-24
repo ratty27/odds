@@ -196,14 +196,16 @@ footer a:active,
 }
 
 .odds_ticket {
-	margin: 4px;
-	padding: 8px 24px;
+	margin: 0.35rem;
+	padding: 0.65rem 1.1rem;
+	border-radius: 8px;
 	background-color: #eefeee;
 }
 
 .odds_win_ticket {
-	margin: 4px;
-	padding: 8px 24px;
+	margin: 0.35rem;
+	padding: 0.65rem 1.1rem;
+	border-radius: 8px;
 	animation: blinkAnime 1s infinite alternate;
 }
 
@@ -646,4 +648,183 @@ footer a:active,
 
 [data-theme="dark"] .odds-portal-game-list a:after {
 	color: #999;
+}
+
+/* Game detail / bet pages */
+.odds-game {
+	padding-bottom: 1.5rem;
+}
+
+.odds-game-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	align-items: center;
+	justify-content: space-between;
+	margin: 0.35rem 0 1rem;
+}
+
+.odds-game-bet .odds-game-actions {
+	justify-content: flex-start;
+}
+
+.odds-game-status {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.45rem 0.85rem;
+	border-radius: 8px;
+	background-color: #383838;
+	color: #fff;
+	font-size: 0.92rem;
+	font-weight: 600;
+}
+
+.odds-game-tip {
+	margin-bottom: 0.75rem;
+	font-size: 0.78rem;
+	color: #0d6efd;
+	text-align: right;
+}
+
+.odds-game-section {
+	margin-bottom: 1.35rem;
+}
+
+.odds-game-title {
+	margin-top: 0;
+}
+
+.odds-game-comment {
+	margin-top: -0.25rem;
+	margin-bottom: 0.25rem;
+	padding: 0.75rem 0.9rem;
+	border: 1px solid #e0e0e0;
+	border-radius: 8px;
+	background-color: #fff;
+	line-height: 1.6;
+	text-align: right;
+}
+
+.odds-game-tickets {
+	gap: 0.15rem;
+}
+
+.odds-game-caption {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.35rem 1rem;
+	margin-bottom: 0.65rem;
+}
+
+.odds-game-caption h4 {
+	margin: 0;
+	padding-bottom: 0;
+	border-bottom: none;
+}
+
+.odds-game-caption-desc {
+	font-size: 0.85rem;
+	color: #777;
+}
+
+.odds-game-table-wrap {
+	border: 1px solid #e0e0e0;
+	border-radius: 10px;
+	overflow: hidden;
+	background-color: #fff;
+}
+
+.odds-game-table {
+	margin-bottom: 0;
+}
+
+.odds-game-table > :not(caption) > * > * {
+	padding: 0.65rem 0.7rem;
+}
+
+.odds-game-candidate-name {
+	padding-left: 1rem !important;
+	padding-right: 1rem !important;
+}
+
+.odds-game-matrix-host {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+.odds-game-matrix-wrap {
+	border: 1px solid #e0e0e0;
+	border-radius: 10px;
+	overflow: auto;
+	background-color: #fff;
+}
+
+.odds-game-matrix {
+	margin-bottom: 0;
+	background-color: #fff;
+}
+
+.odds-game-matrix .odds_value {
+	padding: 0.55rem 0.45rem;
+}
+
+.odds-game-matrix-label {
+	font-size: 0.8rem;
+	color: #666;
+	background-color: #f8f8f8;
+}
+
+.odds-game .odds_bet {
+	padding: 0.35rem;
+}
+
+.odds-game .odds_bet .form-control {
+	border-radius: 8px;
+	min-width: 4.5rem;
+}
+
+@media only screen and (max-width : 768px) {
+	.odds-game-actions {
+		justify-content: stretch;
+	}
+
+	.odds-game-actions .btn,
+	.odds-game-status {
+		flex: 1 1 auto;
+		text-align: center;
+		justify-content: center;
+	}
+
+	.odds-game-caption {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+}
+
+[data-theme="dark"] .odds-game-status {
+	background-color: #555;
+}
+
+[data-theme="dark"] .odds-game-tip {
+	color: #8ab4ff;
+}
+
+[data-theme="dark"] .odds-game-comment,
+[data-theme="dark"] .odds-game-table-wrap,
+[data-theme="dark"] .odds-game-matrix-wrap,
+[data-theme="dark"] .odds-game-matrix {
+	background-color: #222;
+	border-color: #555;
+}
+
+[data-theme="dark"] .odds-game-caption-desc {
+	color: #999;
+}
+
+[data-theme="dark"] .odds-game-matrix-label {
+	color: #bbb;
+	background-color: #2a2a2a;
 }

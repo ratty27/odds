@@ -40,126 +40,90 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
   <link rel="stylesheet" href="{{ asset('/css/bootstrap.min.css')  }}">
   <link rel="stylesheet" href="{{ asset('/css/odds.css?v=' . __('odds.css_ver')) }}" >
 </head>
-<div class="container">
+<div class="container odds-game">
   @include('parts.header')
-  <div style="width: 100%;">
-    <div class="position-fixed top-10 start-0">
-      <div style="float: left">
-        @php
-        if( $game->user_id == $user->id )
-        {
-          echo "<a href='/mygames' class='btn btn-info'>" . __('odds.game_list') . "</a>";
-        }
-        else
-        {
-          echo "<a href='/usergames/$game->user_id' class='btn btn-info'>" . __('odds.game_list') . "</a>";
-        }
-        @endphp
-      </div>
-    </div>
-    <div class="position-fixed top-10 end-0">
-    @php
-    if( $game->status == 0 )
-    {
-    @endphp
-      <div style="float: right;"><a href="/bet/{{ $game->id }}" class="btn btn-info">{{ __('odds.game_bet') }}</a></div>
-    @php
-    }
-    else
-    {
-    @endphp
-      <div class="btn btn-dark" style="float: right;">{{ __('odds.game_info_closed') }}</div>
-    @php
-    }
-    @endphp
-    </div>
+
+  <div class="odds-game-actions">
+    @if( $game->user_id == $user->id )
+      <a href="/mygames" class="btn btn-info">{{ __('odds.game_list') }}</a>
+    @else
+      <a href="/usergames/{{ $game->user_id }}" class="btn btn-info">{{ __('odds.game_list') }}</a>
+    @endif
+
+    @if( $game->status == 0 )
+      <a href="/bet/{{ $game->id }}" class="btn btn-info">{{ __('odds.game_bet') }}</a>
+    @else
+      <span class="odds-game-status">{{ __('odds.game_info_closed') }}</span>
+    @endif
   </div>
-  <div style="clear: left;"></div>
 
-  <hr>
+  @if( $game->status == 0 )
+    <div class="odds-game-tip">{!! __('odds.info_odds') !!}</div>
+  @endif
 
-  @php
-  if( $game->status == 0 )
-  {
-  @endphp
-    <div class="text-end text-info odds_tips">{!! __("odds.info_odds") !!}</div>
-  @php
-  }
-  @endphp
+  <section class="odds-game-section">
+    <h3 class="odds-game-title">{{ $game->name }}</h3>
+    @if( strlen(trim($game->comment)) > 0 )
+      <div class="odds-game-comment">{!! str_replace("\n", "<br>", $game->comment) !!}</div>
+    @endif
+  </section>
 
-  	<h3>{{ $game->name }}</h3>
-    <div class="text-end">{!! str_replace("\n", "<br>", $game->comment) !!}</div>
-
-    @php
-    if( count($bets) > 0 )
-    {
-    @endphp
-      <h4>{{ __('odds.user_tickers') }}</h4>
-      <div class='d-flex flex-row flex-wrap bd-highlight'>
+  @if( count($bets) > 0 )
+  <section class="odds-game-section">
+    <h4>{{ __('odds.user_tickers') }}</h4>
+    <div class="odds-game-tickets d-flex flex-row flex-wrap">
       @foreach($bets as $bet)
-        <div class='border shadow-sm odds_ticket' id='bet_ticket_{{ $bet->id }}'></div>
+        <div class="border shadow-sm odds_ticket" id="bet_ticket_{{ $bet->id }}"></div>
       @endforeach
-      </div>
-      <hr>
-    @php
-    }
-    @endphp
+    </div>
+  </section>
+  @endif
 
+  <section class="odds-game-section">
     <div id="caption_win"></div>
-    <table class="table table-striped table-bordered">
-      <tr>
-        <th class="text-center col-md-1 odds_textcolor">{{ __('odds.candidate_order') }}</th>
-        <th class="text-center col-md-6 odds_textcolor">{{ __('odds.candidate_name') }}</th>
-        <th class="text-center col-md-1 odds_textcolor">{{ __('odds.candidate_odds') }}</th>
-        <th class="text-center col-md-1 odds_textcolor">{{ __('odds.candidate_favorite') }}</th>
-        <th class="text-center col-md-1 odds_textcolor">{{ __('odds.candidate_result') }}</th>
-      </tr>
-    @foreach($candidates as $candidate)
-      <tr>
-        <th class="text-center align-middle odds_number">{{ $candidate->disp_order+1 }}</th>
-        <td class="text-left align-middle odds_textcolor" style="padding-left: 20px; padding-right: 20px;">{{ $candidate->name }}</td>
-        <td class="text-center align-middle odds_textcolor" id="odds_win_{{ $candidate->id }}"></td>
-        <td class="text-center align-middle odds_textcolor" id="favo_win_{{ $candidate->id }}"></td>
-        @php
-          if( $candidate->result_rank < 0 )
-          {
-        @endphp
+    <div class="odds-game-table-wrap">
+      <table class="table table-striped table-bordered odds-game-table mb-0">
+        <tr>
+          <th class="text-center col-md-1 odds_textcolor">{{ __('odds.candidate_order') }}</th>
+          <th class="text-center col-md-6 odds_textcolor">{{ __('odds.candidate_name') }}</th>
+          <th class="text-center col-md-1 odds_textcolor">{{ __('odds.candidate_odds') }}</th>
+          <th class="text-center col-md-1 odds_textcolor">{{ __('odds.candidate_favorite') }}</th>
+          <th class="text-center col-md-1 odds_textcolor">{{ __('odds.candidate_result') }}</th>
+        </tr>
+        @foreach($candidates as $candidate)
+        <tr>
+          <th class="text-center align-middle odds_number">{{ $candidate->disp_order+1 }}</th>
+          <td class="align-middle odds_textcolor odds-game-candidate-name">{{ $candidate->name }}</td>
+          <td class="text-center align-middle odds_textcolor" id="odds_win_{{ $candidate->id }}"></td>
+          <td class="text-center align-middle odds_textcolor" id="favo_win_{{ $candidate->id }}"></td>
+          @if( $candidate->result_rank < 0 )
             <td class="text-center align-middle odds_textcolor">-</td>
-        @php
-          }
-          else
-          {
-        @endphp
+          @else
             <td class="text-center align-middle odds_textcolor">{{ $candidate->result_rank }}</td>
-        @php
-          }
-        @endphp
-        </td>
-      </tr>
-    @endforeach
-    </table>
+          @endif
+        </tr>
+        @endforeach
+      </table>
+    </div>
+  </section>
 
-    <hr>
+  @if( $game->is_enabled(1) )
+  <section class="odds-game-section">
+    <div id="caption_quinella"></div>
+    <div id="odds_quinella" class="odds-game-matrix-host"></div>
+  </section>
+  @endif
 
-    @php
-    if( $game->is_enabled(1) )
-    {
-      echo '<div id="caption_quinella"></div>';
-      echo '<div id="odds_quinella"></div>';
-    }
-
-    if( $game->is_enabled(2) )
-    {
-      echo '<div id="caption_exacta"></div>';
-      echo '<div id="odds_exacta"></div>';
-    }
-    @endphp
-
-  <hr>
+  @if( $game->is_enabled(2) )
+  <section class="odds-game-section">
+    <div id="caption_exacta"></div>
+    <div id="odds_exacta" class="odds-game-matrix-host"></div>
+  </section>
+  @endif
 
 </div>
 
-<script src="{{ asset('/js/odds_util.js') }}"></script>
+<script src="{{ asset('/js/odds_util.js?v=' . __('odds.css_ver')) }}"></script>
 <script type="text/javascript">
 const TXT_POINTS = '{{ __("odds.bet_points") }}';
 var candidates = <?php echo json_encode($candidates); ?>;
@@ -184,24 +148,14 @@ function initValues()
 {
   // Odds layout
   layout_odds_caption( "caption_win", "{{ __('odds.bet_win') }}", "{{ __('odds.info_win') }}" );
-  @php
-  if( $game->is_enabled(1) )
-  {
-  @endphp
+  @if( $game->is_enabled(1) )
     layout_odds_caption( "caption_quinella", "{{ __('odds.bet_quinella') }}", "{{ __('odds.info_quinella') }}" );
     layout_quinella("odds_quinella", candidates, false);
-  @php
-  }
-  @endphp
-  @php
-  if( $game->is_enabled(2) )
-  {
-  @endphp
+  @endif
+  @if( $game->is_enabled(2) )
     layout_odds_caption( "caption_exacta", "{{ __('odds.bet_exacta') }}", "{{ __('odds.info_exacta') }}" );
     layout_exacta("odds_exacta", candidates, false);
-  @php
-  }
-  @endphp
+  @endif
 
   // Odds & Favorites
   // win
@@ -220,10 +174,7 @@ function initValues()
     }
   }
   // quinella
-  @php
-  if( $game->is_enabled(1) )
-  {
-  @endphp
+  @if( $game->is_enabled(1) )
     for( let i = 0; i < odds1.length; ++i )
     {
       let elem = document.getElementById('odds_quinella_' + odds1[i].candidate_id0 + '_' + odds1[i].candidate_id1);
@@ -232,14 +183,9 @@ function initValues()
         elem.innerHTML = get_disp_odds( odds1[i].odds );
       }
     }
-  @php
-  }
-  @endphp
+  @endif
   // exacta
-  @php
-  if( $game->is_enabled(2) )
-  {
-  @endphp
+  @if( $game->is_enabled(2) )
     for( let i = 0; i < odds2.length; ++i )
     {
       let elem = document.getElementById('odds_exacta_' + odds2[i].candidate_id0 + '_' + odds2[i].candidate_id1);
@@ -248,9 +194,7 @@ function initValues()
         elem.innerHTML = get_disp_odds( odds2[i].odds );
       }
     }
-  @php
-  }
-  @endphp
+  @endif
 
   // Bets
   for( let i = 0; i < bets.length; ++i )
@@ -299,7 +243,7 @@ function initValues()
             let tmp = can0;
             can0 = can1;
             can1 = tmp;
-          } 
+          }
           elem.innerHTML = '<table>'
                          +   '<tr>'
                          +     '<td class="border border-dark" rowspan="4"><div class="odds_vertical_rect">{{ __("odds.bet_quinella") }}</div></td>'
