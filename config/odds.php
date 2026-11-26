@@ -26,7 +26,7 @@ return [
 	'interval_calc_odds' => '5 min',
 
 	// Confirm robot
-	'confirm_robot' => true,
+	'confirm_robot' => false,
 
 	// Cookie expire minutes
 	'cookie_expires' => 60*24*365,

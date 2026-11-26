@@ -2,7 +2,7 @@
 
 return [
 
-	'title' => 'Odds - Race Prediction',
+	'title' => 'EnjoyOdds',
 
 	'admin' => 'Admin',
 	'admin_add' => 'Add',
