@@ -12,11 +12,10 @@ $candidates = App\Models\Candidate::where('game_id', $game_id)
   ->orderBy('disp_order', 'asc')
   ->select('id', 'name', 'disp_order', 'result_rank')
   ->get();
-// Past race results for candidates (same organizer, finished games)
+// Race results for candidates (same organizer, finished games including current)
 $candidate_history = App\Models\Candidate::get_past_results(
   $game->user_id,
-  $candidates->pluck('name')->all(),
-  $game->id
+  $candidates->pluck('name')->all()
 );
 // Odds for win
 $odds0 = App\Models\Odd::where('game_id', $game_id)->where('type', 0)

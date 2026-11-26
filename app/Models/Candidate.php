@@ -29,15 +29,15 @@ class Candidate extends Model
 	}
 
 	/**
-	 *	Get past race results for candidate names under the same organizer.
+	 *	Get race results for candidate names under the same organizer.
+	 *	Includes finished races (status=2) that have ranks, including the current race.
 	 *	Results are keyed by candidate name.
 	 *
 	 *	@param	int		$owner_user_id		Game organizer user id
 	 *	@param	array	$names				Candidate names to look up
-	 *	@param	int		$exclude_game_id	Current game id to exclude
 	 *	@return	array	[ name => [ ['game_name' => string, 'result_rank' => int], ... ], ... ]
 	 */
-	public static function get_past_results($owner_user_id, $names, $exclude_game_id)
+	public static function get_past_results($owner_user_id, $names)
 	{
 		$result = [];
 		if( count($names) == 0 )
@@ -49,7 +49,6 @@ class Candidate extends Model
 			->join('games', 'candidates.game_id', '=', 'games.id')
 			->where('games.user_id', $owner_user_id)
 			->where('games.status', 2)
-			->where('games.id', '!=', $exclude_game_id)
 			->whereIn('candidates.name', $names)
 			->where('candidates.result_rank', '>=', 0)
 			->orderBy('games.id', 'desc')
