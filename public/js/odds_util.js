@@ -144,3 +144,85 @@ function layout_exacta(elemId, candidates, forBet)
 		elem.innerHTML = layout;
 	}
 }
+
+/**
+ *	Show past race results for a candidate name in a modal.
+ *
+ *	@param	string	name			Candidate name
+ *	@param	object	historyMap		{ name: [ {game_name, result_rank}, ... ], ... }
+ *	@param	string	titlePrefix		Modal title prefix (e.g. "Past results")
+ */
+function showCandidateHistory(name, historyMap, titlePrefix)
+{
+	let modalElem = document.getElementById('CandidateHistory');
+	if( !modalElem )
+	{
+		return;
+	}
+
+	let titleElem = document.getElementById('CandidateHistoryLabel');
+	if( titleElem )
+	{
+		titleElem.textContent = titlePrefix + ' - ' + name;
+	}
+
+	let emptyElem = document.getElementById('candidate_history_empty');
+	let wrapElem = document.getElementById('candidate_history_table_wrap');
+	let bodyElem = document.getElementById('candidate_history_body');
+	if( !emptyElem || !wrapElem || !bodyElem )
+	{
+		return;
+	}
+
+	let rows = (historyMap && historyMap[name]) ? historyMap[name] : [];
+	bodyElem.innerHTML = '';
+	if( rows.length == 0 )
+	{
+		emptyElem.classList.remove('d-none');
+		wrapElem.classList.add('d-none');
+	}
+	else
+	{
+		emptyElem.classList.add('d-none');
+		wrapElem.classList.remove('d-none');
+		for( let i = 0; i < rows.length; ++i )
+		{
+			let tr = document.createElement('tr');
+			let tdName = document.createElement('td');
+			tdName.className = 'align-middle';
+			tdName.textContent = rows[i].game_name;
+			let tdRank = document.createElement('td');
+			tdRank.className = 'text-center align-middle';
+			tdRank.textContent = '' + rows[i].result_rank;
+			tr.appendChild(tdName);
+			tr.appendChild(tdRank);
+			bodyElem.appendChild(tr);
+		}
+	}
+
+	let modal = bootstrap.Modal.getOrCreateInstance(modalElem);
+	modal.show();
+}
+
+/**
+ *	Bind click handlers for candidate history links.
+ *
+ *	@param	object	historyMap		{ name: [ {game_name, result_rank}, ... ], ... }
+ *	@param	string	titlePrefix		Modal title prefix
+ */
+function bindCandidateHistoryLinks(historyMap, titlePrefix)
+{
+	let links = document.querySelectorAll('.odds-candidate-history-link');
+	for( let i = 0; i < links.length; ++i )
+	{
+		links[i].addEventListener('click', function(ev)
+		{
+			ev.preventDefault();
+			let name = this.getAttribute('data-name');
+			if( name )
+			{
+				showCandidateHistory(name, historyMap, titlePrefix);
+			}
+		});
+	}
+}

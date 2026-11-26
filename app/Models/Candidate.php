@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use App\Models\Bet;
 use App\Models\Odd;
 
@@ -25,5 +26,48 @@ class Candidate extends Model
 		 ->orWhere('candidate_id2', $this->id)
 		 ->delete();
 		$this->delete();
+	}
+
+	/**
+	 *	Get past race results for candidate names under the same organizer.
+	 *	Results are keyed by candidate name.
+	 *
+	 *	@param	int		$owner_user_id		Game organizer user id
+	 *	@param	array	$names				Candidate names to look up
+	 *	@param	int		$exclude_game_id	Current game id to exclude
+	 *	@return	array	[ name => [ ['game_name' => string, 'result_rank' => int], ... ], ... ]
+	 */
+	public static function get_past_results($owner_user_id, $names, $exclude_game_id)
+	{
+		$result = [];
+		if( count($names) == 0 )
+		{
+			return $result;
+		}
+
+		$rows = DB::table('candidates')
+			->join('games', 'candidates.game_id', '=', 'games.id')
+			->where('games.user_id', $owner_user_id)
+			->where('games.status', 2)
+			->where('games.id', '!=', $exclude_game_id)
+			->whereIn('candidates.name', $names)
+			->where('candidates.result_rank', '>=', 0)
+			->orderBy('games.id', 'desc')
+			->select('candidates.name', 'games.name as game_name', 'candidates.result_rank')
+			->get();
+
+		foreach( $rows as $row )
+		{
+			if( !isset($result[$row->name]) )
+			{
+				$result[$row->name] = [];
+			}
+			$result[$row->name][] = [
+				'game_name' => $row->game_name,
+				'result_rank' => $row->result_rank,
+			];
+		}
+
+		return $result;
 	}
 }

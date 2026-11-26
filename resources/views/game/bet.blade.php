@@ -7,6 +7,12 @@ $candidates = App\Models\Candidate::where('game_id', $game->id)
   ->orderBy('disp_order', 'asc')
   ->select('id', 'name', 'disp_order', 'result_rank')
   ->get();
+// Past race results for candidates (same organizer, finished games)
+$candidate_history = App\Models\Candidate::get_past_results(
+  $game->user_id,
+  $candidates->pluck('name')->all(),
+  $game->id
+);
 // Odds for win
 $odds0 = App\Models\Odd::where('game_id', $game->id)->where('type', 0)
   ->select('candidate_id0', 'odds', 'favorite')
@@ -63,7 +69,9 @@ $bets = App\Models\Bet::where('game_id', $game->id)->where('user_id', $user->id)
           @foreach($candidates as $candidate)
           <tr>
             <th class="text-center align-middle odds_number">{{ $candidate->disp_order+1 }}</th>
-            <td class="align-middle odds-game-candidate-name">{{ $candidate->name }}</td>
+            <td class="align-middle odds-game-candidate-name">
+              <button type="button" class="odds-candidate-history-link" data-name="{{ $candidate->name }}">{{ $candidate->name }}</button>
+            </td>
             <td class="text-center align-middle" id="odds_win_{{ $candidate->id }}"></td>
             <td class="odds_bet">
               <input id="bet_win_{{ $candidate->id }}" name="bet_win_{{ $candidate->id }}" type="text" class="form-control" oninput="onModifyBet()" value="0">
@@ -90,14 +98,18 @@ $bets = App\Models\Bet::where('game_id', $game->id)->where('user_id', $user->id)
   </form>
 </div>
 
+@include('parts.candidate_history')
+
 <script src="{{ asset('/js/odds_util.js?v=' . __('odds.css_ver')) }}"></script>
 <script type="text/javascript">
 const TXT_POINTS = '{{ __("odds.bet_points") }}';
+const TXT_CANDIDATE_HISTORY = '{{ __("odds.candidate_history_title") }}';
 const candidates = <?php echo json_encode($candidates); ?>;
 const odds0 = <?php echo json_encode($odds0); ?>;
 const odds1 = <?php echo json_encode($odds1); ?>;
 const odds2 = <?php echo json_encode($odds2); ?>;
 const bets = <?php echo json_encode($bets); ?>;
+const candidateHistory = <?php echo json_encode($candidate_history); ?>;
 const initial_points = {{ $user->get_current_points() }};
 var input_bet_elements = [];
 
@@ -119,6 +131,8 @@ const initial_bets = calcTotalBets();
 // Initialize the values of odds, and bets.
 function initOddsBets()
 {
+  bindCandidateHistoryLinks(candidateHistory, TXT_CANDIDATE_HISTORY);
+
   // Odds layout
   layout_odds_caption( "caption_win", "{{ __('odds.bet_win') }}", "{{ __('odds.info_win') }}" );
   @if( $game->is_enabled(1) )

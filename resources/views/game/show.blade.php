@@ -12,6 +12,12 @@ $candidates = App\Models\Candidate::where('game_id', $game_id)
   ->orderBy('disp_order', 'asc')
   ->select('id', 'name', 'disp_order', 'result_rank')
   ->get();
+// Past race results for candidates (same organizer, finished games)
+$candidate_history = App\Models\Candidate::get_past_results(
+  $game->user_id,
+  $candidates->pluck('name')->all(),
+  $game->id
+);
 // Odds for win
 $odds0 = App\Models\Odd::where('game_id', $game_id)->where('type', 0)
   ->select('candidate_id0', 'odds', 'favorite')
@@ -93,7 +99,9 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
         @foreach($candidates as $candidate)
         <tr>
           <th class="text-center align-middle odds_number">{{ $candidate->disp_order+1 }}</th>
-          <td class="align-middle odds_textcolor odds-game-candidate-name">{{ $candidate->name }}</td>
+          <td class="align-middle odds_textcolor odds-game-candidate-name">
+            <button type="button" class="odds-candidate-history-link" data-name="{{ $candidate->name }}">{{ $candidate->name }}</button>
+          </td>
           <td class="text-center align-middle odds_textcolor" id="odds_win_{{ $candidate->id }}"></td>
           <td class="text-center align-middle odds_textcolor" id="favo_win_{{ $candidate->id }}"></td>
           @if( $candidate->result_rank < 0 )
@@ -123,14 +131,18 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
 
 </div>
 
+@include('parts.candidate_history')
+
 <script src="{{ asset('/js/odds_util.js?v=' . __('odds.css_ver')) }}"></script>
 <script type="text/javascript">
 const TXT_POINTS = '{{ __("odds.bet_points") }}';
+const TXT_CANDIDATE_HISTORY = '{{ __("odds.candidate_history_title") }}';
 var candidates = <?php echo json_encode($candidates); ?>;
 var odds0 = <?php echo json_encode($odds0); ?>;
 var odds1 = <?php echo json_encode($odds1); ?>;
 var odds2 = <?php echo json_encode($odds2); ?>;
 var bets = <?php echo json_encode($bets); ?>;
+var candidateHistory = <?php echo json_encode($candidate_history); ?>;
 
 function searchCadidate(canid)
 {
@@ -146,6 +158,8 @@ function searchCadidate(canid)
 
 function initValues()
 {
+  bindCandidateHistoryLinks(candidateHistory, TXT_CANDIDATE_HISTORY);
+
   // Odds layout
   layout_odds_caption( "caption_win", "{{ __('odds.bet_win') }}", "{{ __('odds.info_win') }}" );
   @if( $game->is_enabled(1) )

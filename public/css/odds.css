@@ -777,6 +777,29 @@ footer a:active,
 	padding-right: 1rem !important;
 }
 
+.odds-candidate-history-link {
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: #0d6efd;
+	font: inherit;
+	text-align: left;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.odds-candidate-history-link:hover {
+	color: #0a58ca;
+}
+
+[data-theme="dark"] .odds-candidate-history-link {
+	color: #6ea8fe;
+}
+
+[data-theme="dark"] .odds-candidate-history-link:hover {
+	color: #9ec5fe;
+}
+
 .odds-game-matrix-host {
 	display: flex;
 	flex-direction: column;

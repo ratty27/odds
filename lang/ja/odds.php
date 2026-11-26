@@ -62,6 +62,8 @@ return [
 	'candidate_favorite' => '人気',
 	'candidate_result' => '結果',
 	'candidate_ranking' => '順位',
+	'candidate_history_title' => '過去の成績',
+	'candidate_history_empty' => '過去の成績はありません。',
 
 	'bet_points' => 'ポイント',
 	'bet_win' => '単勝',
@@ -147,5 +149,5 @@ return [
 	'internal_error' => '内部エラー',
 
 	// css version
-	'css_ver' => '16',
+	'css_ver' => '17',
 ];

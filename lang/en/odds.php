@@ -62,6 +62,8 @@ return [
 	'candidate_favorite' => 'Favorite',
 	'candidate_result' => 'Result',
 	'candidate_ranking' => 'Rank',
+	'candidate_history_title' => 'Past results',
+	'candidate_history_empty' => 'No past results.',
 
 	'bet_points' => 'Points',
 	'bet_win' => 'Win',
@@ -147,5 +149,5 @@ return [
 	'internal_error' => 'Internal error',
 
 	// css version
-	'css_ver' => '16',
+	'css_ver' => '17',
 ];
