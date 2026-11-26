@@ -56,7 +56,10 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
     @endif
 
     @if( $game->status == 0 )
-      <a href="/bet/{{ $game->id }}" class="btn btn-info">{{ __('odds.game_bet') }}</a>
+      <a href="/bet/{{ $game->id }}" class="btn btn-info odds-game-bet-cta">
+        <span class="odds-game-bet-cta__label">{{ __('odds.game_bet') }}</span>
+        <span class="odds-game-bet-cta__arrow" aria-hidden="true">&gt;&gt;&gt;</span>
+      </a>
     @else
       <span class="odds-game-status">{{ __('odds.game_info_closed') }}</span>
     @endif

@@ -692,6 +692,77 @@ footer a:active,
 	margin: 0.35rem 0 1rem;
 }
 
+/* CTA: nudge right so the bet button reads as "go to the next screen" */
+.odds-game-bet-cta {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.4rem;
+	font-weight: 700;
+	box-shadow: 0 0.2rem 0.65rem rgba(13, 202, 240, 0.38);
+	animation: oddsBetCtaNudge 1.6s linear infinite;
+}
+
+.odds-game-bet-cta__arrow {
+	display: inline-block;
+	letter-spacing: 0.05em;
+	animation: oddsBetCtaArrow 1.6s linear infinite;
+}
+
+.odds-game-bet-cta:hover,
+.odds-game-bet-cta:focus-visible {
+	animation-play-state: paused;
+}
+
+.odds-game-bet-cta:hover .odds-game-bet-cta__arrow,
+.odds-game-bet-cta:focus-visible .odds-game-bet-cta__arrow {
+	animation-play-state: paused;
+	transform: translateX(0.35rem);
+}
+
+/* Slow drift right (~98%), then snap back in ~1-2 frames */
+@keyframes oddsBetCtaNudge {
+	0% {
+		transform: translateX(0);
+		box-shadow: 0 0.2rem 0.65rem rgba(13, 202, 240, 0.32);
+	}
+	98% {
+		transform: translateX(0.4rem);
+		box-shadow: 0 0.3rem 0.9rem rgba(13, 202, 240, 0.5);
+	}
+	100% {
+		transform: translateX(0);
+		box-shadow: 0 0.2rem 0.65rem rgba(13, 202, 240, 0.32);
+	}
+}
+
+@keyframes oddsBetCtaArrow {
+	0% {
+		transform: translateX(0);
+		opacity: 0.65;
+	}
+	98% {
+		transform: translateX(0.35rem);
+		opacity: 1;
+	}
+	100% {
+		transform: translateX(0);
+		opacity: 0.65;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.odds-game-bet-cta,
+	.odds-game-bet-cta__arrow {
+		animation: none;
+	}
+
+	.odds-game-bet-cta:hover .odds-game-bet-cta__arrow,
+	.odds-game-bet-cta:focus-visible .odds-game-bet-cta__arrow {
+		transform: none;
+	}
+}
+
 .odds-game-bet .odds-game-actions {
 	justify-content: flex-start;
 }

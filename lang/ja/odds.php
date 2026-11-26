@@ -42,7 +42,7 @@ return [
 	'game_limit_close' => '受付終了',
 	'game_candidate' => '出走者',
 	'game_candidate_desc' => '出走者名を改行区切りで入力してください。',
-	'game_bet' => 'このレースを予想する >>>',
+	'game_bet' => 'このレースを予想する',
 	'game_bet_save' => '<<< 予想を保存',
 	'game_list' => '<<< レース一覧',
 	'game_info_closed' => '予想受付は終了しました',
@@ -149,5 +149,5 @@ return [
 	'internal_error' => '内部エラー',
 
 	// css version
-	'css_ver' => '17',
+	'css_ver' => '19',
 ];

@@ -42,7 +42,7 @@ return [
 	'game_limit_close' => 'Closed',
 	'game_candidate' => 'Entrants',
 	'game_candidate_desc' => 'Enter entrant names separated by new lines.',
-	'game_bet' => 'Bet on this race >>>',
+	'game_bet' => 'Bet on this race',
 	'game_bet_save' => '<<< Save bets',
 	'game_list' => '<<< Race list',
 	'game_info_closed' => 'Betting is closed',
@@ -149,5 +149,5 @@ return [
 	'internal_error' => 'Internal error',
 
 	// css version
-	'css_ver' => '17',
+	'css_ver' => '19',
 ];
