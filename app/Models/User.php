@@ -81,6 +81,11 @@ class User extends Model
 	 */
 	public static function auth_login()
 	{
+		if( !config('odds.confirm_robot') )
+		{
+			return redirect('/');
+		}
+
 		$token = User::generate_token();
 		$login = new Login;
 		$login->token = $token;
