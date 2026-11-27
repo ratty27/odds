@@ -53,6 +53,8 @@ return [
 	'game_public' => 'Public',
 	'game_exclude_history' => 'Exclude from form',
 	'game_exclude_history_desc' => 'When enabled, this race result is omitted from entrant past results and recent form.',
+	'game_meta_starters' => ':count starters',
+	'game_meta_participants' => ':count predicting',
 	'game_odds_type' => 'Odds type',
 	'game_edit' => 'Edit race',
 	'game_title_empty' => 'Please enter a race name.',
@@ -152,5 +154,5 @@ return [
 	'internal_error' => 'Internal error',
 
 	// css version
-	'css_ver' => '20',
+	'css_ver' => '21',
 ];

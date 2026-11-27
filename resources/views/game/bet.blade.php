@@ -28,6 +28,8 @@ $odds2 = App\Models\Odd::where('game_id', $game->id)->where('type', 2)
 $bets = App\Models\Bet::where('game_id', $game->id)->where('user_id', $user->id)
   ->select('type', 'candidate_id0', 'candidate_id1', 'candidate_id2', 'points', 'payed')
   ->get();
+$starter_count = count($candidates);
+$participant_count = App\Models\Bet::where('game_id', $game->id)->distinct('user_id')->count();
 
 @endphp
 
@@ -53,6 +55,7 @@ $bets = App\Models\Bet::where('game_id', $game->id)->where('user_id', $user->id)
 
     <section class="odds-game-section">
       <h3 class="odds-game-title">{{ $game->name }}</h3>
+      <div class="odds-game-meta">{{ __('odds.game_meta_starters', ['count' => $starter_count]) }} / {{ __('odds.game_meta_participants', ['count' => $participant_count]) }}</div>
     </section>
 
     <section class="odds-game-section">

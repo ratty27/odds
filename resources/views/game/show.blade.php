@@ -34,6 +34,8 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
   ->orderBy('type', 'asc')->orderBy('candidate_id0', 'asc')->orderBy('candidate_id1', 'asc')->orderBy('candidate_id2', 'asc')
   ->select('id', 'type', 'candidate_id0', 'candidate_id1', 'candidate_id2', 'points', 'payed')
   ->get();
+$starter_count = count($candidates);
+$participant_count = App\Models\Bet::where('game_id', $game_id)->distinct('user_id')->count();
 
 @endphp
 <head>
@@ -71,6 +73,7 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
 
   <section class="odds-game-section">
     <h3 class="odds-game-title">{{ $game->name }}</h3>
+    <div class="odds-game-meta">{{ __('odds.game_meta_starters', ['count' => $starter_count]) }} / {{ __('odds.game_meta_participants', ['count' => $participant_count]) }}</div>
     @if( strlen(trim($game->comment)) > 0 )
       <div class="odds-game-comment">{!! str_replace("\n", "<br>", $game->comment) !!}</div>
     @endif

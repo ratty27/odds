@@ -53,6 +53,8 @@ return [
 	'game_public' => '公開',
 	'game_exclude_history' => '成績から除外',
 	'game_exclude_history_desc' => 'オンにすると、このレースの着順は出走者の過去成績・近走表示に含まれません。',
+	'game_meta_starters' => ':count頭立て',
+	'game_meta_participants' => ':count人が予想中',
 	'game_odds_type' => 'オッズ種別',
 	'game_edit' => 'レース編集',
 	'game_title_empty' => 'レース名を入力してください。',
@@ -152,5 +154,5 @@ return [
 	'internal_error' => '内部エラー',
 
 	// css version
-	'css_ver' => '20',
+	'css_ver' => '21',
 ];
