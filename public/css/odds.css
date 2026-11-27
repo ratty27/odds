@@ -245,20 +245,22 @@ footer a:active,
 	pointer-events: none;
 	z-index: 1;
 	background-repeat: no-repeat;
+	transform-origin: center center;
+	will-change: opacity, transform;
 }
 
 .odds_win_ticket::before {
 	background-image:
-		radial-gradient(circle closest-side, #ffe566 0%, rgba(255, 215, 0, 0.55) 45%, transparent 70%),
-		radial-gradient(circle closest-side, #fff 0%, rgba(255, 248, 200, 0.7) 40%, transparent 70%),
-		radial-gradient(circle closest-side, #ffd700 0%, rgba(255, 200, 0, 0.5) 45%, transparent 70%),
-		radial-gradient(circle closest-side, #fff8b0 0%, transparent 70%),
-		radial-gradient(circle closest-side, #ffe566 0%, rgba(255, 215, 0, 0.55) 45%, transparent 70%),
-		radial-gradient(circle closest-side, #fff 0%, transparent 70%),
-		radial-gradient(circle closest-side, #ffcc00 0%, rgba(255, 200, 0, 0.5) 45%, transparent 70%),
-		radial-gradient(circle closest-side, #fff8dc 0%, transparent 70%);
-	background-size: 0.5rem 0.5rem, 0.35rem 0.35rem, 0.45rem 0.45rem, 0.3rem 0.3rem,
-		0.55rem 0.55rem, 0.35rem 0.35rem, 0.45rem 0.45rem, 0.28rem 0.28rem;
+		radial-gradient(circle closest-side, #ff3b5c 0%, rgba(255, 59, 92, 0.75) 45%, transparent 72%),
+		radial-gradient(circle closest-side, #ff8a1a 0%, rgba(255, 138, 26, 0.7) 45%, transparent 72%),
+		radial-gradient(circle closest-side, #ffd400 0%, rgba(255, 212, 0, 0.75) 45%, transparent 72%),
+		radial-gradient(circle closest-side, #2ecc71 0%, rgba(46, 204, 113, 0.7) 45%, transparent 72%),
+		radial-gradient(circle closest-side, #2f9bff 0%, rgba(47, 155, 255, 0.75) 45%, transparent 72%),
+		radial-gradient(circle closest-side, #7b5cff 0%, rgba(123, 92, 255, 0.7) 45%, transparent 72%),
+		radial-gradient(circle closest-side, #ff4fd8 0%, rgba(255, 79, 216, 0.75) 45%, transparent 72%),
+		radial-gradient(circle closest-side, #ff8a1a 0%, rgba(255, 138, 26, 0.65) 45%, transparent 72%);
+	background-size: 0.58rem 0.58rem, 0.42rem 0.42rem, 0.52rem 0.52rem, 0.38rem 0.38rem,
+		0.62rem 0.62rem, 0.42rem 0.42rem, 0.5rem 0.5rem, 0.34rem 0.34rem;
 	background-position:
 		0% 14%,
 		10% 0%,
@@ -268,19 +270,19 @@ footer a:active,
 		88% 100%,
 		12% 100%,
 		0% 80%;
-	animation: oddsWinSparkleA 1.5s ease-in-out infinite;
+	animation: oddsWinSparkleA 1.2s ease-in-out infinite;
 }
 
 .odds_win_ticket::after {
 	background-image:
-		radial-gradient(circle closest-side, #fff 0%, rgba(255, 248, 200, 0.75) 40%, transparent 70%),
-		radial-gradient(circle closest-side, #ffd700 0%, rgba(255, 200, 0, 0.55) 45%, transparent 70%),
-		radial-gradient(circle closest-side, #ffe566 0%, transparent 70%),
-		radial-gradient(circle closest-side, #fff8b0 0%, rgba(255, 215, 0, 0.5) 45%, transparent 70%),
-		radial-gradient(circle closest-side, #fff 0%, transparent 70%),
-		radial-gradient(circle closest-side, #ffcc00 0%, transparent 70%);
-	background-size: 0.32rem 0.32rem, 0.48rem 0.48rem, 0.28rem 0.28rem,
-		0.42rem 0.42rem, 0.3rem 0.3rem, 0.38rem 0.38rem;
+		radial-gradient(circle closest-side, #2f9bff 0%, rgba(47, 155, 255, 0.75) 45%, transparent 72%),
+		radial-gradient(circle closest-side, #ff4fd8 0%, rgba(255, 79, 216, 0.7) 45%, transparent 72%),
+		radial-gradient(circle closest-side, #ffd400 0%, rgba(255, 212, 0, 0.75) 45%, transparent 72%),
+		radial-gradient(circle closest-side, #7b5cff 0%, rgba(123, 92, 255, 0.7) 45%, transparent 72%),
+		radial-gradient(circle closest-side, #2ecc71 0%, rgba(46, 204, 113, 0.75) 45%, transparent 72%),
+		radial-gradient(circle closest-side, #ff3b5c 0%, rgba(255, 59, 92, 0.7) 45%, transparent 72%);
+	background-size: 0.38rem 0.38rem, 0.55rem 0.55rem, 0.34rem 0.34rem,
+		0.48rem 0.48rem, 0.36rem 0.36rem, 0.44rem 0.44rem;
 	background-position:
 		0% 42%,
 		50% -2%,
@@ -288,36 +290,45 @@ footer a:active,
 		55% 102%,
 		-2% 62%,
 		102% 28%;
-	animation: oddsWinSparkleB 1.7s ease-in-out infinite;
+	animation: oddsWinSparkleB 1.2s ease-in-out infinite;
 }
 
+/* Alternate two sparkle sets so light backgrounds still show a clear twinkle */
 @keyframes oddsWinSparkleA {
 	0%, 100% {
-		opacity: 0.2;
-		filter: brightness(0.95);
+		opacity: 0;
+		transform: scale(0.7);
 	}
-	35% {
+	25% {
 		opacity: 1;
-		filter: brightness(1.35);
+		transform: scale(1.15);
 	}
-	65% {
-		opacity: 0.35;
-		filter: brightness(1.05);
+	50% {
+		opacity: 0.05;
+		transform: scale(0.75);
+	}
+	75% {
+		opacity: 0.95;
+		transform: scale(1.1);
 	}
 }
 
 @keyframes oddsWinSparkleB {
 	0%, 100% {
-		opacity: 0.15;
-		filter: brightness(0.9);
-	}
-	45% {
 		opacity: 1;
-		filter: brightness(1.4);
+		transform: scale(1.1);
+	}
+	25% {
+		opacity: 0.05;
+		transform: scale(0.75);
+	}
+	50% {
+		opacity: 0.95;
+		transform: scale(1.15);
 	}
 	75% {
-		opacity: 0.3;
-		filter: brightness(1);
+		opacity: 0;
+		transform: scale(0.7);
 	}
 }
 
@@ -325,8 +336,8 @@ footer a:active,
 	.odds_win_ticket::before,
 	.odds_win_ticket::after {
 		animation: none;
-		opacity: 0.7;
-		filter: none;
+		opacity: 0.9;
+		transform: none;
 	}
 }
 
