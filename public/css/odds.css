@@ -227,15 +227,107 @@ footer a:active,
 }
 
 .odds_win_ticket {
+	position: relative;
 	margin: 0.35rem;
 	padding: 0.65rem 1.1rem;
 	border-radius: 0;
-	animation: blinkAnime 1s infinite alternate;
+	background-color: #ffffee;
+	color: #333;
+	overflow: visible;
 }
 
-@keyframes blinkAnime {
-	0%{ color : #333; background:#ffffee }
-	100%{ color : #333; background:#eefeee }
+/* Small sparkles around a winning ticket (no card blink) */
+.odds_win_ticket::before,
+.odds_win_ticket::after {
+	content: '';
+	position: absolute;
+	inset: -0.45rem;
+	pointer-events: none;
+	z-index: 1;
+	background-repeat: no-repeat;
+}
+
+.odds_win_ticket::before {
+	background-image:
+		radial-gradient(circle closest-side, #ffe566 0%, rgba(255, 215, 0, 0.55) 45%, transparent 70%),
+		radial-gradient(circle closest-side, #fff 0%, rgba(255, 248, 200, 0.7) 40%, transparent 70%),
+		radial-gradient(circle closest-side, #ffd700 0%, rgba(255, 200, 0, 0.5) 45%, transparent 70%),
+		radial-gradient(circle closest-side, #fff8b0 0%, transparent 70%),
+		radial-gradient(circle closest-side, #ffe566 0%, rgba(255, 215, 0, 0.55) 45%, transparent 70%),
+		radial-gradient(circle closest-side, #fff 0%, transparent 70%),
+		radial-gradient(circle closest-side, #ffcc00 0%, rgba(255, 200, 0, 0.5) 45%, transparent 70%),
+		radial-gradient(circle closest-side, #fff8dc 0%, transparent 70%);
+	background-size: 0.5rem 0.5rem, 0.35rem 0.35rem, 0.45rem 0.45rem, 0.3rem 0.3rem,
+		0.55rem 0.55rem, 0.35rem 0.35rem, 0.45rem 0.45rem, 0.28rem 0.28rem;
+	background-position:
+		0% 14%,
+		10% 0%,
+		90% 0%,
+		100% 16%,
+		100% 84%,
+		88% 100%,
+		12% 100%,
+		0% 80%;
+	animation: oddsWinSparkleA 1.5s ease-in-out infinite;
+}
+
+.odds_win_ticket::after {
+	background-image:
+		radial-gradient(circle closest-side, #fff 0%, rgba(255, 248, 200, 0.75) 40%, transparent 70%),
+		radial-gradient(circle closest-side, #ffd700 0%, rgba(255, 200, 0, 0.55) 45%, transparent 70%),
+		radial-gradient(circle closest-side, #ffe566 0%, transparent 70%),
+		radial-gradient(circle closest-side, #fff8b0 0%, rgba(255, 215, 0, 0.5) 45%, transparent 70%),
+		radial-gradient(circle closest-side, #fff 0%, transparent 70%),
+		radial-gradient(circle closest-side, #ffcc00 0%, transparent 70%);
+	background-size: 0.32rem 0.32rem, 0.48rem 0.48rem, 0.28rem 0.28rem,
+		0.42rem 0.42rem, 0.3rem 0.3rem, 0.38rem 0.38rem;
+	background-position:
+		0% 42%,
+		50% -2%,
+		100% 48%,
+		55% 102%,
+		-2% 62%,
+		102% 28%;
+	animation: oddsWinSparkleB 1.7s ease-in-out infinite;
+}
+
+@keyframes oddsWinSparkleA {
+	0%, 100% {
+		opacity: 0.2;
+		filter: brightness(0.95);
+	}
+	35% {
+		opacity: 1;
+		filter: brightness(1.35);
+	}
+	65% {
+		opacity: 0.35;
+		filter: brightness(1.05);
+	}
+}
+
+@keyframes oddsWinSparkleB {
+	0%, 100% {
+		opacity: 0.15;
+		filter: brightness(0.9);
+	}
+	45% {
+		opacity: 1;
+		filter: brightness(1.4);
+	}
+	75% {
+		opacity: 0.3;
+		filter: brightness(1);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.odds_win_ticket::before,
+	.odds_win_ticket::after {
+		animation: none;
+		opacity: 0.7;
+		filter: none;
+	}
 }
 
 .odds_tips {
@@ -403,7 +495,7 @@ footer a:active,
 }
 
 [data-theme="dark"] .odds_win_ticket {
-	animation: blinkAnime 1s infinite alternate;
+	background-color: #ffffee;
 }
 
 [data-theme="dark"] .odds_checker {
