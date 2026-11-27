@@ -31,6 +31,7 @@ class Candidate extends Model
 	/**
 	 *	Get race results for candidate names under the same organizer.
 	 *	Includes finished races (status=2) that have ranks, including the current race.
+	 *	Races with exclude_history enabled are omitted.
 	 *	Results are keyed by candidate name.
 	 *
 	 *	@param	int		$owner_user_id		Game organizer user id
@@ -49,6 +50,7 @@ class Candidate extends Model
 			->join('games', 'candidates.game_id', '=', 'games.id')
 			->where('games.user_id', $owner_user_id)
 			->where('games.status', 2)
+			->where('games.exclude_history', 0)
 			->whereIn('candidates.name', $names)
 			->where('candidates.result_rank', '>=', 0)
 			->orderBy('games.id', 'desc')

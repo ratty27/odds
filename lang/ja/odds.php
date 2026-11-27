@@ -51,6 +51,8 @@ return [
 	'game_public_setting_desc' => '公開にするとトップページに掲載される場合があります。非公開にしてもトップページに掲載されないだけで、誰でも閲覧／参加可能です。',
 	'game_private' => '非公開',
 	'game_public' => '公開',
+	'game_exclude_history' => '成績から除外',
+	'game_exclude_history_desc' => 'オンにすると、このレースの着順は出走者の過去成績・近走表示に含まれません。',
 	'game_odds_type' => 'オッズ種別',
 	'game_edit' => 'レース編集',
 	'game_title_empty' => 'レース名を入力してください。',
@@ -58,6 +60,7 @@ return [
 
 	'candidate_order' => '番号',
 	'candidate_name' => '出走者',
+	'candidate_recent' => '近走',
 	'candidate_odds' => 'オッズ',
 	'candidate_favorite' => '人気',
 	'candidate_result' => '結果',
@@ -149,5 +152,5 @@ return [
 	'internal_error' => '内部エラー',
 
 	// css version
-	'css_ver' => '19',
+	'css_ver' => '20',
 ];

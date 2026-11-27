@@ -113,12 +113,13 @@ class GameController extends Controller
 						$candidate_names = array_map('trim', $candidate_names);
 
 						$pubset = intval( $request->input('game_pubsetting') );
+						$exclude_history = $request->input('game_exclude_history') ? true : false;
 
 						// Update a game info.
 						$game_id = $request->input('game_id');
 						if( $game_id === 'new' )
 						{
-							Game::new_game($user->id, $name, $limit, $comment, $enabled, $candidate_names, $pubset);
+							Game::new_game($user->id, $name, $limit, $comment, $enabled, $candidate_names, $pubset, $exclude_history);
 						}
 						else
 						{
@@ -127,7 +128,7 @@ class GameController extends Controller
 							{
 								if( $user->admin || $game->user_id == $user->id )
 								{
-									$game->update_game($name, $limit, $comment, $enabled, $candidate_names, $pubset);
+									$game->update_game($name, $limit, $comment, $enabled, $candidate_names, $pubset, $exclude_history);
 								}
 							}
 						}

@@ -848,6 +848,16 @@ footer a:active,
 	padding-right: 1rem !important;
 }
 
+.odds-game-recent {
+	white-space: nowrap;
+	font-size: 0.9em;
+	font-variant-numeric: tabular-nums;
+	min-width: 4.5ch;
+	max-width: 7ch;
+	padding-left: 0.4rem !important;
+	padding-right: 0.4rem !important;
+}
+
 .odds-candidate-history-link {
 	padding: 0;
 	border: 0;

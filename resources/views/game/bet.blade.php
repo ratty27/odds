@@ -61,16 +61,27 @@ $bets = App\Models\Bet::where('game_id', $game->id)->where('user_id', $user->id)
         <table class="table table-striped table-bordered odds-game-table mb-0">
           <tr>
             <th class="text-center col-md-1">{{ __('odds.candidate_order') }}</th>
-            <th class="text-center col-md-6">{{ __('odds.candidate_name') }}</th>
+            <th class="text-center col-md-5">{{ __('odds.candidate_name') }}</th>
+            <th class="text-center">{{ __('odds.candidate_recent') }}</th>
             <th class="text-center col-md-1">{{ __('odds.candidate_odds') }}</th>
             <th class="text-center col-md-2">{{ __('odds.bet_points') }}</th>
           </tr>
           @foreach($candidates as $candidate)
+          @php
+            $recent = $candidate_history[$candidate->name] ?? [];
+            $ranks = [];
+            for( $i = 0; $i < min(3, count($recent)); $i++ )
+            {
+              $ranks[] = $recent[$i]['result_rank'];
+            }
+            $recent_text = count($ranks) > 0 ? implode('-', $ranks) : '-';
+          @endphp
           <tr>
             <th class="text-center align-middle odds_number">{{ $candidate->disp_order+1 }}</th>
             <td class="align-middle odds-game-candidate-name">
               <button type="button" class="odds-candidate-history-link" data-name="{{ $candidate->name }}">{{ $candidate->name }}</button>
             </td>
+            <td class="text-center align-middle odds-game-recent">{{ $recent_text }}</td>
             <td class="text-center align-middle" id="odds_win_{{ $candidate->id }}"></td>
             <td class="odds_bet">
               <input id="bet_win_{{ $candidate->id }}" name="bet_win_{{ $candidate->id }}" type="text" class="form-control" oninput="onModifyBet()" value="0">

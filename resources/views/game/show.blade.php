@@ -93,17 +93,28 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
       <table class="table table-striped table-bordered odds-game-table mb-0">
         <tr>
           <th class="text-center col-md-1 odds_textcolor">{{ __('odds.candidate_order') }}</th>
-          <th class="text-center col-md-6 odds_textcolor">{{ __('odds.candidate_name') }}</th>
+          <th class="text-center col-md-5 odds_textcolor">{{ __('odds.candidate_name') }}</th>
+          <th class="text-center odds_textcolor">{{ __('odds.candidate_recent') }}</th>
           <th class="text-center col-md-1 odds_textcolor">{{ __('odds.candidate_odds') }}</th>
           <th class="text-center col-md-1 odds_textcolor">{{ __('odds.candidate_favorite') }}</th>
           <th class="text-center col-md-1 odds_textcolor">{{ __('odds.candidate_result') }}</th>
         </tr>
         @foreach($candidates as $candidate)
+        @php
+          $recent = $candidate_history[$candidate->name] ?? [];
+          $ranks = [];
+          for( $i = 0; $i < min(3, count($recent)); $i++ )
+          {
+            $ranks[] = $recent[$i]['result_rank'];
+          }
+          $recent_text = count($ranks) > 0 ? implode('-', $ranks) : '-';
+        @endphp
         <tr>
           <th class="text-center align-middle odds_number">{{ $candidate->disp_order+1 }}</th>
           <td class="align-middle odds_textcolor odds-game-candidate-name">
             <button type="button" class="odds-candidate-history-link" data-name="{{ $candidate->name }}">{{ $candidate->name }}</button>
           </td>
+          <td class="text-center align-middle odds_textcolor odds-game-recent">{{ $recent_text }}</td>
           <td class="text-center align-middle odds_textcolor" id="odds_win_{{ $candidate->id }}"></td>
           <td class="text-center align-middle odds_textcolor" id="favo_win_{{ $candidate->id }}"></td>
           @if( $candidate->result_rank < 0 )

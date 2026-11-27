@@ -51,6 +51,8 @@ return [
 	'game_public_setting_desc' => 'Public races may appear on the top page. Private races are still viewable and joinable; they are just not featured.',
 	'game_private' => 'Private',
 	'game_public' => 'Public',
+	'game_exclude_history' => 'Exclude from form',
+	'game_exclude_history_desc' => 'When enabled, this race result is omitted from entrant past results and recent form.',
 	'game_odds_type' => 'Odds type',
 	'game_edit' => 'Edit race',
 	'game_title_empty' => 'Please enter a race name.',
@@ -58,6 +60,7 @@ return [
 
 	'candidate_order' => 'No.',
 	'candidate_name' => 'Entrant',
+	'candidate_recent' => 'Form',
 	'candidate_odds' => 'Odds',
 	'candidate_favorite' => 'Favorite',
 	'candidate_result' => 'Result',
@@ -149,5 +152,5 @@ return [
 	'internal_error' => 'Internal error',
 
 	// css version
-	'css_ver' => '19',
+	'css_ver' => '20',
 ];

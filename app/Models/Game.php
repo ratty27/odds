@@ -25,7 +25,7 @@ class Game extends Model
 	/**
 	 *	Create new game
 	 */
-	public static function new_game($user_id, $name, $limit, $comment, $enabled, $candidate_names, $pubset)
+	public static function new_game($user_id, $name, $limit, $comment, $enabled, $candidate_names, $pubset, $exclude_history = false)
 	{
 		$game = new Game;
 		$game->name = $name;
@@ -38,6 +38,7 @@ class Game extends Model
 		$game->user_id = $user_id;
 		$game->next_update = date("Y/m/d H:i:s");
 		$game->exclusion_update = 0;
+		$game->exclude_history = $exclude_history ? 1 : 0;
 
 		$game->enabled = $enabled;
 
@@ -75,7 +76,7 @@ class Game extends Model
 	/**
 	 *	Update an existed game
 	 */
-	public function update_game($name, $limit, $comment, $enabled, $candidate_names, $pubset)
+	public function update_game($name, $limit, $comment, $enabled, $candidate_names, $pubset, $exclude_history = false)
 	{
 		$this->name = $name;
 		$this->limit = $limit;
@@ -87,6 +88,7 @@ class Game extends Model
 		$this->next_update = date("Y/m/d H:i:s");
 		$this->exclusion_update = 0;
 		$this->enabled = $enabled;
+		$this->exclude_history = $exclude_history ? 1 : 0;
 
 		if( $pubset == 0 )
 		{	// private

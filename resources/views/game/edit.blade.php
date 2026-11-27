@@ -106,6 +106,20 @@ if( $user->CanEditGame() )
             <option value="1">{{ __('odds.game_public') }}</option>
           </select>
         </div>
+        <div class="form-group text-start">
+          <label for="game_exclude_history" class="form-label">
+            <table style="width: 100%; table-layout: fixed;">
+              <tr>
+                <td class="col-md-3 text-start fw-bold">{{ __('odds.game_exclude_history') }}</td>
+                <td class="col-md-7 text-end">{{ __('odds.game_exclude_history_desc') }}</td>
+              </tr>
+            </table>
+          </label>
+          <div class="form-check">
+            <input type="checkbox" id="game_exclude_history" name="game_exclude_history" class="form-check-input" value="1" {{ !empty($game->exclude_history) ? 'checked' : '' }}>
+            <label class="form-check-label" for="game_exclude_history">{{ __('odds.game_exclude_history') }}</label>
+          </div>
+        </div>
         <div class="text-start fw-bold">
           {{ __('odds.game_odds_type') }}
         </div>
