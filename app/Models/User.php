@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Game;
 use App\Models\Candidate;
 use App\Models\Bet;
+use App\Odds\Turnstile;
 use App\Odds\RuleWin;
 use App\Odds\RuleQuinella;
 use App\Odds\RuleExacta;
@@ -77,11 +78,19 @@ class User extends Model
 	}
 
 	/**
+	 *	Whether first-visit user creation must pass a bot check
+	 */
+	public static function requires_bot_check()
+	{
+		return Turnstile::is_enabled() || config('odds.confirm_robot');
+	}
+
+	/**
 	 *	Authorize
 	 */
 	public static function auth_login()
 	{
-		if( !config('odds.confirm_robot') )
+		if( !self::requires_bot_check() )
 		{
 			return redirect('/');
 		}
@@ -91,7 +100,8 @@ class User extends Model
 		$login->token = $token;
 		if( $login->save() )
 		{
-			return view('auth/login', compact('token'));
+			$message = '';
+			return view('auth/login', compact('token', 'message'));
 		}
 		else
 		{

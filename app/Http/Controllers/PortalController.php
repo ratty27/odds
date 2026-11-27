@@ -19,7 +19,7 @@ class PortalController extends Controller
 		$user = User::get_current_user();
 		if( is_null($user) )
 		{
-			if( config('odds.confirm_robot') )
+			if( User::requires_bot_check() )
 			{
 				return User::auth_login();
 			}

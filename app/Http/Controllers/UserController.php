@@ -19,9 +19,23 @@ class UserController extends Controller
 	/**
 	 *  Login
 	 */
-	public function login($token)
+	public function login(Request $request, $token)
 	{
-		DB::transaction(function () use($token)
+		if( Turnstile::is_enabled() )
+		{
+			if( !Turnstile::verify($request->input('cf-turnstile-response'), $request->ip()) )
+			{
+				if( !Login::where('token', $token)->exists() )
+				{
+					return User::auth_login();
+				}
+				$message = __('odds.info_turnstile_failed');
+				return view('auth/login', compact('token', 'message'));
+			}
+		}
+
+		$created = false;
+		DB::transaction(function () use($token, &$created)
 			{
 				$login = Login::where('token', $token)->select('id')->get();
 				if( count($login) > 0 )
@@ -29,8 +43,14 @@ class UserController extends Controller
 					$login[0]->delete();
 					User::register_user($token, config('odds.initial_points'));
 					Cookie::queue('iden_token', $token, config('odds.cookie_expires'));
+					$created = true;
 				}
 			} );
+
+		if( !$created )
+		{
+			return User::auth_login();
+		}
 		return redirect('/');
 	}
 

@@ -71,13 +71,15 @@ config/odds.php
 * past_game_count ... 「過去のレース」に表示されるレース数
 * calc_odds_on_request ... ユーザのリクエストをトリガとしてオッズ更新を行うなら true
 * interval_calc_odds ... オッズ更新間隔 ※calc_odds_on_request=true の時のみ有効
-* confirm_robot ... 初めてのユーザに「私はロボットではありません」チェックを表示するなら true
+* confirm_robot ... Turnstile 未設定時に、初めてのユーザへ「私はロボットではありません」チェックを表示するなら true
 
 ※ダミーユーザは賭け数が少ない場合にもオッズを機能させるための処置で、予め全ての枠に指定のポイントが均一に賭けられているものとしてオッズの計算を行います。
 
 ## Cloudflare Turnstile
 
-ユーザ登録・ユーザ情報更新時のボット対策に [Cloudflare Turnstile](https://developers.cloudflare.com/turnstile/) を使います。
+初回ユーザ作成・ユーザ登録・ユーザ情報更新時のボット対策に [Cloudflare Turnstile](https://developers.cloudflare.com/turnstile/) を使います。
+
+`TURNSTILE_SITE_KEY` / `TURNSTILE_SECRET_KEY` が設定されている場合、Cookie 未保持の初回訪問ではユーザを即作成せず、Turnstile 通過後に作成します。ユーザ登録・情報更新でも同じキーを使います。
 
 本番運用では次が必要です。
 
@@ -90,7 +92,7 @@ TURNSTILE_SITE_KEY=<サイトキー>
 TURNSTILE_SECRET_KEY=<シークレットキー>
 ```
 
-両方空のときは検証をスキップします（ローカル開発用）。本番では必ず設定してください。未設定のままだとボット対策が無効になります。ローカル確認用の常時成功テストキーは Cloudflare ドキュメントを参照してください。
+両方空のときは検証をスキップします（ローカル開発用）。本番では必ず設定してください。未設定のままだと初回ユーザ作成ゲートを含むボット対策が無効になります。ローカル確認用の常時成功テストキーは Cloudflare ドキュメントを参照してください。
 
 `command:send-auth-mail` 実行時、ニックネームが長すぎる、または `http:` / `https:` を含むユーザは確認メールを送らず `authorized = -1`（BAN）にします。既に認証待ち／認証済みでも同条件なら BAN します。
 

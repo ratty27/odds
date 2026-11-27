@@ -25,10 +25,11 @@ return [
 	// Interval of calculate odds, if 'calc_odds_on_request' is true
 	'interval_calc_odds' => '5 min',
 
-	// Confirm robot
+	// Confirm robot checkbox when Turnstile keys are not configured
 	'confirm_robot' => false,
 
-	// Cloudflare Turnstile (empty keys disable verification)
+	// Cloudflare Turnstile (empty keys disable verification).
+	// When set, first-visit user creation requires Turnstile.
 	'turnstile_site_key' => env('TURNSTILE_SITE_KEY', ''),
 	'turnstile_secret_key' => env('TURNSTILE_SECRET_KEY', ''),
 
