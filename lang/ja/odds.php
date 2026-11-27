@@ -85,6 +85,7 @@ return [
 	'bet_quick_hint' => '0 を保存すると、このBetを取り消します。',
 	'bet_quick_submit' => 'Betする',
 	'bet_quick_cancel' => 'キャンセル',
+	'bet_payoff' => '払い戻し :points pt',
 	'bet_win' => '単勝',
 	'bet_quinella' => '馬連',
 	'bet_exacta' => '馬単',
@@ -168,5 +169,5 @@ return [
 	'internal_error' => '内部エラー',
 
 	// css version
-	'css_ver' => '29',
+	'css_ver' => '30',
 ];

@@ -85,6 +85,7 @@ return [
 	'bet_quick_hint' => 'Saving 0 clears this bet.',
 	'bet_quick_submit' => 'Place bet',
 	'bet_quick_cancel' => 'Cancel',
+	'bet_payoff' => 'Payout :points pt',
 	'bet_win' => 'Win',
 	'bet_quinella' => 'Quinella',
 	'bet_exacta' => 'Exacta',
@@ -168,5 +169,5 @@ return [
 	'internal_error' => 'Internal error',
 
 	// css version
-	'css_ver' => '29',
+	'css_ver' => '30',
 ];

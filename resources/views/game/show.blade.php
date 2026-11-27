@@ -93,7 +93,10 @@ foreach( $bets as $bet )
     <h4>{{ __('odds.user_tickers') }}</h4>
     <div class="odds-game-tickets d-flex flex-row flex-wrap">
       @foreach($bets as $bet)
-        <div class="border shadow-sm odds_ticket" id="bet_ticket_{{ $bet->id }}"></div>
+        <div class="odds-ticket-item">
+          <div class="border shadow-sm odds_ticket" id="bet_ticket_{{ $bet->id }}"></div>
+          <div class="odds-ticket-payoff" id="bet_payoff_{{ $bet->id }}" hidden></div>
+        </div>
       @endforeach
     </div>
   </section>
@@ -221,6 +224,7 @@ const TXT_BET_ACTION = '{{ __("odds.bet_action") }}';
 const TXT_CANDIDATE_HISTORY = '{{ __("odds.candidate_history_title") }}';
 const TXT_BET_QUICK_TARGET = '{{ __("odds.bet_quick_target") }}';
 const TXT_BET_QUICK_TARGET_PAIR = '{{ __("odds.bet_quick_target_pair") }}';
+const TXT_BET_PAYOFF = '{{ __("odds.bet_payoff") }}';
 const TXT_BET_QUICK_TITLE = {
   0: '{{ __("odds.bet_quick_title_win") }}',
   1: '{{ __("odds.bet_quick_title_quinella") }}',
@@ -244,6 +248,46 @@ function searchCadidate(canid)
     }
   }
   return null;
+}
+
+function findOdd(oddsList, candidateId0, candidateId1)
+{
+  for( let i = 0; i < oddsList.length; ++i )
+  {
+    if( oddsList[i].candidate_id0 != candidateId0 )
+    {
+      continue;
+    }
+    if( candidateId1 == null || oddsList[i].candidate_id1 == candidateId1 )
+    {
+      return oddsList[i];
+    }
+  }
+  return null;
+}
+
+function calcBetPayoff(points, odd)
+{
+  if( !odd )
+  {
+    return 0;
+  }
+  return Math.floor(Number(points) * Number(odd.odds));
+}
+
+function markWinningTicket(ticketElem, bet, odd)
+{
+  ticketElem.classList.remove('odds_ticket');
+  ticketElem.classList.add('odds_win_ticket');
+
+  let payoffElem = document.getElementById('bet_payoff_' + bet.id);
+  if( !payoffElem )
+  {
+    return;
+  }
+  let payoff = calcBetPayoff(bet.points, odd);
+  payoffElem.textContent = TXT_BET_PAYOFF.replace(':points', String(payoff));
+  payoffElem.hidden = false;
 }
 
 function formatQuickBetTarget(button)
@@ -431,8 +475,7 @@ function initValues()
                          +   '</tr>';
           if( bets[i].payed == 1 && can0.result_rank == 1 )
           {
-            elem.classList.remove('odds_ticket');
-            elem.classList.add('odds_win_ticket');
+            markWinningTicket(elem, bets[i], findOdd(odds0, bets[i].candidate_id0, null));
           }
         }
       }
@@ -471,8 +514,7 @@ function initValues()
              || (can0.result_rank == 2 && can1.result_rank == 1)
              || (can0.result_rank == 1 && can1.result_rank == 1) ) )  // arrive at the same time
           {
-            elem.classList.remove('odds_ticket');
-            elem.classList.add('odds_win_ticket');
+            markWinningTicket(elem, bets[i], findOdd(odds1, bets[i].candidate_id0, bets[i].candidate_id1));
           }
         }
       }
@@ -504,8 +546,7 @@ function initValues()
            && ( (can0.result_rank == 1 && can1.result_rank == 2)
              || (can0.result_rank == 1 && can1.result_rank == 1) ) )  // arrive at the same time
           {
-            elem.classList.remove('odds_ticket');
-            elem.classList.add('odds_win_ticket');
+            markWinningTicket(elem, bets[i], findOdd(odds2, bets[i].candidate_id0, bets[i].candidate_id1));
           }
         }
       }

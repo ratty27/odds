@@ -918,6 +918,26 @@ footer a:active,
 	gap: 0.15rem;
 }
 
+.odds-ticket-item {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+}
+
+.odds-ticket-payoff {
+	margin: -0.15rem 0.35rem 0.35rem;
+	padding: 0 0.2rem;
+	font-size: 0.8rem;
+	font-weight: 700;
+	line-height: 1.3;
+	text-align: center;
+	color: #b45309;
+}
+
+[data-theme="dark"] .odds-ticket-payoff {
+	color: #ffb347;
+}
+
 .odds-game-caption {
 	display: flex;
 	flex-wrap: wrap;
