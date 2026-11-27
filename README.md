@@ -42,6 +42,8 @@ $ composer install
   * MAIL_PASSWORD=<smtp サーバのパスワード>
   * MAIL_ENCRYPTION=<"ssl" など>
   * MAIL_FROM_ADDRESS=<メールアドレス>
+  * TURNSTILE_SITE_KEY=<Cloudflare Turnstile のサイトキー>（本番では必須）
+  * TURNSTILE_SECRET_KEY=<Cloudflare Turnstile のシークレットキー>（本番では必須）
 * APP_KEY を作成
 これは Laravel フレームワークでの暗号化に使用されます。
 ```
@@ -72,6 +74,25 @@ config/odds.php
 * confirm_robot ... 初めてのユーザに「私はロボットではありません」チェックを表示するなら true
 
 ※ダミーユーザは賭け数が少ない場合にもオッズを機能させるための処置で、予め全ての枠に指定のポイントが均一に賭けられているものとしてオッズの計算を行います。
+
+## Cloudflare Turnstile
+
+ユーザ登録・ユーザ情報更新時のボット対策に [Cloudflare Turnstile](https://developers.cloudflare.com/turnstile/) を使います。
+
+本番運用では次が必要です。
+
+1. [Cloudflare](https://dash.cloudflare.com/) にアカウント登録する
+2. Turnstile でサイト（ウィジェット）を作成し、サイトキーとシークレットキーを発行する
+3. 発行したキーを `.env` に書く
+
+```
+TURNSTILE_SITE_KEY=<サイトキー>
+TURNSTILE_SECRET_KEY=<シークレットキー>
+```
+
+両方空のときは検証をスキップします（ローカル開発用）。本番では必ず設定してください。未設定のままだとボット対策が無効になります。ローカル確認用の常時成功テストキーは Cloudflare ドキュメントを参照してください。
+
+`command:send-auth-mail` 実行時、ニックネームが長すぎる、または `http:` / `https:` を含むユーザは確認メールを送らず `authorized = -1`（BAN）にします。既に認証待ち／認証済みでも同条件なら BAN します。
 
 ## オッズの再計算
 

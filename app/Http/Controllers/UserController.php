@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Models\Bet;
 use App\Models\Game;
 use App\Mail\ResetPasswordMail;
+use App\Odds\Turnstile;
 
 class UserController extends Controller
 {
@@ -84,15 +85,35 @@ class UserController extends Controller
 		$message = '';
 		DB::transaction(function () use($request, $user, &$message)
 			{
-				$user->name = trim( (string)$request->input('info_name') );
-				$name_len = mb_strlen($user->name);
-				if( $name_len < 1 || $name_len > 16 )
+				if( $user->is_banned() )
+				{
+					$message = __('odds.user_banned');
+					return;
+				}
+
+				if( !Turnstile::verify($request->input('cf-turnstile-response'), $request->ip()) )
+				{
+					$message = __('odds.info_turnstile_failed');
+					return;
+				}
+
+				$name = trim( (string)$request->input('info_name') );
+				if( mb_strlen($name) < 1 )
 				{
 					$message = __('odds.info_nickname_length');
 					return;
 				}
+				if( User::is_suspicious_name($name) )
+				{
+					$user->name = $name;
+					$user->ban();
+					$message = __('odds.info_nickname_invalid');
+					return;
+				}
+
+				$user->name = $name;
 				$user->email = $request->input('info_email');
-				if( User::where('email', $user->email)->where('authorized', 3)->exists() )
+				if( User::where('email', $user->email)->where('authorized', User::AUTHORIZED_OK)->exists() )
 				{
 					$message = __('odds.user_email_exists');
 					return;
@@ -102,7 +123,7 @@ class UserController extends Controller
 				{
 					$user->token = User::make_hash( $pass );
 					$user->temp = hash('sha256', uniqid(config('app.key')) . random_int(1000000, 9999999) . 'temp');
-					$user->authorized = 1;
+					$user->authorized = User::AUTHORIZED_WAIT_SEND;
 					if( $user->save() )
 					{
 						$message = __("odds.info_confirm_email");
@@ -137,36 +158,56 @@ class UserController extends Controller
 		$message = '';
 		DB::transaction(function () use($request, $user, &$message)
 			{
-				$user->name = trim( (string)$request->input('info_name') );
-				$name_len = mb_strlen($user->name);
-				if( $name_len < 1 || $name_len > 16 )
+				if( $user->is_banned() )
+				{
+					$message = __('odds.user_banned');
+					return;
+				}
+
+				if( !Turnstile::verify($request->input('cf-turnstile-response'), $request->ip()) )
+				{
+					$message = __('odds.info_turnstile_failed');
+					return;
+				}
+
+				$name = trim( (string)$request->input('info_name') );
+				if( mb_strlen($name) < 1 )
 				{
 					$message = __('odds.info_nickname_length');
 					return;
 				}
+				if( User::is_suspicious_name($name) )
+				{
+					$user->name = $name;
+					$user->ban();
+					$message = __('odds.info_nickname_invalid');
+					return;
+				}
+
+				$user->name = $name;
 
 				// Update email address
 				$email = trim( $request->input('info_email') );
 				if( $user->email !== $email )
 				{
-					if( User::where('email', $user->email)->where('authorized', 3)->exists() )
+					if( User::where('email', $email)->where('authorized', User::AUTHORIZED_OK)->exists() )
 					{
 						$message = __('odds.user_email_exists');
 						return;
 					}
 					$user->email = $email;
-					$user->authorized = 0;
+					$user->authorized = User::AUTHORIZED_NONE;
 				}
 				// Generate a temporary token, if email isn't authorized.
-				if( $user->authorized == 0 )
+				if( $user->authorized == User::AUTHORIZED_NONE )
 				{
 					$user->temp = $user->make_temp_token();
-					$user->authorized = 1;		// Ready to send an authorize mail
+					$user->authorized = User::AUTHORIZED_WAIT_SEND;		// Ready to send an authorize mail
 				}
 
 				if( $user->update() )
 				{
-					if( $user->authorized == 1 )
+					if( $user->authorized == User::AUTHORIZED_WAIT_SEND )
 					{
 						$message = __("odds.info_confirm_email");
 					}
@@ -199,16 +240,16 @@ class UserController extends Controller
 				$user = User::where('temp', $temp)->first();
 				if( !is_null($user) )
 				{
-					if( $user->authorized == 2 )
+					if( $user->authorized == User::AUTHORIZED_WAIT_CONFIRM )
 					{
-						if( User::where('email', $user->email)->where('authorized', 3)->exists() )
+						if( User::where('email', $user->email)->where('authorized', User::AUTHORIZED_OK)->exists() )
 						{
 							$message = __('odds.user_email_exists');
 							return;
 						}
 
 						$user->temp = null;
-						$user->authorized = 3;
+						$user->authorized = User::AUTHORIZED_OK;
 						if( $user->update() )
 						{
 							Cookie::queue('iden_token', $user->personal_id, config('odds.cookie_expires'));
@@ -237,6 +278,10 @@ class UserController extends Controller
 		}
 
 		$user = User::get_current_user();
+		if( is_null($user) || $user->is_banned() )
+		{
+			return redirect('/');
+		}
 		return view('auth/change_password', compact('user'));
 	}
 
@@ -251,6 +296,10 @@ class UserController extends Controller
 		}
 
 		$user = User::get_current_user();
+		if( is_null($user) || $user->is_banned() )
+		{
+			return redirect('/');
+		}
 
 		$message = '';
 		DB::transaction(function () use($request, $user, &$message)
@@ -433,10 +482,14 @@ class UserController extends Controller
 		$user = User::get_current_user();
 		if( !is_null($user) )
 		{
+			if( $user->is_banned() )
+			{
+				return redirect('/');
+			}
 			$user->email = null;
 			$user->token = null;
 			$user->temp = null;
-			$user->authorized = 0;
+			$user->authorized = User::AUTHORIZED_NONE;
 			$user->update();
 		}
 		return redirect('/');

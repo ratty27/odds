@@ -28,6 +28,10 @@ return [
 	// Confirm robot
 	'confirm_robot' => false,
 
+	// Cloudflare Turnstile (empty keys disable verification)
+	'turnstile_site_key' => env('TURNSTILE_SITE_KEY', ''),
+	'turnstile_secret_key' => env('TURNSTILE_SECRET_KEY', ''),
+
 	// Cookie expire minutes
 	'cookie_expires' => 60*24*365,
 ];

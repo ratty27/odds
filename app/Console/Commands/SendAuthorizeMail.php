@@ -33,12 +33,29 @@ class SendAuthorizeMail extends Command
 	{
 		DB::transaction(function ()
 			{
-				$users = User::where('authorized', 1)->select('id', 'personal_id', 'temp')
-					->select('id', 'personal_id', 'email', 'temp', 'authorized')->get();
+				$users = User::whereIn('authorized', [
+						User::AUTHORIZED_WAIT_SEND,
+						User::AUTHORIZED_WAIT_CONFIRM,
+						User::AUTHORIZED_OK,
+					])
+					->select('id', 'personal_id', 'email', 'temp', 'authorized', 'name')
+					->get();
+
 				foreach( $users as $user )
 				{
+					if( User::is_suspicious_name($user->name) )
+					{
+						$user->ban();
+						continue;
+					}
+
+					if( (int)$user->authorized !== User::AUTHORIZED_WAIT_SEND )
+					{
+						continue;
+					}
+
 					Mail::to($user->email)->send(new AuthorizeMail($user->personal_id, $user->temp));
-					$user->authorized = 2;
+					$user->authorized = User::AUTHORIZED_WAIT_CONFIRM;
 					$user->update();
 				}
 			} );

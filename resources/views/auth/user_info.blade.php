@@ -1,6 +1,8 @@
 @php
 $user_token = Cookie::queued('iden_token') ? Cookie::queued('iden_token')->getValue() : Cookie::get('iden_token');
 $user = App\Models\User::where('personal_id', $user_token)->first();
+$turnstile_enabled = App\Odds\Turnstile::is_enabled();
+$turnstile_site_key = config('odds.turnstile_site_key');
 @endphp
 
 <head>
@@ -11,6 +13,9 @@ $user = App\Models\User::where('personal_id', $user_token)->first();
   @include('parts.theme_boot')
   <link rel="stylesheet" href="{{ asset('/css/bootstrap.min.css') }}">
   <link rel="stylesheet" href="{{ asset('/css/odds.css?v=' . __('odds.css_ver')) }}" >
+  @if( $turnstile_enabled )
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  @endif
 </head>
 <div class="container">
   @include('parts.header')
@@ -20,7 +25,14 @@ $user = App\Models\User::where('personal_id', $user_token)->first();
       @php
       if( $message === "" )
       {
-        echo __("odds.info_user_register");
+        if( $user->is_banned() )
+        {
+          echo __("odds.user_banned");
+        }
+        else
+        {
+          echo __("odds.info_user_register");
+        }
       }
       else
       {
@@ -31,22 +43,32 @@ $user = App\Models\User::where('personal_id', $user_token)->first();
     <br>
     <div class="col-md-8 shadow rounded" style="padding: 16px;">
         @php
-        if( $user->authorized > 0
+        if( $user->is_banned() )
+        {
+          // No form for banned users
+        }
+        else if( $user->authorized > 0
          || (!is_null($user->name) && !is_null($user->email)) )
         {
           echo "<form action='" . asset("/update_user") . "' method='POST'>";
           echo "<div class='mb-3 text-start'>";
           echo "<label for='nickname' class='form-label'>" . __("odds.user_nickname") . "</label>";
-          echo "<input type='text' class='form-control' id='nickname' name='info_name' maxlength='16' value='" . $user->name . "'>";
+          echo "<input type='text' class='form-control' id='nickname' name='info_name' maxlength='16' value='" . e($user->name) . "'>";
           echo "</div>";
           echo "<div class='mb-3 text-start'>";
           echo "<label for='email' class='form-label'>" . __("odds.user_email") . "</label>";
-          echo "<input type='email' class='form-control' id='email' name='info_email' value='" . $user->email . "'>";
+          echo "<input type='email' class='form-control' id='email' name='info_email' value='" . e($user->email) . "'>";
           if( $user->authorized < 3 )
           {
             echo "(" . __('odds.user_not_authorize') . ")";
           }
           echo "</div>";
+          if( $turnstile_enabled )
+          {
+            echo "<div class='mb-3 text-start'>";
+            echo "<div class='cf-turnstile' data-sitekey='" . e($turnstile_site_key) . "'></div>";
+            echo "</div>";
+          }
           echo "<div style='display: flex; justify-content: space-between;'>";
           echo "<div class='text-start'>";
           echo "<input type='button' class='btn btn-info' onclick='if(is_valid_infos()) submit();' value='" . __("odds.user_update") . "'>";
@@ -80,6 +102,12 @@ $user = App\Models\User::where('personal_id', $user_token)->first();
           echo "<label for='confirm' class='form-label'>" . __("odds.user_password") . __("odds.user_password_confirm") . "</label>";
           echo "<input type='password' class='form-control' id='confirm'>";
           echo "</div>";
+          if( $turnstile_enabled )
+          {
+            echo "<div class='mb-3 text-start'>";
+            echo "<div class='cf-turnstile' data-sitekey='" . e($turnstile_site_key) . "'></div>";
+            echo "</div>";
+          }
 
           echo "<div style='display: flex; justify-content: space-between;'>";
           echo "<div class='text-start'>";

@@ -146,8 +146,11 @@ return [
 	'info_incorrect_password' => 'The password is incorrect.',
 	'info_password_length' => 'Password must be 8 to 16 characters.',
 	'info_nickname_length' => 'Nickname must be 1 to 16 characters.',
+	'info_nickname_invalid' => 'The nickname contains disallowed text.',
 	'info_incorrect_email' => 'The email address is invalid.',
 	'info_confirm_email' => 'A confirmation email has been sent.<br>Please check your email and complete verification.',
+	'info_turnstile_failed' => 'Bot verification failed. Please try again.',
+	'user_banned' => 'This user is not available.',
 	'info_about_title' => 'About this site',
 	'info_about_desc' => 'This site lets friends make unofficial odds and predictions for upcoming races.<br>This is just for fun. There is no paid feature. Points can only be carried over to another race.<br><b>If you run out of points, you can always reset them to 30000pt from the gear button at the top right.</b><br><br>You do not need to register just to join. Pick a race and place your bets.<br>Creating a new race requires free registration.<br>
 		Because of how this site works, please do not use multiple accounts.',

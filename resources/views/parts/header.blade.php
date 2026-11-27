@@ -6,7 +6,9 @@
     </a>
     <div class="odds_header_meta">
       <a class="odds_header_user" href="{{ url('/user_info') }}">
-        @if( $user->authorized )
+        @if( $user->is_banned() )
+          {{ __('odds.user_banned') }}
+        @elseif( $user->authorized >= 1 )
           @if( $user->name != '' )
             {{ $user->name }}
           @else

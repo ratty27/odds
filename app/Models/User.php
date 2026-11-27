@@ -18,6 +18,13 @@ class User extends Model
 {
 	use HasFactory;
 
+	// authorized: -1=banned / 0=not authorized / 1=wait for send mail / 2=wait for user confirming / 3=authorized
+	public const AUTHORIZED_BANNED = -1;
+	public const AUTHORIZED_NONE = 0;
+	public const AUTHORIZED_WAIT_SEND = 1;
+	public const AUTHORIZED_WAIT_CONFIRM = 2;
+	public const AUTHORIZED_OK = 3;
+
 	/**
 	 *  Check whether cookie has valid token
 	 */
@@ -287,6 +294,50 @@ class User extends Model
 	 */
 	public function CanEditGame()
 	{
-		return $this->admin || $this->authorized == 3;
+		return $this->admin || $this->authorized == self::AUTHORIZED_OK;
+	}
+
+	/**
+	 *	Whether this user is banned
+	 */
+	public function is_banned()
+	{
+		return (int)$this->authorized === self::AUTHORIZED_BANNED;
+	}
+
+	/**
+	 *	Ban this user and invalidate pending auth tokens
+	 */
+	public function ban()
+	{
+		$this->authorized = self::AUTHORIZED_BANNED;
+		$this->temp = null;
+		$this->update();
+	}
+
+	/**
+	 *	Detect suspicious nicknames (plan A): too long, or contains http(s) URL scheme
+	 */
+	public static function is_suspicious_name($name)
+	{
+		if( $name === null )
+		{
+			return false;
+		}
+		$name = (string)$name;
+		if( $name === '' )
+		{
+			return false;
+		}
+		if( mb_strlen($name) > 16 )
+		{
+			return true;
+		}
+		$lower = mb_strtolower($name);
+		if( str_contains($lower, 'https:') || str_contains($lower, 'http:') )
+		{
+			return true;
+		}
+		return false;
 	}
 }
