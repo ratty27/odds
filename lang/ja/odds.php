@@ -61,6 +61,7 @@ return [
 	'game_needs_candidates' => '出走者は2名以上当目区する必要があります。',
 
 	'candidate_order' => '番号',
+	'candidate_mark' => '印',
 	'candidate_name' => '出走者',
 	'candidate_recent' => '近走',
 	'candidate_odds' => 'オッズ',
@@ -154,5 +155,5 @@ return [
 	'internal_error' => '内部エラー',
 
 	// css version
-	'css_ver' => '21',
+	'css_ver' => '22',
 ];

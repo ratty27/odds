@@ -97,6 +97,7 @@ $participant_count = App\Models\Bet::where('game_id', $game_id)->distinct('user_
         <tr>
           <th class="text-center col-md-1 odds_textcolor">{{ __('odds.candidate_order') }}</th>
           <th class="text-center col-md-5 odds_textcolor">{{ __('odds.candidate_name') }}</th>
+          <th class="text-center odds_textcolor">{{ __('odds.candidate_mark') }}</th>
           <th class="text-center odds_textcolor">{{ __('odds.candidate_recent') }}</th>
           <th class="text-center col-md-1 odds_textcolor">{{ __('odds.candidate_odds') }}</th>
           <th class="text-center col-md-1 odds_textcolor">{{ __('odds.candidate_favorite') }}</th>
@@ -117,6 +118,7 @@ $participant_count = App\Models\Bet::where('game_id', $game_id)->distinct('user_
           <td class="align-middle odds_textcolor odds-game-candidate-name">
             <button type="button" class="odds-candidate-history-link" data-name="{{ $candidate->name }}">{{ $candidate->name }}</button>
           </td>
+          <td class="text-center align-middle odds_textcolor odds-game-mark" id="mark_win_{{ $candidate->id }}"></td>
           <td class="text-center align-middle odds_textcolor odds-game-recent">{{ $recent_text }}</td>
           <td class="text-center align-middle odds_textcolor" id="odds_win_{{ $candidate->id }}"></td>
           <td class="text-center align-middle odds_textcolor" id="favo_win_{{ $candidate->id }}"></td>
@@ -201,6 +203,12 @@ function initValues()
     if( elem )
     {
       elem.innerHTML = '' + odds0[i].favorite;
+    }
+
+    elem = document.getElementById('mark_win_' + odds0[i].candidate_id0);
+    if( elem )
+    {
+      elem.innerHTML = get_favorite_mark( odds0[i].favorite );
     }
   }
   // quinella

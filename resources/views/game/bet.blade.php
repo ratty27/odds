@@ -65,6 +65,7 @@ $participant_count = App\Models\Bet::where('game_id', $game->id)->distinct('user
           <tr>
             <th class="text-center col-md-1">{{ __('odds.candidate_order') }}</th>
             <th class="text-center col-md-5">{{ __('odds.candidate_name') }}</th>
+            <th class="text-center">{{ __('odds.candidate_mark') }}</th>
             <th class="text-center">{{ __('odds.candidate_recent') }}</th>
             <th class="text-center col-md-1">{{ __('odds.candidate_odds') }}</th>
             <th class="text-center col-md-2">{{ __('odds.bet_points') }}</th>
@@ -84,6 +85,7 @@ $participant_count = App\Models\Bet::where('game_id', $game->id)->distinct('user
             <td class="align-middle odds-game-candidate-name">
               <button type="button" class="odds-candidate-history-link" data-name="{{ $candidate->name }}">{{ $candidate->name }}</button>
             </td>
+            <td class="text-center align-middle odds-game-mark" id="mark_win_{{ $candidate->id }}"></td>
             <td class="text-center align-middle odds-game-recent">{{ $recent_text }}</td>
             <td class="text-center align-middle" id="odds_win_{{ $candidate->id }}"></td>
             <td class="odds_bet">
@@ -163,11 +165,20 @@ function initOddsBets()
       // Odds
       let elem = document.getElementById('odds_win_' + candidate.id);
       elem.innerHTML = '1';
+      let markElem = document.getElementById('mark_win_' + candidate.id);
+      if( markElem )
+      {
+        markElem.innerHTML = '';
+      }
       for( let i = 0; i < odds0.length; ++i )
       {
         if( odds0[i].candidate_id0 == candidate.id )
         {
           elem.innerHTML = get_disp_odds( odds0[i].odds );
+          if( markElem )
+          {
+            markElem.innerHTML = get_favorite_mark( odds0[i].favorite );
+          }
           break;
         }
       }

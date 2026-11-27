@@ -865,6 +865,15 @@ footer a:active,
 	padding-right: 0.4rem !important;
 }
 
+.odds-game-mark {
+	white-space: nowrap;
+	font-weight: 700;
+	min-width: 2ch;
+	max-width: 2.5ch;
+	padding-left: 0.25rem !important;
+	padding-right: 0.25rem !important;
+}
+
 .odds-candidate-history-link {
 	padding: 0;
 	border: 0;

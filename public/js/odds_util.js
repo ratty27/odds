@@ -12,6 +12,31 @@ function get_disp_odds(val)
 }
 
 /**
+ *	Get popularity mark from favorite rank
+ */
+function get_favorite_mark(favorite)
+{
+	let rank = parseInt(favorite, 10);
+	if( rank == 1 )
+	{
+		return '◎';
+	}
+	if( rank == 2 )
+	{
+		return '○';
+	}
+	if( rank == 3 )
+	{
+		return '▲';
+	}
+	if( rank == 4 )
+	{
+		return '△';
+	}
+	return '';
+}
+
+/**
  *	Odds type caption
  */
 function layout_odds_caption(elemId, name, desc)

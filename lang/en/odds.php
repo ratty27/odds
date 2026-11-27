@@ -61,6 +61,7 @@ return [
 	'game_needs_candidates' => 'At least 2 entrants are required.',
 
 	'candidate_order' => 'No.',
+	'candidate_mark' => 'Mark',
 	'candidate_name' => 'Entrant',
 	'candidate_recent' => 'Form',
 	'candidate_odds' => 'Odds',
@@ -154,5 +155,5 @@ return [
 	'internal_error' => 'Internal error',
 
 	// css version
-	'css_ver' => '21',
+	'css_ver' => '22',
 ];
