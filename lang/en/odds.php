@@ -46,8 +46,8 @@ return [
 	'game_candidate_remove_row' => 'Remove',
 	'game_candidate_auto_colors' => 'Auto-assign colors',
 	'game_candidate_color' => 'Frame color',
-	'game_bet' => 'Bet on this race',
-	'game_bet_save' => '<<< Save bets',
+	'game_bet' => 'Batch bet',
+	'game_bet_save' => '<<< Save batch',
 	'game_list' => '<<< Race list',
 	'game_info_closed' => 'Betting is closed',
 	'game_register' => 'Register a new race',
@@ -76,6 +76,15 @@ return [
 	'candidate_history_empty' => 'No past results.',
 
 	'bet_points' => 'Points',
+	'bet_action' => 'Bet',
+	'bet_quick_title_win' => 'Bet Win',
+	'bet_quick_title_quinella' => 'Bet Quinella',
+	'bet_quick_title_exacta' => 'Bet Exacta',
+	'bet_quick_target' => ':order :name',
+	'bet_quick_target_pair' => ':order0 :name0 - :order1 :name1',
+	'bet_quick_hint' => 'Saving 0 clears this bet.',
+	'bet_quick_submit' => 'Place bet',
+	'bet_quick_cancel' => 'Cancel',
 	'bet_win' => 'Win',
 	'bet_quinella' => 'Quinella',
 	'bet_exacta' => 'Exacta',
@@ -159,5 +168,5 @@ return [
 	'internal_error' => 'Internal error',
 
 	// css version
-	'css_ver' => '25',
+	'css_ver' => '27',
 ];

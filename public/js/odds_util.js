@@ -103,11 +103,44 @@ function make_quinella_tag(prefix, id0, id1)
 }
 
 /**
+ *	Escape a value for an HTML attribute
+ */
+function escape_attr(value)
+{
+	return String(value)
+		.replace(/&/g, '&amp;')
+		.replace(/"/g, '&quot;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;');
+}
+
+/**
+ *	Make a quick-bet odds cell button
+ */
+function make_matrix_quick_bet_cell(oddsTag, type, id0, id1, order0, name0, order1, name1)
+{
+	let layout = "<td class='odds_value text-center odds-game-matrix-bet-cell'>";
+	layout += "<button type='button' class='odds-game-matrix-bet'";
+	layout += " data-bet-type='" + type + "'";
+	layout += " data-candidate-id0='" + id0 + "'";
+	layout += " data-candidate-id1='" + id1 + "'";
+	layout += " data-candidate-order0='" + order0 + "'";
+	layout += " data-candidate-name0='" + escape_attr(name0) + "'";
+	layout += " data-candidate-order1='" + order1 + "'";
+	layout += " data-candidate-name1='" + escape_attr(name1) + "'";
+	layout += " data-points='0'>";
+	layout += "<span class='odds-game-matrix-bet__odds' id='" + oddsTag + "'></span>";
+	layout += "<span class='odds-game-matrix-bet__label'>" + TXT_BET_ACTION + "</span>";
+	layout += "</button></td>";
+	return layout;
+}
+
+/**
  *	Make layout for quinella
  */
-function layout_quinella(elemId, candidates, forBet)
+function layout_quinella(elemId, candidates, forBet, forQuickBet)
 {
-	let cellw = 12;
+	let cellw = forQuickBet ? 14 : 12;
 
 	let layout = '';
 	for( let i = 0; i < candidates.length - 1; ++i )
@@ -125,7 +158,29 @@ function layout_quinella(elemId, candidates, forBet)
 		for( let j = i + 1; j< candidates.length; ++j )
 		{
 			let tag = make_quinella_tag("odds_quinella", candidates[i].id, candidates[j].id);
-			layout += "<td class='odds_value text-center' id='" + tag + "'></td>";
+			if( forQuickBet )
+			{
+				let id0 = candidates[i].id;
+				let id1 = candidates[j].id;
+				let order0 = candidates[i].disp_order + 1;
+				let order1 = candidates[j].disp_order + 1;
+				let name0 = candidates[i].name;
+				let name1 = candidates[j].name;
+				if( id0 > id1 )
+				{
+					id0 = candidates[j].id;
+					id1 = candidates[i].id;
+					order0 = candidates[j].disp_order + 1;
+					order1 = candidates[i].disp_order + 1;
+					name0 = candidates[j].name;
+					name1 = candidates[i].name;
+				}
+				layout += make_matrix_quick_bet_cell(tag, 1, id0, id1, order0, name0, order1, name1);
+			}
+			else
+			{
+				layout += "<td class='odds_value text-center' id='" + tag + "'></td>";
+			}
 		}
 		layout += "</tr>";
 		if( forBet )
@@ -160,9 +215,9 @@ function make_exacta_tag(prefix, id0, id1)
 /**
  *	Make layout for exacta
  */
-function layout_exacta(elemId, candidates, forBet)
+function layout_exacta(elemId, candidates, forBet, forQuickBet)
 {
-	let cellw = 12;
+	let cellw = forQuickBet ? 14 : 12;
 
 	let layout = '';
 	for( let i = 0; i < candidates.length; ++i )
@@ -182,7 +237,23 @@ function layout_exacta(elemId, candidates, forBet)
 		{
 			if( i == j ) continue;
 			let tag = make_exacta_tag("odds_exacta", candidates[i].id, candidates[j].id);
-			layout += "<td class='odds_value text-center' id='" + tag + "'></td>";
+			if( forQuickBet )
+			{
+				layout += make_matrix_quick_bet_cell(
+					tag,
+					2,
+					candidates[i].id,
+					candidates[j].id,
+					candidates[i].disp_order + 1,
+					candidates[i].name,
+					candidates[j].disp_order + 1,
+					candidates[j].name
+				);
+			}
+			else
+			{
+				layout += "<td class='odds_value text-center' id='" + tag + "'></td>";
+			}
 		}
 		layout += "</tr>";
 		if( forBet )

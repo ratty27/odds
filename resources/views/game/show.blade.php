@@ -37,6 +37,14 @@ $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
   ->get();
 $starter_count = count($candidates);
 $participant_count = App\Models\Bet::where('game_id', $game_id)->distinct('user_id')->count();
+$win_bet_points = [];
+foreach( $bets as $bet )
+{
+  if( $bet->type == 0 && $bet->payed == 0 )
+  {
+    $win_bet_points[$bet->candidate_id0] = $bet->points;
+  }
+}
 
 @endphp
 <head>
@@ -96,6 +104,9 @@ $participant_count = App\Models\Bet::where('game_id', $game_id)->distinct('user_
     <div class="odds-game-table-wrap">
       <table class="table table-striped table-bordered odds-game-table mb-0">
         <tr>
+          @if( $game->status == 0 )
+            <th class="text-center odds_textcolor odds-game-bet-col">{{ __('odds.bet_action') }}</th>
+          @endif
           <th class="text-center col-md-1 odds_textcolor">{{ __('odds.candidate_order') }}</th>
           <th class="text-center col-md-5 odds_textcolor">{{ __('odds.candidate_name') }}</th>
           <th class="text-center odds_textcolor">{{ __('odds.candidate_mark') }}</th>
@@ -113,6 +124,7 @@ $participant_count = App\Models\Bet::where('game_id', $game_id)->distinct('user_
             $ranks[] = $recent[$i]['result_rank'];
           }
           $recent_text = count($ranks) > 0 ? implode('-', $ranks) : '-';
+          $current_win_points = $win_bet_points[$candidate->id] ?? 0;
         @endphp
         @php
           $frame_style = '';
@@ -122,6 +134,19 @@ $participant_count = App\Models\Bet::where('game_id', $game_id)->distinct('user_
           }
         @endphp
         <tr>
+          @if( $game->status == 0 )
+            <td class="text-center align-middle odds-game-bet-col">
+              <button
+                type="button"
+                class="btn btn-info btn-sm odds-game-quick-bet"
+                data-bet-type="0"
+                data-candidate-id0="{{ $candidate->id }}"
+                data-candidate-order0="{{ $candidate->disp_order + 1 }}"
+                data-candidate-name0="{{ $candidate->name }}"
+                data-points="{{ $current_win_points }}"
+              >{{ __('odds.bet_action') }}</button>
+            </td>
+          @endif
           <th class="text-center align-middle odds_number {{ $frame_style !== '' ? 'odds-game-number--framed' : '' }}" @if($frame_style !== '') style="{{ $frame_style }}" @endif>{{ $candidate->disp_order+1 }}</th>
           <td class="align-middle odds_textcolor odds-game-candidate-name">
             <button type="button" class="odds-candidate-history-link" data-name="{{ $candidate->name }}">{{ $candidate->name }}</button>
@@ -159,16 +184,55 @@ $participant_count = App\Models\Bet::where('game_id', $game_id)->distinct('user_
 
 @include('parts.candidate_history')
 
+@if( $game->status == 0 )
+<div class="modal fade" id="QuickBet" tabindex="-1" aria-labelledby="QuickBetLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="{{ asset('/bet/quick') }}" method="POST" id="quick_bet_form">
+        {{ csrf_field() }}
+        <input type="hidden" name="game_id" value="{{ $game->id }}">
+        <input type="hidden" name="type" id="quick_bet_type" value="0">
+        <input type="hidden" name="candidate_id0" id="quick_bet_candidate_id0" value="">
+        <input type="hidden" name="candidate_id1" id="quick_bet_candidate_id1" value="0">
+        <div class="modal-header">
+          <h4 class="modal-title" id="QuickBetLabel">{{ __('odds.bet_quick_title_win') }}</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="odds-quick-bet-target mb-3" id="quick_bet_target"></div>
+          <label for="quick_bet_points" class="form-label">{{ __('odds.bet_points') }}</label>
+          <input type="text" inputmode="numeric" class="form-control" id="quick_bet_points" name="points" value="0" autocomplete="off">
+          <div class="form-text">{{ __('odds.bet_quick_hint') }}</div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('odds.bet_quick_cancel') }}</button>
+          <button type="submit" class="btn btn-info">{{ __('odds.bet_quick_submit') }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+@endif
+
 <script src="{{ asset('/js/odds_util.js?v=' . __('odds.css_ver')) }}"></script>
 <script type="text/javascript">
 const TXT_POINTS = '{{ __("odds.bet_points") }}';
+const TXT_BET_ACTION = '{{ __("odds.bet_action") }}';
 const TXT_CANDIDATE_HISTORY = '{{ __("odds.candidate_history_title") }}';
+const TXT_BET_QUICK_TARGET = '{{ __("odds.bet_quick_target") }}';
+const TXT_BET_QUICK_TARGET_PAIR = '{{ __("odds.bet_quick_target_pair") }}';
+const TXT_BET_QUICK_TITLE = {
+  0: '{{ __("odds.bet_quick_title_win") }}',
+  1: '{{ __("odds.bet_quick_title_quinella") }}',
+  2: '{{ __("odds.bet_quick_title_exacta") }}'
+};
 var candidates = <?php echo json_encode($candidates); ?>;
 var odds0 = <?php echo json_encode($odds0); ?>;
 var odds1 = <?php echo json_encode($odds1); ?>;
 var odds2 = <?php echo json_encode($odds2); ?>;
 var bets = <?php echo json_encode($bets); ?>;
 var candidateHistory = <?php echo json_encode($candidate_history); ?>;
+const QUICK_BET_ENABLED = {{ $game->status == 0 ? 'true' : 'false' }};
 
 function searchCadidate(canid)
 {
@@ -182,20 +246,114 @@ function searchCadidate(canid)
   return null;
 }
 
+function formatQuickBetTarget(button)
+{
+  let type = parseInt(button.getAttribute('data-bet-type'), 10);
+  let order0 = button.getAttribute('data-candidate-order0');
+  let name0 = button.getAttribute('data-candidate-name0');
+  if( type === 0 )
+  {
+    return TXT_BET_QUICK_TARGET
+      .replace(':order', order0)
+      .replace(':name', name0);
+  }
+  return TXT_BET_QUICK_TARGET_PAIR
+    .replace(':order0', order0)
+    .replace(':name0', name0)
+    .replace(':order1', button.getAttribute('data-candidate-order1'))
+    .replace(':name1', button.getAttribute('data-candidate-name1'));
+}
+
+function openQuickBet(button)
+{
+  let modalElem = document.getElementById('QuickBet');
+  if( !modalElem )
+  {
+    return;
+  }
+  let type = parseInt(button.getAttribute('data-bet-type'), 10);
+  document.getElementById('quick_bet_type').value = String(type);
+  document.getElementById('quick_bet_candidate_id0').value = button.getAttribute('data-candidate-id0');
+  document.getElementById('quick_bet_candidate_id1').value = button.getAttribute('data-candidate-id1') || '0';
+  document.getElementById('quick_bet_points').value = button.getAttribute('data-points') || '0';
+  document.getElementById('QuickBetLabel').textContent = TXT_BET_QUICK_TITLE[type] || TXT_BET_QUICK_TITLE[0];
+  document.getElementById('quick_bet_target').textContent = formatQuickBetTarget(button);
+  bootstrap.Modal.getOrCreateInstance(modalElem).show();
+  window.setTimeout(function()
+  {
+    let input = document.getElementById('quick_bet_points');
+    input.focus();
+    input.select();
+  }, 200);
+}
+
+function bindQuickBetButtons(selector)
+{
+  let buttons = document.querySelectorAll(selector);
+  for( let i = 0; i < buttons.length; ++i )
+  {
+    buttons[i].addEventListener('click', function()
+    {
+      openQuickBet(this);
+    });
+  }
+}
+
+function applyMatrixQuickBetPoints()
+{
+  for( let i = 0; i < bets.length; ++i )
+  {
+    if( bets[i].payed )
+    {
+      continue;
+    }
+    if( bets[i].type !== 1 && bets[i].type !== 2 )
+    {
+      continue;
+    }
+    let selector = '.odds-game-matrix-bet[data-bet-type="' + bets[i].type + '"]'
+                 + '[data-candidate-id0="' + bets[i].candidate_id0 + '"]'
+                 + '[data-candidate-id1="' + bets[i].candidate_id1 + '"]';
+    let button = document.querySelector(selector);
+    if( !button )
+    {
+      continue;
+    }
+    button.setAttribute('data-points', String(bets[i].points));
+    button.classList.add('odds-game-matrix-bet--active');
+    let label = button.querySelector('.odds-game-matrix-bet__label');
+    if( label )
+    {
+      label.textContent = bets[i].points + 'pt';
+    }
+  }
+}
+
 function initValues()
 {
   bindCandidateHistoryLinks(candidateHistory, TXT_CANDIDATE_HISTORY);
+
+  if( QUICK_BET_ENABLED )
+  {
+    bindQuickBetButtons('.odds-game-quick-bet');
+  }
 
   // Odds layout
   layout_odds_caption( "caption_win", "{{ __('odds.bet_win') }}", "{{ __('odds.info_win') }}" );
   @if( $game->is_enabled(1) )
     layout_odds_caption( "caption_quinella", "{{ __('odds.bet_quinella') }}", "{{ __('odds.info_quinella') }}" );
-    layout_quinella("odds_quinella", candidates, false);
+    layout_quinella("odds_quinella", candidates, false, QUICK_BET_ENABLED);
   @endif
   @if( $game->is_enabled(2) )
     layout_odds_caption( "caption_exacta", "{{ __('odds.bet_exacta') }}", "{{ __('odds.info_exacta') }}" );
-    layout_exacta("odds_exacta", candidates, false);
+    layout_exacta("odds_exacta", candidates, false, QUICK_BET_ENABLED);
   @endif
+
+  if( QUICK_BET_ENABLED )
+  {
+    bindQuickBetButtons('.odds-game-matrix-bet');
+    applyMatrixQuickBetPoints();
+  }
 
   // Odds & Favorites
   // win

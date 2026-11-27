@@ -46,8 +46,8 @@ return [
 	'game_candidate_remove_row' => '削除',
 	'game_candidate_auto_colors' => '色を自動で割り振る',
 	'game_candidate_color' => '枠色',
-	'game_bet' => 'このレースを予想する',
-	'game_bet_save' => '<<< 予想を保存',
+	'game_bet' => 'まとめてBetする',
+	'game_bet_save' => '<<< まとめて保存',
 	'game_list' => '<<< レース一覧',
 	'game_info_closed' => '予想受付は終了しました',
 	'game_register' => '新しいレースを登録',
@@ -76,6 +76,15 @@ return [
 	'candidate_history_empty' => '過去の成績はありません。',
 
 	'bet_points' => 'ポイント',
+	'bet_action' => 'Bet',
+	'bet_quick_title_win' => '単勝をBet',
+	'bet_quick_title_quinella' => '馬連をBet',
+	'bet_quick_title_exacta' => '馬単をBet',
+	'bet_quick_target' => ':order :name',
+	'bet_quick_target_pair' => ':order0 :name0 - :order1 :name1',
+	'bet_quick_hint' => '0 を保存すると、このBetを取り消します。',
+	'bet_quick_submit' => 'Betする',
+	'bet_quick_cancel' => 'キャンセル',
 	'bet_win' => '単勝',
 	'bet_quinella' => '馬連',
 	'bet_exacta' => '馬単',
@@ -159,5 +168,5 @@ return [
 	'internal_error' => '内部エラー',
 
 	// css version
-	'css_ver' => '25',
+	'css_ver' => '27',
 ];

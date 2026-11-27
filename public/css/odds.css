@@ -874,6 +874,25 @@ footer a:active,
 	padding-right: 0.25rem !important;
 }
 
+.odds-game-bet-col {
+	width: 4.5rem;
+	min-width: 4.5rem;
+	padding-left: 0.35rem !important;
+	padding-right: 0.35rem !important;
+	white-space: nowrap;
+}
+
+.odds-game-quick-bet {
+	min-width: 3.2rem;
+	font-weight: 700;
+	padding: 0.25rem 0.55rem;
+}
+
+.odds-quick-bet-target {
+	font-size: 1.05rem;
+	font-weight: 700;
+}
+
 /* Bootstrap table-striped paints via inset box-shadow; keep frame colors visible. */
 .odds-game-table .odds-game-number--framed {
 	--bs-table-accent-bg: transparent;
@@ -951,6 +970,69 @@ footer a:active,
 
 .odds-game-matrix .odds_value {
 	padding: 0.55rem 0.45rem;
+}
+
+.odds-game-matrix-bet-cell {
+	padding: 0.25rem !important;
+	vertical-align: middle;
+}
+
+.odds-game-matrix-bet {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.1rem;
+	width: 100%;
+	min-height: 2.75rem;
+	padding: 0.25rem 0.2rem;
+	border: 1px solid #0aa2c0;
+	border-radius: 8px;
+	background: #e8f7fb;
+	color: inherit;
+	font: inherit;
+	line-height: 1.15;
+	cursor: pointer;
+}
+
+.odds-game-matrix-bet__odds {
+	font-variant-numeric: tabular-nums;
+	font-weight: 600;
+}
+
+.odds-game-matrix-bet__label {
+	font-size: 0.72rem;
+	font-weight: 700;
+	color: #087990;
+	letter-spacing: 0.02em;
+}
+
+.odds-game-matrix-bet--active {
+	border-color: #0d6efd;
+	background: #e7f1ff;
+}
+
+.odds-game-matrix-bet--active .odds-game-matrix-bet__label {
+	color: #0d6efd;
+}
+
+[data-theme="dark"] .odds-game-matrix-bet {
+	border-color: #3dd5f3;
+	background: #163036;
+	color: #eee;
+}
+
+[data-theme="dark"] .odds-game-matrix-bet__label {
+	color: #3dd5f3;
+}
+
+[data-theme="dark"] .odds-game-matrix-bet--active {
+	border-color: #6ea8fe;
+	background: #1a2740;
+}
+
+[data-theme="dark"] .odds-game-matrix-bet--active .odds-game-matrix-bet__label {
+	color: #6ea8fe;
 }
 
 .odds-game-matrix-label {

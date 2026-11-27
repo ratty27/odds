@@ -39,6 +39,7 @@ Route::get('/pastgames/{user_id}', 'App\Http\Controllers\GameController@pastgame
 Route::get('/game/{game_id}', 'App\Http\Controllers\GameController@show');
 Route::get('/bet/{game_id}', 'App\Http\Controllers\GameController@bet');
 Route::post('/bet', 'App\Http\Controllers\GameController@save_bet');
+Route::post('/bet/quick', 'App\Http\Controllers\GameController@save_quick_bet');
 Route::get('/reset_user', 'App\Http\Controllers\UserController@reset_user');
 // - authorization
 Route::get('/user_info', 'App\Http\Controllers\UserController@user_info');

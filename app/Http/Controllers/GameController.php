@@ -443,6 +443,161 @@ class GameController extends Controller
 	}
 
 	/**
+	 *  Save one bet from race page quick bet UI
+	 */
+	public function save_quick_bet(Request $request)
+	{
+		if( !User::is_valid_user() )
+		{
+			return User::auth_login();
+		}
+
+		$user = User::where('personal_id', Cookie::get('iden_token'))->first();
+		$game_id = intval($request->input('game_id'));
+		$type = intval($request->input('type'));
+		$candidate_id0 = intval($request->input('candidate_id0'));
+		$candidate_id1 = intval($request->input('candidate_id1'));
+		$points_raw = $request->input('points');
+
+		DB::transaction(function () use($user, $game_id, $type, $candidate_id0, $candidate_id1, $points_raw)
+			{
+				$game = Game::find($game_id);
+				if( is_null($game) || $game->status > 0 )
+				{
+					return;
+				}
+
+				if( $type === Bet::TYPE_WIN )
+				{
+					$candidate_id1 = 0;
+				}
+				else if( $type === Bet::TYPE_QUINELLA )
+				{
+					if( !$game->is_enabled(Bet::TYPE_QUINELLA) )
+					{
+						return;
+					}
+					if( $candidate_id0 <= 0 || $candidate_id1 <= 0 || $candidate_id0 === $candidate_id1 )
+					{
+						Log::warning('Invalid quick quinella pair : user_id=' . $user->id);
+						return;
+					}
+					if( $candidate_id0 > $candidate_id1 )
+					{
+						$tmp = $candidate_id0;
+						$candidate_id0 = $candidate_id1;
+						$candidate_id1 = $tmp;
+					}
+				}
+				else if( $type === Bet::TYPE_EXACTA )
+				{
+					if( !$game->is_enabled(Bet::TYPE_EXACTA) )
+					{
+						return;
+					}
+					if( $candidate_id0 <= 0 || $candidate_id1 <= 0 || $candidate_id0 === $candidate_id1 )
+					{
+						Log::warning('Invalid quick exacta pair : user_id=' . $user->id);
+						return;
+					}
+				}
+				else
+				{
+					Log::warning('Unsupported quick bet type : user_id=' . $user->id . ' / type=' . $type);
+					return;
+				}
+
+				$candidate_ids = [ $candidate_id0 ];
+				if( $type !== Bet::TYPE_WIN )
+				{
+					$candidate_ids[] = $candidate_id1;
+				}
+				$candidate_count = Candidate::where('game_id', $game_id)
+					->whereIn('id', $candidate_ids)
+					->where('result_rank', '<', 0)
+					->count();
+				if( $candidate_count !== count($candidate_ids) )
+				{
+					Log::warning('Invalid quick bet candidate : user_id=' . $user->id . ' / type=' . $type);
+					return;
+				}
+
+				$limit = config('odds.limit_bet_points');
+				$points = 0;
+				if( is_numeric($points_raw) )
+				{
+					$points = intval($points_raw);
+					if( $points < 0 )
+					{
+						$points = 0;
+					}
+					else if( $points > $limit )
+					{
+						$points = $limit;
+					}
+				}
+
+				$query = Bet::where('game_id', $game_id)
+					->where('user_id', $user->id)
+					->where('type', $type)
+					->where('candidate_id0', $candidate_id0)
+					->where('payed', 0);
+				if( $type === Bet::TYPE_WIN )
+				{
+					$existing = $query->first();
+				}
+				else
+				{
+					$existing = $query->where('candidate_id1', $candidate_id1)->first();
+				}
+				$existing_points = is_null($existing) ? 0 : intval($existing->points);
+				$available = $user->get_current_points() + $existing_points;
+				if( $points > $available )
+				{
+					Log::warning('Invalid quick bettnig request : user_id=' . $user->id . ' / available=' . $available . ' / requested=' . $points);
+					return;
+				}
+
+				if( $points > 0 )
+				{
+					if( is_null($existing) )
+					{
+						$bet = new Bet;
+						$bet->type = $type;
+						$bet->game_id = $game_id;
+						$bet->user_id = $user->id;
+						$bet->candidate_id0 = $candidate_id0;
+						if( $type !== Bet::TYPE_WIN )
+						{
+							$bet->candidate_id1 = $candidate_id1;
+						}
+						$bet->points = $points;
+						$bet->payed = 0;
+						$bet->save();
+					}
+					else
+					{
+						$existing->points = $points;
+						$existing->update();
+					}
+				}
+				else if( !is_null($existing) )
+				{
+					$existing->delete();
+				}
+
+				if( !config('odds.calc_odds_on_request') )
+				{
+					$game->exclusion_update = 0;
+					$game->update();
+				}
+			}
+		);
+
+		return redirect()->action('App\Http\Controllers\GameController@show', ['game_id' => $game_id]);
+	}
+
+	/**
 	 *  Error
 	 */
 	public function error($errcode)
