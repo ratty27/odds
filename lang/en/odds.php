@@ -29,6 +29,7 @@ return [
 	'dialog_yes' => 'Yes',
 	'dialog_no' => 'No',
 	'dialog_confirm_robot' => 'I am not a robot.',
+	'dialog_verifying_human' => 'Verifying your access…',
 
 	'game_future' => 'Upcoming races',
 	'game_past' => 'Past races',

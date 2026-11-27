@@ -43,7 +43,11 @@ input[type=checkbox] {
       @if( !empty($message) )
       <div class="fs-5 text-danger mb-3">{{ $message }}</div>
       @endif
+      @if( $turnstile_enabled )
+      {{ __("odds.dialog_verifying_human") }}
+      @else
       {{ __("odds.dialog_confirm_robot") }}
+      @endif
       <br>
       <br>
       {{-- GET: production currently registers only GET/HEAD for /login/{token} --}}

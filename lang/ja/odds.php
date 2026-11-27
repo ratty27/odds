@@ -29,6 +29,7 @@ return [
 	'dialog_yes' => 'はい',
 	'dialog_no' => 'いいえ',
 	'dialog_confirm_robot' => '私はロボットではありません。',
+	'dialog_verifying_human' => 'アクセス確認中です…',
 
 	'game_future' => '今後のレース',
 	'game_past' => '過去のレース',
