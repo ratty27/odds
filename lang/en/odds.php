@@ -41,7 +41,11 @@ return [
 	'game_limit_desc' => 'This is only shown to users. Betting is not closed automatically at this time.',
 	'game_limit_close' => 'Closed',
 	'game_candidate' => 'Entrants',
-	'game_candidate_desc' => 'Enter entrant names separated by new lines.',
+	'game_candidate_desc' => 'Enter each entrant name and frame color. Colors can also be assigned automatically.',
+	'game_candidate_add_row' => 'Add row',
+	'game_candidate_remove_row' => 'Remove',
+	'game_candidate_auto_colors' => 'Auto-assign colors',
+	'game_candidate_color' => 'Frame color',
 	'game_bet' => 'Bet on this race',
 	'game_bet_save' => '<<< Save bets',
 	'game_list' => '<<< Race list',
@@ -155,5 +159,5 @@ return [
 	'internal_error' => 'Internal error',
 
 	// css version
-	'css_ver' => '22',
+	'css_ver' => '25',
 ];

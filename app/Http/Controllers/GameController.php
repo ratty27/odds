@@ -109,8 +109,36 @@ class GameController extends Controller
 							}
 						}
 
-						$candidate_names = explode("\n", $request->input('game_candidate'));
-						$candidate_names = array_map('trim', $candidate_names);
+						$raw_names = $request->input('candidate_name', []);
+						$raw_colors = $request->input('candidate_color', []);
+						if( !is_array($raw_names) )
+						{
+							$raw_names = [];
+						}
+						if( !is_array($raw_colors) )
+						{
+							$raw_colors = [];
+						}
+						$candidate_names = [];
+						$candidate_colors = [];
+						for( $i = 0; $i < count($raw_names); ++$i )
+						{
+							$candidate_name = trim((string)$raw_names[$i]);
+							if( $candidate_name === '' )
+							{
+								continue;
+							}
+							$candidate_names[] = $candidate_name;
+							$color = isset($raw_colors[$i]) ? trim((string)$raw_colors[$i]) : '';
+							if( preg_match('/^#[0-9A-Fa-f]{6}$/', $color) )
+							{
+								$candidate_colors[] = strtoupper($color);
+							}
+							else
+							{
+								$candidate_colors[] = null;
+							}
+						}
 
 						$pubset = intval( $request->input('game_pubsetting') );
 						$exclude_history = $request->input('game_exclude_history') ? true : false;
@@ -119,7 +147,7 @@ class GameController extends Controller
 						$game_id = $request->input('game_id');
 						if( $game_id === 'new' )
 						{
-							Game::new_game($user->id, $name, $limit, $comment, $enabled, $candidate_names, $pubset, $exclude_history);
+							Game::new_game($user->id, $name, $limit, $comment, $enabled, $candidate_names, $pubset, $exclude_history, $candidate_colors);
 						}
 						else
 						{
@@ -128,7 +156,7 @@ class GameController extends Controller
 							{
 								if( $user->admin || $game->user_id == $user->id )
 								{
-									$game->update_game($name, $limit, $comment, $enabled, $candidate_names, $pubset, $exclude_history);
+									$game->update_game($name, $limit, $comment, $enabled, $candidate_names, $pubset, $exclude_history, $candidate_colors);
 								}
 							}
 						}

@@ -1,10 +1,14 @@
 @php
-$candidates_name = "";
+$edit_candidates = [];
 if( $game_id === 'new' )
 {
   $game = new App\Models\Game;
   $game->limit = date("Y-m-d") . 'T' . date("H:i:00");
   $game->user_id = $user->id;
+  $edit_candidates = [
+    ['name' => '', 'color' => '#808080'],
+    ['name' => '', 'color' => '#808080'],
+  ];
 }
 else
 {
@@ -16,7 +20,17 @@ else
   $candidates = App\Models\Candidate::where('game_id', $game_id)->orderBy('disp_order', 'asc')->get();
   foreach( $candidates as $candidate )
   {
-    $candidates_name .= $candidate->name . "\n";
+    $edit_candidates[] = [
+      'name' => $candidate->name,
+      'color' => $candidate->frame_color ? $candidate->frame_color : '#808080',
+    ];
+  }
+  if( count($edit_candidates) == 0 )
+  {
+    $edit_candidates = [
+      ['name' => '', 'color' => '#808080'],
+      ['name' => '', 'color' => '#808080'],
+    ];
   }
 }
 @endphp
@@ -82,15 +96,19 @@ if( $user->CanEditGame() )
           <textarea id="game_comment" name="game_comment" class="form-control">{{ $game->comment }}</textarea>
         </div>
         <div class="form-group text-start">
-          <label for="game_candidate" class="form-label">
+          <div class="form-label">
             <table style="width: 100%; table-layout: fixed;">
               <tr>
                 <td class="col-md-3 text-start fw-bold">{{ __('odds.game_candidate') }}</td>
                 <td class="col-md-7 text-end">{{ __('odds.game_candidate_desc') }}</td>
               </tr>
             </table>
-          </label>
-          <textarea id="game_candidate" name="game_candidate" style='height: 400px' class="form-control">{{ $candidates_name }}</textarea>
+          </div>
+          <div id="candidate_rows" class="odds-edit-candidates"></div>
+          <div class="odds-edit-candidate-actions mt-2">
+            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="addCandidateRow();">{{ __('odds.game_candidate_add_row') }}</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="autoAssignCandidateColors();">{{ __('odds.game_candidate_auto_colors') }}</button>
+          </div>
         </div>
         <div class="form-group text-start">
           <label for="game_pubsetting" class="form-label">
@@ -172,6 +190,96 @@ if( $user->CanEditGame() )
 @endphp
 
 <script type="text/javascript">
+const INITIAL_CANDIDATES = <?php echo json_encode($edit_candidates, JSON_UNESCAPED_UNICODE); ?>;
+const TXT_CANDIDATE_COLOR = '{{ __("odds.game_candidate_color") }}';
+const TXT_CANDIDATE_REMOVE = '{{ __("odds.game_candidate_remove_row") }}';
+
+// Solid frame colors: first 8 follow JRA 枠色, next 8 are extra distinct solids.
+const FRAME_COLOR_PALETTE = [
+  '#FFFFFF',
+  '#111111',
+  '#E60012',
+  '#0057A8',
+  '#F5C400',
+  '#00A040',
+  '#F08200',
+  '#E4007F',
+  '#7A3E00',
+  '#00A0C8',
+  '#6B2D8B',
+  '#90EE90',
+  '#C0C0C0',
+  '#8B0000',
+  '#003366',
+  '#FFDAB9'
+];
+
+function createCandidateRow(name, color)
+{
+  let row = document.createElement('div');
+  row.className = 'odds-edit-candidate-row';
+
+  let colorInput = document.createElement('input');
+  colorInput.type = 'color';
+  colorInput.name = 'candidate_color[]';
+  colorInput.value = color || '#808080';
+  colorInput.title = TXT_CANDIDATE_COLOR;
+  colorInput.className = 'odds-edit-candidate-color form-control form-control-color';
+
+  let nameInput = document.createElement('input');
+  nameInput.type = 'text';
+  nameInput.name = 'candidate_name[]';
+  nameInput.value = name || '';
+  nameInput.className = 'odds-edit-candidate-name form-control';
+
+  let removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.className = 'btn btn-outline-danger btn-sm';
+  removeBtn.textContent = TXT_CANDIDATE_REMOVE;
+  removeBtn.addEventListener('click', function()
+  {
+    let list = document.getElementById('candidate_rows');
+    if( list && list.children.length > 1 )
+    {
+      row.remove();
+    }
+  });
+
+  row.appendChild(colorInput);
+  row.appendChild(nameInput);
+  row.appendChild(removeBtn);
+  return row;
+}
+
+function addCandidateRow(name, color)
+{
+  let list = document.getElementById('candidate_rows');
+  if( !list )
+  {
+    return;
+  }
+  list.appendChild(createCandidateRow(name || '', color || '#808080'));
+}
+
+function autoAssignCandidateColors()
+{
+  let list = document.getElementById('candidate_rows');
+  if( !list )
+  {
+    return;
+  }
+  let colors = list.querySelectorAll('input[type="color"]');
+  let n = colors.length;
+  if( n <= 0 )
+  {
+    return;
+  }
+  let paletteSize = FRAME_COLOR_PALETTE.length;
+  for( let i = 0; i < n; ++i )
+  {
+    colors[i].value = FRAME_COLOR_PALETTE[i % paletteSize];
+  }
+}
 
 function initValues()
 {
@@ -186,6 +294,16 @@ function initValues()
     }
     @endphp
     elem.selectedIndex = {{ $pub }};
+  }
+
+  let list = document.getElementById('candidate_rows');
+  if( list )
+  {
+    list.innerHTML = '';
+    for( let i = 0; i < INITIAL_CANDIDATES.length; ++i )
+    {
+      addCandidateRow(INITIAL_CANDIDATES[i].name, INITIAL_CANDIDATES[i].color);
+    }
   }
 }
 window.onload = initValues;
@@ -217,9 +335,16 @@ function checkEdit()
     return false;
   }
 
-  let elemCandidate = document.getElementById('game_candidate');
-  let candidates = elemCandidate.value.split(/\r\n|\n/);
-  if( candidates.length < 2 )
+  let nameInputs = document.querySelectorAll('#candidate_rows input[name="candidate_name[]"]');
+  let count = 0;
+  for( let i = 0; i < nameInputs.length; ++i )
+  {
+    if( nameInputs[i].value.trim() !== '' )
+    {
+      ++count;
+    }
+  }
+  if( count < 2 )
   {
     alert('{{ __("odds.game_needs_candidates") }}');
     return false;

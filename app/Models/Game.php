@@ -25,7 +25,7 @@ class Game extends Model
 	/**
 	 *	Create new game
 	 */
-	public static function new_game($user_id, $name, $limit, $comment, $enabled, $candidate_names, $pubset, $exclude_history = false)
+	public static function new_game($user_id, $name, $limit, $comment, $enabled, $candidate_names, $pubset, $exclude_history = false, $candidate_colors = [])
 	{
 		$game = new Game;
 		$game->name = $name;
@@ -58,8 +58,12 @@ class Game extends Model
 			for( $i = 0; $i < count($candidate_names); ++$i )
 			{
 				$records[] = [
-					'name' => $candidate_names[$i], 'game_id' => $game->id, 'disp_order' => $i,
-					'created_at' => $now, 'updated_at' => $now,
+					'name' => $candidate_names[$i],
+					'game_id' => $game->id,
+					'disp_order' => $i,
+					'frame_color' => $candidate_colors[$i] ?? null,
+					'created_at' => $now,
+					'updated_at' => $now,
 				];
 			}
 			Candidate::insert( $records );
@@ -76,7 +80,7 @@ class Game extends Model
 	/**
 	 *	Update an existed game
 	 */
-	public function update_game($name, $limit, $comment, $enabled, $candidate_names, $pubset, $exclude_history = false)
+	public function update_game($name, $limit, $comment, $enabled, $candidate_names, $pubset, $exclude_history = false, $candidate_colors = [])
 	{
 		$this->name = $name;
 		$this->limit = $limit;
@@ -108,7 +112,7 @@ class Game extends Model
 
 			// Update existing records
 			$candidates = Candidate::where('game_id', $this->id)
-				->select('id', 'name', 'disp_order')
+				->select('id', 'name', 'disp_order', 'frame_color')
 				->get();
 			foreach( $candidates as &$candidate )
 			{
@@ -119,9 +123,11 @@ class Game extends Model
 				}
 				else
 				{	// Update an existed candidate
-					if( $candidate->disp_order != $index )
+					$new_color = $candidate_colors[$index] ?? null;
+					if( $candidate->disp_order != $index || $candidate->frame_color != $new_color )
 					{
 						$candidate->disp_order = $index;
+						$candidate->frame_color = $new_color;
 						$candidate->update();
 					}
 					array_push($candidate_updated, $candidate->name);
@@ -136,8 +142,12 @@ class Game extends Model
 				if( !in_array($candidate_names[$index], $candidate_updated) )
 				{
 					$records[] = [
-						'name' => $candidate_names[$index], 'game_id' => $this->id, 'disp_order' => $index,
-						'created_at' => $now, 'updated_at' => $now,
+						'name' => $candidate_names[$index],
+						'game_id' => $this->id,
+						'disp_order' => $index,
+						'frame_color' => $candidate_colors[$index] ?? null,
+						'created_at' => $now,
+						'updated_at' => $now,
 					];
 				}
 			}

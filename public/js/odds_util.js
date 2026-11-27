@@ -37,6 +37,39 @@ function get_favorite_mark(favorite)
 }
 
 /**
+ *	Pick readable text color for a frame background.
+ */
+function get_contrast_text_color(hex)
+{
+	if( !hex )
+	{
+		return '#111111';
+	}
+	let raw = ('' + hex).replace('#', '');
+	if( raw.length != 6 )
+	{
+		return '#111111';
+	}
+	let r = parseInt(raw.substring(0, 2), 16);
+	let g = parseInt(raw.substring(2, 4), 16);
+	let b = parseInt(raw.substring(4, 6), 16);
+	let yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+	return (yiq >= 140) ? '#111111' : '#ffffff';
+}
+
+/**
+ *	Inline style for framed number cells.
+ */
+function get_frame_number_style(color)
+{
+	if( !color )
+	{
+		return '';
+	}
+	return 'background-color:' + color + ';color:' + get_contrast_text_color(color) + ';';
+}
+
+/**
  *	Odds type caption
  */
 function layout_odds_caption(elemId, name, desc)
@@ -81,10 +114,12 @@ function layout_quinella(elemId, candidates, forBet)
 	{
 		layout += "<div class='table-responsive odds-game-matrix-wrap'>";
 		layout += "<table class='table-bordered odds-game-matrix' style='table-layout: fixed; width: " + (8 + ((candidates.length - i - 1) * cellw)) + "ch;'>";
-		layout += "<tr><th scope='row' class='odds_value odds_number text-center' rowspan='2' style='width: 8ch;'>" + (candidates[i].disp_order+1) + "</th>";
+		let rowFrame = get_frame_number_style(candidates[i].frame_color);
+		layout += "<tr><th scope='row' class='odds_value odds_number text-center" + (rowFrame ? " odds-game-number--framed" : "") + "' rowspan='2' style='width: 8ch;" + rowFrame + "'>" + (candidates[i].disp_order+1) + "</th>";
 		for( let j = i + 1; j< candidates.length; ++j )
 		{
-			layout += "<th scope='col' class='odds_value odds_number text-center'>" + (candidates[j].disp_order+1) + "</th>";
+			let colFrame = get_frame_number_style(candidates[j].frame_color);
+			layout += "<th scope='col' class='odds_value odds_number text-center" + (colFrame ? " odds-game-number--framed" : "") + "'" + (colFrame ? " style='" + colFrame + "'" : "") + ">" + (candidates[j].disp_order+1) + "</th>";
 		}
 		layout += "</tr><tr>";
 		for( let j = i + 1; j< candidates.length; ++j )
@@ -134,11 +169,13 @@ function layout_exacta(elemId, candidates, forBet)
 	{
 		layout += "<div class='table-responsive odds-game-matrix-wrap'>";
 		layout += "<table class='table-bordered odds-game-matrix' style='table-layout: fixed; width: " + (8 + ((candidates.length - 1) * cellw)) + "ch;'>";
-		layout += "<tr><th scope='row' class='odds_value odds_number text-center' rowspan='2' style='width: 8ch;'>" + (candidates[i].disp_order+1) + "</th>";
+		let rowFrame = get_frame_number_style(candidates[i].frame_color);
+		layout += "<tr><th scope='row' class='odds_value odds_number text-center" + (rowFrame ? " odds-game-number--framed" : "") + "' rowspan='2' style='width: 8ch;" + rowFrame + "'>" + (candidates[i].disp_order+1) + "</th>";
 		for( let j = 0; j< candidates.length; ++j )
 		{
 			if( i == j ) continue;
-			layout += "<th scope='col' class='odds_value odds_number text-center'>" + (candidates[j].disp_order+1) + "</th>";
+			let colFrame = get_frame_number_style(candidates[j].frame_color);
+			layout += "<th scope='col' class='odds_value odds_number text-center" + (colFrame ? " odds-game-number--framed" : "") + "'" + (colFrame ? " style='" + colFrame + "'" : "") + ">" + (candidates[j].disp_order+1) + "</th>";
 		}
 		layout += "</tr><tr>";
 		for( let j = 0; j< candidates.length; ++j )

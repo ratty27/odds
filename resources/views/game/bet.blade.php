@@ -5,8 +5,9 @@ $user = App\Models\User::where('personal_id', $user_token)->first();
 // Canddates
 $candidates = App\Models\Candidate::where('game_id', $game->id)
   ->orderBy('disp_order', 'asc')
-  ->select('id', 'name', 'disp_order', 'result_rank')
+  ->select('id', 'name', 'disp_order', 'result_rank', 'frame_color')
   ->get();
+App\Models\Candidate::fill_missing_frame_colors($candidates, $game->id);
 // Race results for candidates (same organizer, finished games including current)
 $candidate_history = App\Models\Candidate::get_past_results(
   $game->user_id,
@@ -80,8 +81,15 @@ $participant_count = App\Models\Bet::where('game_id', $game->id)->distinct('user
             }
             $recent_text = count($ranks) > 0 ? implode('-', $ranks) : '-';
           @endphp
+          @php
+            $frame_style = '';
+            if( !empty($candidate->frame_color) )
+            {
+              $frame_style = 'background-color:' . $candidate->frame_color . ';color:' . App\Models\Candidate::contrast_text_color($candidate->frame_color) . ';';
+            }
+          @endphp
           <tr>
-            <th class="text-center align-middle odds_number">{{ $candidate->disp_order+1 }}</th>
+            <th class="text-center align-middle odds_number {{ $frame_style !== '' ? 'odds-game-number--framed' : '' }}" @if($frame_style !== '') style="{{ $frame_style }}" @endif>{{ $candidate->disp_order+1 }}</th>
             <td class="align-middle odds-game-candidate-name">
               <button type="button" class="odds-candidate-history-link" data-name="{{ $candidate->name }}">{{ $candidate->name }}</button>
             </td>

@@ -201,7 +201,7 @@ footer a:active,
 	height: 3.75rem;
 }
 
-.odds_number {
+.odds_number:not(.odds-game-number--framed) {
 	color: #444;
 	background-color: #f8f8f8;
 }
@@ -373,7 +373,7 @@ footer a:active,
 	border-color: #555;
 }
 
-[data-theme="dark"] .odds_number {
+[data-theme="dark"] .odds_number:not(.odds-game-number--framed) {
 	color: #ddd;
 	background-color: #2a2a2a;
 }
@@ -872,6 +872,40 @@ footer a:active,
 	max-width: 2.5ch;
 	padding-left: 0.25rem !important;
 	padding-right: 0.25rem !important;
+}
+
+/* Bootstrap table-striped paints via inset box-shadow; keep frame colors visible. */
+.odds-game-table .odds-game-number--framed {
+	--bs-table-accent-bg: transparent;
+	box-shadow: none !important;
+}
+
+.odds-edit-candidates {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.odds-edit-candidate-row {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.odds-edit-candidate-color {
+	width: 3rem;
+	min-width: 3rem;
+	padding: 0.15rem;
+}
+
+.odds-edit-candidate-name {
+	flex: 1 1 auto;
+}
+
+.odds-edit-candidate-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
 }
 
 .odds-candidate-history-link {

@@ -13,6 +13,116 @@ class Candidate extends Model
 	use HasFactory;
 
 	/**
+	 *	Pick readable text color for a frame background hex color.
+	 *
+	 *	@param	string|null	$hex	#RRGGBB
+	 *	@return	string				#111111 or #ffffff
+	 */
+	public static function contrast_text_color($hex)
+	{
+		$hex = ltrim((string)$hex, '#');
+		if( strlen($hex) != 6 )
+		{
+			return '#111111';
+		}
+		$r = hexdec(substr($hex, 0, 2));
+		$g = hexdec(substr($hex, 2, 2));
+		$b = hexdec(substr($hex, 4, 2));
+		$yiq = (($r * 299) + ($g * 587) + ($b * 114)) / 1000;
+		return ($yiq >= 140) ? '#111111' : '#ffffff';
+	}
+
+	/**
+	 *	Solid frame colors. First 8 follow JRA 枠色; next 8 are extra distinct solids.
+	 *	Beyond 16 runners the palette repeats.
+	 *
+	 *	@return	array	list of #RRGGBB
+	 */
+	public static function frame_color_palette()
+	{
+		return [
+			'#FFFFFF', // 1 white
+			'#111111', // 2 black
+			'#E60012', // 3 red
+			'#0057A8', // 4 blue
+			'#F5C400', // 5 yellow
+			'#00A040', // 6 green
+			'#F08200', // 7 orange
+			'#E4007F', // 8 pink
+			'#7A3E00', // 9 brown
+			'#00A0C8', // 10 cyan
+			'#6B2D8B', // 11 purple
+			'#90EE90', // 12 light green
+			'#C0C0C0', // 13 silver
+			'#8B0000', // 14 dark red
+			'#003366', // 15 navy
+			'#FFDAB9', // 16 peach
+		];
+	}
+
+	/**
+	 *	Generate solid categorical frame colors by runner order.
+	 *
+	 *	@param	int	$count
+	 *	@param	int	$seed	kept for call compatibility; unused
+	 *	@return	array	list of #RRGGBB
+	 */
+	public static function generate_frame_colors($count, $seed = 0)
+	{
+		$colors = [];
+		if( $count <= 0 )
+		{
+			return $colors;
+		}
+		$palette = self::frame_color_palette();
+		$n = count($palette);
+		for( $i = 0; $i < $count; ++$i )
+		{
+			$colors[] = $palette[$i % $n];
+		}
+		return $colors;
+	}
+
+	/**
+	 *	Fill empty frame_color values in-memory for display.
+	 *	Does not persist to DB.
+	 *
+	 *	@param	\Illuminate\Support\Collection	$candidates
+	 *	@param	int								$seed
+	 */
+	public static function fill_missing_frame_colors($candidates, $seed)
+	{
+		$count = count($candidates);
+		if( $count <= 0 )
+		{
+			return;
+		}
+		$needs_fill = false;
+		foreach( $candidates as $candidate )
+		{
+			if( empty($candidate->frame_color) )
+			{
+				$needs_fill = true;
+				break;
+			}
+		}
+		if( !$needs_fill )
+		{
+			return;
+		}
+		$colors = self::generate_frame_colors($count, $seed);
+		$i = 0;
+		foreach( $candidates as $candidate )
+		{
+			if( empty($candidate->frame_color) )
+			{
+				$candidate->frame_color = $colors[$i];
+			}
+			++$i;
+		}
+	}
+
+	/**
 	 *	Delete this candidate
 	 */
 	public function safe_delete()

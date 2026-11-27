@@ -41,7 +41,11 @@ return [
 	'game_limit_desc' => '予定をユーザに知らせるためのものであり、この日時で自動的に締め切られることはありません。',
 	'game_limit_close' => '受付終了',
 	'game_candidate' => '出走者',
-	'game_candidate_desc' => '出走者名を改行区切りで入力してください。',
+	'game_candidate_desc' => '出走者名と枠色を入力してください。色は自動割当もできます。',
+	'game_candidate_add_row' => '行を追加',
+	'game_candidate_remove_row' => '削除',
+	'game_candidate_auto_colors' => '色を自動で割り振る',
+	'game_candidate_color' => '枠色',
 	'game_bet' => 'このレースを予想する',
 	'game_bet_save' => '<<< 予想を保存',
 	'game_list' => '<<< レース一覧',
@@ -155,5 +159,5 @@ return [
 	'internal_error' => '内部エラー',
 
 	// css version
-	'css_ver' => '22',
+	'css_ver' => '25',
 ];
