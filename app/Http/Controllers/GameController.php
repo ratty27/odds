@@ -45,7 +45,7 @@ class GameController extends Controller
 			$game_user = $user_id;
 			return view('game/index', compact('user', 'game_user'));
 		}
-		return redirect('/');
+		return User::auth_login();
 	}
 
 	/**
@@ -59,7 +59,7 @@ class GameController extends Controller
 			$game_user = $user_id;
 			return view('game/past', compact('user', 'game_user'));
 		}
-		return redirect('/');
+		return User::auth_login();
 	}
 
 	/**

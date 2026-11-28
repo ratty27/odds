@@ -86,10 +86,72 @@ class User extends Model
 	}
 
 	/**
+	 *	Whether a path is a safe same-origin relative redirect target
+	 */
+	public static function is_safe_internal_path($path)
+	{
+		if( !is_string($path) || $path === '' )
+		{
+			return false;
+		}
+		if( $path[0] !== '/' || str_starts_with($path, '//') )
+		{
+			return false;
+		}
+		if( preg_match('#^[a-z][a-z0-9+.-]*:#i', $path) )
+		{
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 *	Remember the current request URL for redirect after bot check
+	 */
+	public static function remember_intended_url()
+	{
+		$request = request();
+		if( !$request->isMethod('GET') )
+		{
+			return;
+		}
+		if( $request->is('login') || $request->is('login/*') )
+		{
+			return;
+		}
+
+		$path = '/' . ltrim($request->path(), '/');
+		$query = $request->getQueryString();
+		if( $query !== null && $query !== '' )
+		{
+			$path .= '?' . $query;
+		}
+		if( self::is_safe_internal_path($path) )
+		{
+			session(['url.intended' => $path]);
+		}
+	}
+
+	/**
+	 *	Consume and return the remembered URL, or $default if missing/unsafe
+	 */
+	public static function pull_intended_url($default = '/')
+	{
+		$url = session()->pull('url.intended', $default);
+		if( !self::is_safe_internal_path($url) )
+		{
+			return $default;
+		}
+		return $url;
+	}
+
+	/**
 	 *	Authorize
 	 */
 	public static function auth_login()
 	{
+		self::remember_intended_url();
+
 		if( !self::requires_bot_check() )
 		{
 			return redirect('/');

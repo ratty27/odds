@@ -51,7 +51,7 @@ class UserController extends Controller
 		{
 			return User::auth_login();
 		}
-		return redirect('/');
+		return redirect(User::pull_intended_url('/'));
 	}
 
 	/**
