@@ -184,8 +184,9 @@ class Candidate extends Model
 
 	/**
 	 *	Compute dummy bet weights from past average finishing positions.
-	 *	weight ∝ 1 / avg(result_rank). Candidates with no history get the
-	 *	average score of candidates that have history (or equal if none do).
+	 *	weight ∝ (1 / avg(result_rank)) ^ power (config odds.dummy_weight_power).
+	 *	Candidates with no history get the average score of candidates that have
+	 *	history (or equal if none do).
 	 *	Uses all finished races of the same organizer (exclude_history=0).
 	 *
 	 *	@param	int		$owner_user_id
@@ -199,6 +200,12 @@ class Candidate extends Model
 		if( $n == 0 )
 		{
 			return $weights;
+		}
+
+		$power = (float)config('odds.dummy_weight_power', 1.0);
+		if( $power <= 0.0 )
+		{
+			$power = 1.0;
 		}
 
 		$equal = 1.0 / (float)$n;
@@ -219,7 +226,7 @@ class Candidate extends Model
 				$sum_rank += max(1, intval($row['result_rank']));
 			}
 			$avg_rank = $sum_rank / (float)count($history);
-			$score = 1.0 / $avg_rank;
+			$score = pow(1.0 / $avg_rank, $power);
 			$scores[$name] = $score;
 			$scored[] = $score;
 		}

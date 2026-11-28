@@ -17,6 +17,10 @@ return [
 	// Dummy bet points per exacta pattern (total pool = this * permutation count)
 	'dummy_exacta_points' => 4000,
 
+	// Exponent for dummy weight from past average finish.
+	// score = (1 / avg_rank) ^ power. 1.0 = linear; higher = sharper favorites.
+	'dummy_weight_power' => 1.5,
+
 	// Display count of past games
 	'past_game_count' => 10,
 
