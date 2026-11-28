@@ -48,6 +48,17 @@ class RuleBase
 	}
 
 	/**
+	 *	Build a map key for a bet/odds pattern
+	 */
+	protected static function pattern_key($pat) : string
+	{
+		$c0 = $pat[0];
+		$c1 = count($pat) >= 2 ? $pat[1] : -1;
+		$c2 = count($pat) >= 3 ? $pat[2] : -1;
+		return $c0 . '_' . $c1 . '_' . $c2;
+	}
+
+	/**
 	 *	Update odds of a game
 	 *	@param	$game_id		Game ID
 	 *	@param	$candidates		Array of candidates thhat is sorted by ID
@@ -56,24 +67,34 @@ class RuleBase
 	public static function update_odds($game_id, $candidates, $dummy)
 	{
 		$pattern = static::get_patterns($candidates);
+		$type = static::get_typeid();
+		if( count($pattern) == 0 )
+		{
+			return;
+		}
 
-		// Calculate sum of bets
+		// One grouped query instead of per-pattern SUM
+		$sum_rows = Bet::where('game_id', $game_id)
+			->where('type', $type)
+			->groupBy('candidate_id0', 'candidate_id1', 'candidate_id2')
+			->select('candidate_id0', 'candidate_id1', 'candidate_id2', DB::raw('SUM(points) as total_points'))
+			->get();
+		$sum_map = array();
+		foreach( $sum_rows as $row )
+		{
+			$key = $row->candidate_id0 . '_' . $row->candidate_id1 . '_' . $row->candidate_id2;
+			$sum_map[$key] = intval($row->total_points);
+		}
+
+		// Calculate sum of bets (dummy applied per pattern, matching previous behavior)
 		$total_bets = 0;
 		$results = array();
 		$ranks = array();
 		for( $i = 0; $i < count($pattern); ++$i )
 		{
 			$pat = $pattern[$i];
-			$query = Bet::where('type', static::get_typeid())->where('candidate_id0', $pat[0]);
-			if( count($pat) >= 2 )
-			{
-				$query = $query->where('candidate_id1', $pat[1]);
-				if( count($pat) >= 3 )
-				{
-					$query = $query->where('candidate_id2', $pat[2]);
-				}
-			}
-			$candidate_bet = $query->sum('points') + $dummy;
+			$key = static::pattern_key($pat);
+			$candidate_bet = ($sum_map[$key] ?? 0) + $dummy;
 			if( $candidate_bet <= 0 )
 				$candidate_bet = 1;
 			$results[] = $candidate_bet;
@@ -95,37 +116,39 @@ class RuleBase
 			$ranks[] = $rank;
 		}
 
-		// Calculate odds, then save it
+		// Load existing odds rows once, then update/insert in memory
+		$existing_rows = Odd::where('game_id', $game_id)->where('type', $type)
+			->select('id', 'candidate_id0', 'candidate_id1', 'candidate_id2', 'odds', 'favorite')
+			->get();
+		$existing_map = array();
+		foreach( $existing_rows as $row )
+		{
+			$key = $row->candidate_id0 . '_' . $row->candidate_id1 . '_' . $row->candidate_id2;
+			$existing_map[$key] = $row;
+		}
+
 		for( $i = 0; $i < count($pattern); ++$i )
 		{
 			$pat = $pattern[$i];
+			$key = static::pattern_key($pat);
 
-			// Odds
 			$odds_value = round((float)$total_bets / (float)$results[$i], 1);
 			if( $odds_value < 1.1 )
 				$odds_value = 1.1;
+			$favorite = $ranks[$i] + 1;
 
-			$query = Odd::where('type', static::get_typeid())->where('candidate_id0', $pat[0]);
-			if( count($pat) >= 2 )
+			if( isset($existing_map[$key]) )
 			{
-				$query = $query->where('candidate_id1', $pat[1]);
-				if( count($pat) >= 3 )
-				{
-					$query = $query->where('candidate_id2', $pat[2]);
-				}
-			}
-			$odds = $query->select('id')->first();
-			if( !is_null($odds) )
-			{
+				$odds = $existing_map[$key];
 				$odds->odds = $odds_value;
-				$odds->favorite = $ranks[$i] + 1;
+				$odds->favorite = $favorite;
 				$odds->update();
 			}
 			else
 			{
 				$odd = new Odd;
 				$odd->game_id = $game_id;
-				$odd->type = static::get_typeid();
+				$odd->type = $type;
 				$odd->candidate_id0 = $pat[0];
 				if( count($pat) >= 2 )
 				{
@@ -136,7 +159,7 @@ class RuleBase
 					}
 				}
 				$odd->odds = $odds_value;
-				$odd->favorite = $ranks[$i] + 1;
+				$odd->favorite = $favorite;
 				$odd->save();
 			}
 		}
