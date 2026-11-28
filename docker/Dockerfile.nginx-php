@@ -19,6 +19,7 @@ RUN dnf install -y --allowerasing \
 		curl \
 		nginx \
 		procps-ng \
+		cronie \
 		&& dnf clean all
 
 # Install PHP and extensions
@@ -72,9 +73,13 @@ RUN chown -R nginx:nginx /var/www/html \
 # Expose ports
 EXPOSE 80
 
-# Start script
+# Start scripts
 COPY docker/start.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/start.sh
+COPY docker/cron-start.sh /usr/local/bin/
+COPY docker/crontab /usr/local/etc/odds-crontab
+RUN sed -i 's/\r$//' /usr/local/bin/start.sh /usr/local/bin/cron-start.sh /usr/local/etc/odds-crontab \
+	&& chmod +x /usr/local/bin/start.sh /usr/local/bin/cron-start.sh \
+	&& chmod 644 /usr/local/etc/odds-crontab
 
 # Set entrypoint
 ENTRYPOINT []

@@ -178,3 +178,10 @@ $ ./build-up.sh
   - サーバは `mysql` 固定
   - ログイン例: `odds_user` / `odds_password`、または `root` / `rootpassword`
 
+- cron（`odds_cron` コンテナ）
+  - ホストの crontab は使わず、コンテナ内の cron が artisan を直接実行します
+  - `command:send-auth-mail` … 1 分毎
+  - `command:update-odds` … 5 分毎
+  - ログ確認: `docker compose logs -f cron`
+  - Dockerfile / crontab を変えたあとは `./build-up.sh` が必要です
+

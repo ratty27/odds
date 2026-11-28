@@ -41,6 +41,31 @@ services:
       DB_USERNAME: odds_user
       DB_PASSWORD: odds_password
 
+  # Runs artisan commands via cron (no host crontab).
+  # mail: every 1 min / odds: every 5 min
+  cron:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.nginx-php
+    container_name: odds_cron
+    restart: unless-stopped
+    command: ["/usr/local/bin/cron-start.sh"]
+    volumes:
+      - ../:/var/www/html
+      - ./php.ini:/etc/php.d/custom.ini
+      - ./env_local:/var/www/html/.env
+    depends_on:
+      - mysql
+      - nginx-php
+    networks:
+      - odds_network
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: odds
+      DB_USERNAME: odds_user
+      DB_PASSWORD: odds_password
+
   phpmyadmin:
     image: phpmyadmin:5
     container_name: odds_phpmyadmin

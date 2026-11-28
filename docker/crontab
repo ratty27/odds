@@ -1,0 +1,9 @@
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+MAILTO=""
+
+# Auth confirmation mail: every minute
+* * * * * root echo "[odds-cron] send-auth-mail $(date -Is)" >> /proc/1/fd/1 2>> /proc/1/fd/2; cd /var/www/html && setpriv --reuid=nginx --regid=nginx --clear-groups -- /usr/bin/php artisan command:send-auth-mail >> /proc/1/fd/1 2>> /proc/1/fd/2
+
+# Odds recalculation: every 5 minutes
+*/5 * * * * root echo "[odds-cron] update-odds $(date -Is)" >> /proc/1/fd/1 2>> /proc/1/fd/2; cd /var/www/html && setpriv --reuid=nginx --regid=nginx --clear-groups -- /usr/bin/php artisan command:update-odds >> /proc/1/fd/1 2>> /proc/1/fd/2
