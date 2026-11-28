@@ -108,6 +108,14 @@ if( $user->CanEditGame() )
           <div class="odds-edit-candidate-actions mt-2">
             <button type="button" class="btn btn-outline-secondary btn-sm" onclick="addCandidateRow();">{{ __('odds.game_candidate_add_row') }}</button>
             <button type="button" class="btn btn-outline-secondary btn-sm" onclick="autoAssignCandidateColors();">{{ __('odds.game_candidate_auto_colors') }}</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="toggleBulkCandidatePanel();">{{ __('odds.game_candidate_bulk') }}</button>
+          </div>
+          <div id="candidate_bulk_panel" class="odds-edit-candidate-bulk mt-2" hidden>
+            <p class="form-text mb-2">{{ __('odds.game_candidate_bulk_desc') }}</p>
+            <textarea id="candidate_bulk_text" class="form-control" rows="8"></textarea>
+            <div class="mt-2">
+              <button type="button" class="btn btn-outline-primary btn-sm" onclick="applyBulkCandidates();">{{ __('odds.game_candidate_bulk_apply') }}</button>
+            </div>
           </div>
         </div>
         <div class="form-group text-start">
@@ -279,6 +287,59 @@ function autoAssignCandidateColors()
   {
     colors[i].value = FRAME_COLOR_PALETTE[i % paletteSize];
   }
+}
+
+function toggleBulkCandidatePanel()
+{
+  let panel = document.getElementById('candidate_bulk_panel');
+  if( !panel )
+  {
+    return;
+  }
+  panel.hidden = !panel.hidden;
+  if( !panel.hidden )
+  {
+    let textarea = document.getElementById('candidate_bulk_text');
+    if( textarea )
+    {
+      textarea.focus();
+    }
+  }
+}
+
+function applyBulkCandidates()
+{
+  let textarea = document.getElementById('candidate_bulk_text');
+  let list = document.getElementById('candidate_rows');
+  if( !textarea || !list )
+  {
+    return;
+  }
+
+  let names = textarea.value.split('\n')
+    .map(function(line) { return line.trim(); })
+    .filter(function(line) { return line !== ''; });
+
+  list.innerHTML = '';
+  if( names.length === 0 )
+  {
+    addCandidateRow('', '#808080');
+  }
+  else
+  {
+    for( let i = 0; i < names.length; ++i )
+    {
+      addCandidateRow(names[i], '#808080');
+    }
+  }
+  autoAssignCandidateColors();
+
+  let panel = document.getElementById('candidate_bulk_panel');
+  if( panel )
+  {
+    panel.hidden = true;
+  }
+  textarea.value = '';
 }
 
 function initValues()

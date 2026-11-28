@@ -42,10 +42,13 @@ return [
 	'game_limit_desc' => '予定をユーザに知らせるためのものであり、この日時で自動的に締め切られることはありません。',
 	'game_limit_close' => '受付終了',
 	'game_candidate' => '出走者',
-	'game_candidate_desc' => '出走者名と枠色を入力してください。色は自動割当もできます。',
+	'game_candidate_desc' => '出走者名と枠色を入力してください。色は自動割当もできます。一括入力も利用できます。',
 	'game_candidate_add_row' => '行を追加',
 	'game_candidate_remove_row' => '削除',
 	'game_candidate_auto_colors' => '色を自動で割り振る',
+	'game_candidate_bulk' => '一括入力',
+	'game_candidate_bulk_desc' => '出走者名を改行区切りで貼り付け、適用すると既存の行を置き換えます。',
+	'game_candidate_bulk_apply' => '適用',
 	'game_candidate_color' => '枠色',
 	'game_bet' => 'まとめてBetする',
 	'game_bet_save' => '<<< まとめて保存',
@@ -173,5 +176,5 @@ return [
 	'internal_error' => '内部エラー',
 
 	// css version
-	'css_ver' => '30',
+	'css_ver' => '31',
 ];

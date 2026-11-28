@@ -42,10 +42,13 @@ return [
 	'game_limit_desc' => 'This is only shown to users. Betting is not closed automatically at this time.',
 	'game_limit_close' => 'Closed',
 	'game_candidate' => 'Entrants',
-	'game_candidate_desc' => 'Enter each entrant name and frame color. Colors can also be assigned automatically.',
+	'game_candidate_desc' => 'Enter each entrant name and frame color. Colors can also be assigned automatically. Bulk paste is also available.',
 	'game_candidate_add_row' => 'Add row',
 	'game_candidate_remove_row' => 'Remove',
 	'game_candidate_auto_colors' => 'Auto-assign colors',
+	'game_candidate_bulk' => 'Bulk paste',
+	'game_candidate_bulk_desc' => 'Paste entrant names one per line. Applying replaces the existing rows.',
+	'game_candidate_bulk_apply' => 'Apply',
 	'game_candidate_color' => 'Frame color',
 	'game_bet' => 'Batch bet',
 	'game_bet_save' => '<<< Save batch',
@@ -173,5 +176,5 @@ return [
 	'internal_error' => 'Internal error',
 
 	// css version
-	'css_ver' => '30',
+	'css_ver' => '31',
 ];

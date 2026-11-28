@@ -1050,6 +1050,16 @@ footer a:active,
 	gap: 0.5rem;
 }
 
+.odds-edit-candidate-bulk {
+	padding: 0.75rem;
+	border: 1px solid var(--bs-border-color, #dee2e6);
+	border-radius: 0.375rem;
+}
+
+.odds-edit-candidate-bulk textarea {
+	min-height: 10rem;
+}
+
 .odds-candidate-history-link {
 	padding: 0;
 	border: 0;
