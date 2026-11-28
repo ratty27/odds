@@ -22,7 +22,7 @@
       </a>
       <div class="odds_header_points">
         <span class="odds_header_points_label">{{ __('odds.bet_points') }}</span>
-        <span id="my_points">{{ $user->get_current_points() }}</span>
+        <span id="my_points">{{ $current_points ?? $user->get_current_points() }}</span>
       </div>
       <button type="button" class="odds_header_settings" data-bs-toggle="modal" data-bs-target="#UserSettings" aria-label="{{ __('odds.user_settings') }}">
         <img src="{{ asset('/img/gear-fill.svg') }}" alt="" width="18" height="18">

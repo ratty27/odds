@@ -2,35 +2,20 @@
 // User
 $user_token = Cookie::queued('iden_token') ? Cookie::queued('iden_token')->getValue() : Cookie::get('iden_token');
 $user = App\Models\User::where('personal_id', $user_token)->first();
-// Canddates
-$candidates = App\Models\Candidate::where('game_id', $game->id)
-  ->orderBy('disp_order', 'asc')
-  ->select('id', 'name', 'disp_order', 'result_rank', 'frame_color')
-  ->get();
-App\Models\Candidate::fill_missing_frame_colors($candidates, $game->id);
-// Race results for candidates (same organizer, finished games including current)
-$candidate_history = App\Models\Candidate::get_past_results(
-  $game->user_id,
-  $candidates->pluck('name')->all()
-);
-// Odds for win
-$odds0 = App\Models\Odd::where('game_id', $game->id)->where('type', 0)
-  ->select('candidate_id0', 'odds', 'favorite')
-  ->get();
-// Odds for quinella
-$odds1 = App\Models\Odd::where('game_id', $game->id)->where('type', 1)
-  ->select('candidate_id0', 'candidate_id1', 'odds')
-  ->get();
-// Odds for exacta
-$odds2 = App\Models\Odd::where('game_id', $game->id)->where('type', 2)
-  ->select('candidate_id0', 'candidate_id1', 'odds')
-  ->get();
-// Bets
+$current_points = $user->get_current_points();
+// Shared public payload (file cache)
+$public = $game->get_public_view_data();
+$candidates = $public['candidates'];
+$candidate_history = $public['candidate_history'];
+$odds0 = $public['odds0'];
+$odds1 = $public['odds1'];
+$odds2 = $public['odds2'];
+$starter_count = $public['starter_count'];
+$participant_count = $public['participant_count'];
+// Per-user bets (not cached)
 $bets = App\Models\Bet::where('game_id', $game->id)->where('user_id', $user->id)
   ->select('type', 'candidate_id0', 'candidate_id1', 'candidate_id2', 'points', 'payed')
   ->get();
-$starter_count = count($candidates);
-$participant_count = App\Models\Bet::where('game_id', $game->id)->distinct('user_id')->count();
 
 @endphp
 
@@ -133,7 +118,7 @@ const odds1 = <?php echo json_encode($odds1); ?>;
 const odds2 = <?php echo json_encode($odds2); ?>;
 const bets = <?php echo json_encode($bets); ?>;
 const candidateHistory = <?php echo json_encode($candidate_history); ?>;
-const initial_points = {{ $user->get_current_points() }};
+const initial_points = {{ $current_points }};
 var input_bet_elements = [];
 
 // Calculate total of bets that isn't resulted.

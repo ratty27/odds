@@ -1,42 +1,24 @@
 @php
-use Illuminate\Support\Facades\DB;
-
 // User
 $user_token = Cookie::queued('iden_token') ? Cookie::queued('iden_token')->getValue() : Cookie::get('iden_token');
 $user = App\Models\User::where('personal_id', $user_token)->first();
-// Game
+$current_points = $user->get_current_points();
+// Game + shared public payload (file cache)
 $game = App\Models\Game::findOrFail($game_id);
 $game->update_odds_if_needs();
-// Canddates
-$candidates = App\Models\Candidate::where('game_id', $game_id)
-  ->orderBy('disp_order', 'asc')
-  ->select('id', 'name', 'disp_order', 'result_rank', 'frame_color')
-  ->get();
-App\Models\Candidate::fill_missing_frame_colors($candidates, $game->id);
-// Race results for candidates (same organizer, finished games including current)
-$candidate_history = App\Models\Candidate::get_past_results(
-  $game->user_id,
-  $candidates->pluck('name')->all()
-);
-// Odds for win
-$odds0 = App\Models\Odd::where('game_id', $game_id)->where('type', 0)
-  ->select('candidate_id0', 'odds', 'favorite')
-  ->get();
-// Odds for quinella
-$odds1 = App\Models\Odd::where('game_id', $game_id)->where('type', 1)
-  ->select('candidate_id0', 'candidate_id1', 'odds')
-  ->get();
-// Odds for exacta
-$odds2 = App\Models\Odd::where('game_id', $game_id)->where('type', 2)
-  ->select('candidate_id0', 'candidate_id1', 'odds')
-  ->get();
-// Bets
+$public = $game->get_public_view_data();
+$candidates = $public['candidates'];
+$candidate_history = $public['candidate_history'];
+$odds0 = $public['odds0'];
+$odds1 = $public['odds1'];
+$odds2 = $public['odds2'];
+$starter_count = $public['starter_count'];
+$participant_count = $public['participant_count'];
+// Per-user bets (not cached)
 $bets = App\Models\Bet::where('game_id', $game_id)->where('user_id', $user->id)
   ->orderBy('type', 'asc')->orderBy('candidate_id0', 'asc')->orderBy('candidate_id1', 'asc')->orderBy('candidate_id2', 'asc')
   ->select('id', 'type', 'candidate_id0', 'candidate_id1', 'candidate_id2', 'points', 'payed')
   ->get();
-$starter_count = count($candidates);
-$participant_count = App\Models\Bet::where('game_id', $game_id)->distinct('user_id')->count();
 $win_bet_points = [];
 foreach( $bets as $bet )
 {
@@ -233,7 +215,7 @@ const TXT_BET_QUICK_TITLE = {
 const TXT_USER_POINTS_ARE_MISSING = '{{ __("odds.user_points_are_missing") }}';
 const TXT_USER_INVALID_POINTS = '{{ __("odds.user_invalid_points") }}';
 const TXT_USER_OVER_LIMIT_POINTS = '{{ __("odds.user_over_limit_points") }}';
-const INITIAL_POINTS = {{ $user->get_current_points() }};
+const INITIAL_POINTS = {{ $current_points }};
 const LIMIT_BET_POINTS = {{ config('odds.limit_bet_points') }};
 var candidates = <?php echo json_encode($candidates); ?>;
 var odds0 = <?php echo json_encode($odds0); ?>;

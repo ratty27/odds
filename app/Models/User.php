@@ -249,11 +249,23 @@ class User extends Model
 	public function ReceiveRewards()
 	{
 		$user_id = $this->id;
+
+		// Cheap check: skip transaction/update when there is nothing to settle.
+		$has_unpaid_finished = DB::table('bets')
+			->join('games', 'games.id', '=', 'bets.game_id')
+			->where('bets.user_id', $user_id)
+			->where('bets.payed', 0)
+			->where('games.status', 2)
+			->exists();
+		if( !$has_unpaid_finished )
+		{
+			return;
+		}
+
 		DB::transaction(function () use($user_id)
 			{
 				$user = User::find($user_id);
-				$rewards = 0;
-				$finished_list = DB::table('bets')->where('bets.user_id', $this->id)->where('bets.payed', 0)->select('games.id as gid')
+				$finished_list = DB::table('bets')->where('bets.user_id', $user_id)->where('bets.payed', 0)->select('games.id as gid')
 					->join('games', 'games.id', '=', 'bets.game_id')->where('games.status', 2)->distinct()->get();
 				foreach( $finished_list as $finished )
 				{
@@ -266,7 +278,6 @@ class User extends Model
 						->leftJoin('candidates as can0', 'can0.id', '=', 'bets.candidate_id0')
 						->leftJoin('candidates as can1', 'can1.id', '=', 'bets.candidate_id1')
 						->leftJoin('candidates as can2', 'can2.id', '=', 'bets.candidate_id2')->get();
-					//Log::info('Result: ' . json_encode($bets));
 
 					$odds0 = RuleWin::get_odds($finished->gid);
 					if( $game->is_enabled(Bet::TYPE_QUINELLA) )
@@ -306,8 +317,10 @@ class User extends Model
 						$bet->update();
 					}
 				}
-				$user->points += $rewards;
-				$user->update();
+				if( $user->isDirty('points') )
+				{
+					$user->update();
+				}
 			}
 		);
 	}
