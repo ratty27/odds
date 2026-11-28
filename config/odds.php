@@ -7,13 +7,14 @@ return [
 	// User's bet limit
 	'limit_bet_points' => 100000,
 
-	// Dummy user's bet points
+	// Dummy bet points per win pattern (total pool = this * starter count).
+	// Distributed by past average finish weights at create/edit.
 	'dummy_points' => 10000,
 
-	// Dummy user's bet points for quinella
+	// Dummy bet points per quinella pattern (total pool = this * combination count)
 	'dummy_quinella_points' => 3000,
 
-	// Dummy user's bet points for exacta
+	// Dummy bet points per exacta pattern (total pool = this * permutation count)
 	'dummy_exacta_points' => 4000,
 
 	// Display count of past games

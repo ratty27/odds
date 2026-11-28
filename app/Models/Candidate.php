@@ -181,4 +181,82 @@ class Candidate extends Model
 
 		return $result;
 	}
+
+	/**
+	 *	Compute dummy bet weights from past average finishing positions.
+	 *	weight ∝ 1 / avg(result_rank). Candidates with no history get the
+	 *	average score of candidates that have history (or equal if none do).
+	 *	Uses all finished races of the same organizer (exclude_history=0).
+	 *
+	 *	@param	int		$owner_user_id
+	 *	@param	array	$names
+	 *	@return	array	[ name => float weight ]  weights sum to 1.0
+	 */
+	public static function calc_dummy_weights($owner_user_id, $names)
+	{
+		$n = count($names);
+		$weights = [];
+		if( $n == 0 )
+		{
+			return $weights;
+		}
+
+		$equal = 1.0 / (float)$n;
+		$past = self::get_past_results($owner_user_id, $names);
+		$scores = [];
+		$scored = [];
+		foreach( $names as $name )
+		{
+			$history = $past[$name] ?? [];
+			if( count($history) == 0 )
+			{
+				$scores[$name] = null;
+				continue;
+			}
+			$sum_rank = 0.0;
+			foreach( $history as $row )
+			{
+				$sum_rank += max(1, intval($row['result_rank']));
+			}
+			$avg_rank = $sum_rank / (float)count($history);
+			$score = 1.0 / $avg_rank;
+			$scores[$name] = $score;
+			$scored[] = $score;
+		}
+
+		if( count($scored) == 0 )
+		{
+			foreach( $names as $name )
+			{
+				$weights[$name] = $equal;
+			}
+			return $weights;
+		}
+
+		$avg_score = array_sum($scored) / (float)count($scored);
+		$total = 0.0;
+		foreach( $names as $name )
+		{
+			if( $scores[$name] === null )
+			{
+				$scores[$name] = $avg_score;
+			}
+			$total += $scores[$name];
+		}
+
+		if( $total <= 0.0 )
+		{
+			foreach( $names as $name )
+			{
+				$weights[$name] = $equal;
+			}
+			return $weights;
+		}
+
+		foreach( $names as $name )
+		{
+			$weights[$name] = $scores[$name] / $total;
+		}
+		return $weights;
+	}
 }

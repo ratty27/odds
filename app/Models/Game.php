@@ -54,15 +54,18 @@ class Game extends Model
 
 		if( $game->save() )
 		{
+			$weights = Candidate::calc_dummy_weights($user_id, $candidate_names);
 			$records = array();
 			$now = date("Y/m/d H:i:s");
 			for( $i = 0; $i < count($candidate_names); ++$i )
 			{
+				$name = $candidate_names[$i];
 				$records[] = [
-					'name' => $candidate_names[$i],
+					'name' => $name,
 					'game_id' => $game->id,
 					'disp_order' => $i,
 					'frame_color' => $candidate_colors[$i] ?? null,
+					'dummy_weight' => $weights[$name] ?? null,
 					'created_at' => $now,
 					'updated_at' => $now,
 				];
@@ -157,7 +160,35 @@ class Game extends Model
 				Candidate::insert( $records );
 			}
 
+			$this->refresh_dummy_weights();
 			$this->update_odds();
+		}
+	}
+
+	/**
+	 *	Recalculate and persist dummy bet weights from past results.
+	 *	Called on create/edit only; odds cron reuses the stored values.
+	 */
+	public function refresh_dummy_weights()
+	{
+		$candidates = Candidate::where('game_id', $this->id)
+			->orderBy('disp_order', 'asc')
+			->select('id', 'name', 'dummy_weight')
+			->get();
+		if( count($candidates) == 0 )
+		{
+			return;
+		}
+		$names = [];
+		foreach( $candidates as $candidate )
+		{
+			$names[] = $candidate->name;
+		}
+		$weights = Candidate::calc_dummy_weights($this->user_id, $names);
+		foreach( $candidates as $candidate )
+		{
+			$candidate->dummy_weight = $weights[$candidate->name] ?? null;
+			$candidate->update();
 		}
 	}
 
@@ -198,22 +229,177 @@ class Game extends Model
 	}
 
 	/**
+	 *	Build per-pattern dummy points from stored candidate weights.
+	 *	Win uses weight directly. Quinella/exacta use Harville from win weights.
+	 *	Total dummy pool stays base_points * pattern_count (same scale as uniform).
+	 *
+	 *	@param	\Illuminate\Support\Collection	$candidates	id + dummy_weight, ordered by id
+	 *	@param	int								$type		Bet::TYPE_*
+	 *	@param	int|float						$base_points	config dummy points per pattern
+	 *	@return	array	pattern_key => points
+	 */
+	public static function build_dummy_points_map($candidates, $type, $base_points)
+	{
+		$n = count($candidates);
+		$map = [];
+		if( $n == 0 )
+		{
+			return $map;
+		}
+
+		$ids = [];
+		$weights = [];
+		$sum = 0.0;
+		foreach( $candidates as $candidate )
+		{
+			$ids[] = $candidate->id;
+			$w = $candidate->dummy_weight;
+			if( $w === null || $w <= 0 )
+			{
+				$w = 0.0;
+			}
+			$weights[$candidate->id] = (float)$w;
+			$sum += (float)$w;
+		}
+		if( $sum <= 0.0 )
+		{
+			$equal = 1.0 / (float)$n;
+			foreach( $ids as $id )
+			{
+				$weights[$id] = $equal;
+			}
+		}
+		else
+		{
+			foreach( $weights as $id => $w )
+			{
+				$weights[$id] = $w / $sum;
+			}
+		}
+
+		if( $type == Bet::TYPE_WIN )
+		{
+			$total_pool = (float)$base_points * (float)$n;
+			foreach( $ids as $id )
+			{
+				$map[$id . '_-1_-1'] = $total_pool * $weights[$id];
+			}
+			return $map;
+		}
+
+		// Harville: P(i then j) = w_i * w_j / (1 - w_i)
+		$exacta_probs = [];
+		$prob_sum = 0.0;
+		for( $i = 0; $i < $n; ++$i )
+		{
+			for( $j = 0; $j < $n; ++$j )
+			{
+				if( $i == $j )
+				{
+					continue;
+				}
+				$id_i = $ids[$i];
+				$id_j = $ids[$j];
+				$wi = $weights[$id_i];
+				$wj = $weights[$id_j];
+				$denom = 1.0 - $wi;
+				$p = ($denom <= 1e-12) ? 0.0 : ($wi * $wj / $denom);
+				$exacta_probs[$id_i . '_' . $id_j] = $p;
+				$prob_sum += $p;
+			}
+		}
+
+		if( $type == Bet::TYPE_EXACTA )
+		{
+			$num_patterns = $n * ($n - 1);
+			if( $num_patterns <= 0 )
+			{
+				return $map;
+			}
+			$total_pool = (float)$base_points * (float)$num_patterns;
+			if( $prob_sum <= 0.0 )
+			{
+				$equal = $total_pool / (float)$num_patterns;
+				foreach( $exacta_probs as $pair => $_p )
+				{
+					[$a, $b] = explode('_', $pair, 2);
+					$map[$a . '_' . $b . '_-1'] = $equal;
+				}
+				return $map;
+			}
+			foreach( $exacta_probs as $pair => $p )
+			{
+				[$a, $b] = explode('_', $pair, 2);
+				$map[$a . '_' . $b . '_-1'] = $total_pool * ($p / $prob_sum);
+			}
+			return $map;
+		}
+
+		if( $type == Bet::TYPE_QUINELLA )
+		{
+			$num_patterns = (int)(($n * ($n - 1)) / 2);
+			if( $num_patterns <= 0 )
+			{
+				return $map;
+			}
+			$total_pool = (float)$base_points * (float)$num_patterns;
+			for( $i = 0; $i < $n - 1; ++$i )
+			{
+				for( $j = $i + 1; $j < $n; ++$j )
+				{
+					$id_i = $ids[$i];
+					$id_j = $ids[$j];
+					$p = ($exacta_probs[$id_i . '_' . $id_j] ?? 0.0)
+						+ ($exacta_probs[$id_j . '_' . $id_i] ?? 0.0);
+					$key = $id_i . '_' . $id_j . '_-1';
+					if( $prob_sum <= 0.0 )
+					{
+						$map[$key] = $total_pool / (float)$num_patterns;
+					}
+					else
+					{
+						$map[$key] = $total_pool * ($p / $prob_sum);
+					}
+				}
+			}
+			return $map;
+		}
+
+		return $map;
+	}
+
+	/**
 	 *  Update game's odds
 	 */
 	public function update_odds()
 	{
-//		$game_id = $this->id;
-
-		// for win
-		$candidates = Candidate::where('game_id', $this->id)->orderBy('id', 'asc')->select('id')->get();
+		$candidates = Candidate::where('game_id', $this->id)
+			->orderBy('id', 'asc')
+			->select('id', 'dummy_weight')
+			->get();
 		if( count($candidates) > 0 )
 		{
-			// Calculate odds for each candidate
-			RuleWin::update_odds( $this->id, $candidates, config('odds.dummy_points') );
+			RuleWin::update_odds(
+				$this->id,
+				$candidates,
+				self::build_dummy_points_map($candidates, Bet::TYPE_WIN, config('odds.dummy_points'))
+			);
 			if( $this->is_enabled(Bet::TYPE_QUINELLA) )
-				RuleQuinella::update_odds( $this->id, $candidates, config('odds.dummy_points') );
+			{
+				RuleQuinella::update_odds(
+					$this->id,
+					$candidates,
+					self::build_dummy_points_map($candidates, Bet::TYPE_QUINELLA, config('odds.dummy_quinella_points'))
+				);
+			}
 			if( $this->is_enabled(Bet::TYPE_EXACTA) )
-				RuleExacta::update_odds( $this->id, $candidates, config('odds.dummy_points') );
+			{
+				RuleExacta::update_odds(
+					$this->id,
+					$candidates,
+					self::build_dummy_points_map($candidates, Bet::TYPE_EXACTA, config('odds.dummy_exacta_points'))
+				);
+			}
 		}
 
 		$this->visibility = Bet::where('game_id', $this->id)->distinct('user_id')->count();

@@ -62,7 +62,8 @@ class RuleBase
 	 *	Update odds of a game
 	 *	@param	$game_id		Game ID
 	 *	@param	$candidates		Array of candidates thhat is sorted by ID
-	 *	@param	$dummy			Bet points that is by dummy user
+	 *	@param	$dummy			Bet points by dummy user. Scalar applies the same
+	 *							value to every pattern; array maps pattern_key => points.
 	 */
 	public static function update_odds($game_id, $candidates, $dummy)
 	{
@@ -86,7 +87,7 @@ class RuleBase
 			$sum_map[$key] = intval($row->total_points);
 		}
 
-		// Calculate sum of bets (dummy applied per pattern, matching previous behavior)
+		// Calculate sum of bets (dummy applied per pattern)
 		$total_bets = 0;
 		$results = array();
 		$ranks = array();
@@ -94,7 +95,8 @@ class RuleBase
 		{
 			$pat = $pattern[$i];
 			$key = static::pattern_key($pat);
-			$candidate_bet = ($sum_map[$key] ?? 0) + $dummy;
+			$dummy_points = is_array($dummy) ? (float)($dummy[$key] ?? 0) : (float)$dummy;
+			$candidate_bet = ($sum_map[$key] ?? 0) + $dummy_points;
 			if( $candidate_bet <= 0 )
 				$candidate_bet = 1;
 			$results[] = $candidate_bet;
