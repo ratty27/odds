@@ -104,11 +104,11 @@ calc_odds_on_request は false にして、オッズ更新は cron で行うの�
 ```
 $ php artisan command:update-odds
 ```
-を定期実行してください。
+を定期実行してください（例: 1分毎）。ベットが入った開催中レース（`exclusion_update = 0`）だけが再計算対象です。
 
 ## 確認メール送信
 
-確認メール送信は、バッチでまとめて送信します。以下のコマンドを cron で１分毎程度で実行してください。
+確認メール送信は、バッチでまとめて送信します。以下のコマンドを cron で１分毎程度で実行してください。オッズ更新の cron とは分けて設定してください。
 ```
 $ php artisan command:send-auth-mail
 ```
@@ -122,6 +122,16 @@ info_about には作者の GitHub へのリンクが書いてありますが、�
 # 公開
 
 Web サーバ設定で public フォルダだけを公開してください。
+
+## 本番の負荷対策
+
+共用レンタルサーバー向けの運用上の推奨です。
+
+* Cloudflare を DNS プロキシ（オレンジ雲）で前段に置き、Cache Rules で `/css/` `/js/` `/img/` だけを長めにキャッシュする。HTML（`/` や `/game/*`）はキャッシュしない
+* SSL/TLS モードは Full (strict) を推奨（Flexible は使わない）
+* PHP OPcache が Web 向けに有効であること（`opcache.enable=1`）。CLI 向け（`opcache.enable_cli`）は無効のままでよい
+* 開催告知はトップより `/game/{id}` の直リンクを使う
+* イベントで馬連・馬単が不要なら、レース作成時に無効化する（オッズ組み合わせ数が減り再計算が軽くなる）
 
 # 管理
 
@@ -177,4 +187,11 @@ $ ./build-up.sh
 - phpMyAdmin: http://localhost:8080
   - サーバは `mysql` 固定
   - ログイン例: `odds_user` / `odds_password`、または `root` / `rootpassword`
+
+- cron（`odds_cron` コンテナ）
+  - ホストの crontab は使わず、コンテナ内の cron が artisan を直接実行します
+  - `command:send-auth-mail` … 1 分毎
+  - `command:update-odds` … 5 分毎
+  - ログ確認: `docker compose logs -f cron`
+  - Dockerfile / crontab を変えたあとは `./build-up.sh` が必要です
 
