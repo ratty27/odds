@@ -20,11 +20,10 @@ class GameReward
     {
         if( Cookie::has('iden_token') )
         {
-            $iden_token = Cookie::get('iden_token');
-            $user = User::where('personal_id', $iden_token)->get();
-            if( count($user) > 0 )
+            $user = User::where('personal_id', Cookie::get('iden_token'))->first();
+            if( !is_null($user) )
             {
-                $user[0]->ReceiveRewards();
+                $user->ReceiveRewards();
             }
         }
         return $next($request);
