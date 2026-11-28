@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use App\Models\Candidate;
 use App\Models\User;
 use App\Models\Bet;
@@ -220,6 +221,52 @@ class Game extends Model
 		// Mark clean so cron skips until the next bet sets exclusion_update back to 0.
 		$this->exclusion_update = 1;
 		$this->update();
+		Cache::forget(self::public_view_cache_key($this->id));
+	}
+
+	/**
+	 *	Cache key for public race view payload
+	 */
+	public static function public_view_cache_key($game_id) : string
+	{
+		return 'game_odds_view:' . $game_id;
+	}
+
+	/**
+	 *	Public race page data shared across visitors (file cache, 10s TTL).
+	 *	Does not include per-user bets or points.
+	 */
+	public function get_public_view_data() : array
+	{
+		$game = $this;
+		return Cache::remember(self::public_view_cache_key($this->id), 10, function () use($game)
+			{
+				$candidates = Candidate::where('game_id', $game->id)
+					->orderBy('disp_order', 'asc')
+					->select('id', 'name', 'disp_order', 'result_rank', 'frame_color')
+					->get();
+				Candidate::fill_missing_frame_colors($candidates, $game->id);
+
+				return [
+					'candidates' => $candidates,
+					'candidate_history' => Candidate::get_past_results(
+						$game->user_id,
+						$candidates->pluck('name')->all()
+					),
+					'odds0' => Odd::where('game_id', $game->id)->where('type', 0)
+						->select('candidate_id0', 'odds', 'favorite')
+						->get(),
+					'odds1' => Odd::where('game_id', $game->id)->where('type', 1)
+						->select('candidate_id0', 'candidate_id1', 'odds')
+						->get(),
+					'odds2' => Odd::where('game_id', $game->id)->where('type', 2)
+						->select('candidate_id0', 'candidate_id1', 'odds')
+						->get(),
+					'starter_count' => count($candidates),
+					'participant_count' => intval(Game::where('id', $game->id)->value('visibility')),
+				];
+			}
+		);
 	}
 
 	/**
