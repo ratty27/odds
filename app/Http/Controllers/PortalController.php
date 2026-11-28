@@ -39,10 +39,8 @@ class PortalController extends Controller
 		}
 		else
 		{
-			DB::transaction(function ()
-				{
-					User::update_cookie(false);
-				} );
+			// Cookie refresh only; no DB write.
+			User::update_cookie(false);
 		}
 
 		return view('portal/top', compact('user'));
