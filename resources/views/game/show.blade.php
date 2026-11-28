@@ -191,7 +191,7 @@ foreach( $bets as $bet )
 <div class="modal fade" id="QuickBet" tabindex="-1" aria-labelledby="QuickBetLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form action="{{ asset('/bet/quick') }}" method="POST" id="quick_bet_form">
+      <form action="{{ asset('/bet/quick') }}" method="POST" id="quick_bet_form" onsubmit="return checkQuickBet();">
         {{ csrf_field() }}
         <input type="hidden" name="game_id" value="{{ $game->id }}">
         <input type="hidden" name="type" id="quick_bet_type" value="0">
@@ -230,6 +230,11 @@ const TXT_BET_QUICK_TITLE = {
   1: '{{ __("odds.bet_quick_title_quinella") }}',
   2: '{{ __("odds.bet_quick_title_exacta") }}'
 };
+const TXT_USER_POINTS_ARE_MISSING = '{{ __("odds.user_points_are_missing") }}';
+const TXT_USER_INVALID_POINTS = '{{ __("odds.user_invalid_points") }}';
+const TXT_USER_OVER_LIMIT_POINTS = '{{ __("odds.user_over_limit_points") }}';
+const INITIAL_POINTS = {{ $user->get_current_points() }};
+const LIMIT_BET_POINTS = {{ config('odds.limit_bet_points') }};
 var candidates = <?php echo json_encode($candidates); ?>;
 var odds0 = <?php echo json_encode($odds0); ?>;
 var odds1 = <?php echo json_encode($odds1); ?>;
@@ -237,6 +242,7 @@ var odds2 = <?php echo json_encode($odds2); ?>;
 var bets = <?php echo json_encode($bets); ?>;
 var candidateHistory = <?php echo json_encode($candidate_history); ?>;
 const QUICK_BET_ENABLED = {{ $game->status == 0 ? 'true' : 'false' }};
+var quickBetExistingPoints = 0;
 
 function searchCadidate(canid)
 {
@@ -316,10 +322,16 @@ function openQuickBet(button)
     return;
   }
   let type = parseInt(button.getAttribute('data-bet-type'), 10);
+  let existingPoints = Number(button.getAttribute('data-points') || '0');
+  if( isNaN(existingPoints) || existingPoints < 0 )
+  {
+    existingPoints = 0;
+  }
+  quickBetExistingPoints = existingPoints;
   document.getElementById('quick_bet_type').value = String(type);
   document.getElementById('quick_bet_candidate_id0').value = button.getAttribute('data-candidate-id0');
   document.getElementById('quick_bet_candidate_id1').value = button.getAttribute('data-candidate-id1') || '0';
-  document.getElementById('quick_bet_points').value = button.getAttribute('data-points') || '0';
+  document.getElementById('quick_bet_points').value = String(existingPoints);
   document.getElementById('QuickBetLabel').textContent = TXT_BET_QUICK_TITLE[type] || TXT_BET_QUICK_TITLE[0];
   document.getElementById('quick_bet_target').textContent = formatQuickBetTarget(button);
   bootstrap.Modal.getOrCreateInstance(modalElem).show();
@@ -329,6 +341,34 @@ function openQuickBet(button)
     input.focus();
     input.select();
   }, 200);
+}
+
+function checkQuickBet()
+{
+  let raw = document.getElementById('quick_bet_points').value;
+  if( isNaN(raw) )
+  {
+    alert(TXT_USER_INVALID_POINTS);
+    return false;
+  }
+  let points = Number(raw);
+  if( points < 0 )
+  {
+    alert(TXT_USER_INVALID_POINTS);
+    return false;
+  }
+  if( points > LIMIT_BET_POINTS )
+  {
+    alert(TXT_USER_OVER_LIMIT_POINTS + LIMIT_BET_POINTS);
+    return false;
+  }
+  let available = INITIAL_POINTS + quickBetExistingPoints;
+  if( points > available )
+  {
+    alert(TXT_USER_POINTS_ARE_MISSING);
+    return false;
+  }
+  return true;
 }
 
 function bindQuickBetButtons(selector)

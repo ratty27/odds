@@ -124,7 +124,7 @@ return [
 	'theme_dark' => 'ダーク',
 	'user_reset' => '所持ポイントリセット',
 	'user_reset_confirm' => 'すべての予想を破棄して所持ポイントをリセットします。\\nよろしいですか？',
-	'user_points_are_missing' => 'ポイントが不足しています。',
+	'user_points_are_missing' => '所持ポイントが不足しています',
 	'user_invalid_points' => 'ポイントの入力に間違いがあります。',
 	'user_over_limit_points' => '一箇所に入れられるポイントには制限があります:',
 	'user_confirm_delete' => 'ユーザ情報を削除します。本当によろしいですか？',
