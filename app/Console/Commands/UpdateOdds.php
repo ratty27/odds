@@ -29,7 +29,8 @@ class UpdateOdds extends Command
      */
     public function handle()
     {
-        $games = Game::where('status', '0')->get();
+        // Only recalculate open games marked dirty (exclusion_update = 0).
+        $games = Game::where('status', 0)->where('exclusion_update', 0)->get();
         foreach( $games as $game )
         {
             DB::transaction(

@@ -217,6 +217,8 @@ class Game extends Model
 
 		$this->visibility = Bet::where('game_id', $this->id)->distinct('user_id')->count();
 		$this->next_update = date('Y/m/d H:i:s', strtotime('+' . config('odds.interval_calc_odds')));
+		// Mark clean so cron skips until the next bet sets exclusion_update back to 0.
+		$this->exclusion_update = 1;
 		$this->update();
 	}
 
